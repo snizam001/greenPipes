@@ -1,0 +1,9 @@
+multiprocess
+pandas
+termcolor
+mygene
+Biopython
+pyfaidx 
+upsetplot
+#subread
+gtfparse

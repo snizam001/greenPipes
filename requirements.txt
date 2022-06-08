@@ -7,3 +7,4 @@ pyfaidx
 upsetplot
 #subread
 gtfparse
+more_itertools

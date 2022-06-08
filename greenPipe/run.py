@@ -43,7 +43,7 @@ from greenPipe import comparePeak
 
 __description__ = """
 
-greenPipe pipeline (version 1.0)
+greenPipe pipeline (version 1.0): incomplete
 
 1. qc mode
     greenPipe --modes qc --outputdir $(pwd) --inputdir $(pwd)/Fastq --inputfile sampleInfo.txt --libraryType pair 

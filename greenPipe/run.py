@@ -63,7 +63,10 @@ greenPipe pipeline (version 1.0)
     
     greenPipe --modes doughnut --dPeakfiles ./Peaks/Jun_merged_narrow-homer.Clean.bed --dNames jun --sDist 200 
     --gVer hg38 --sFasta /home/sheikh/Databases/hg38/GenCode/GRCh38.p13.fa --mDist 400 --sProt TGA.TCA,TGA..TCA --mPwm MA0491 --outputdir $(pwd)
-   
+
+
+
+#____________ > differential peaks should be in the outputdir + DifferentialPeaks 
 """
 
 epilogue = """
@@ -96,6 +99,7 @@ reqNamed.add_argument("--modes",
                       'idr, '+
                       'doughnut, '+
                       'PeakComparison, '+
+                      'annotation, '
                       'UserAnnotation, '+
                       'coverageTracks, '+
                       'cutfrequency, '+
@@ -103,7 +107,7 @@ reqNamed.add_argument("--modes",
                       'heatmap, '+
 #                      'heatmapCoverage, ' +
                       'piggyBack, '+
-                      'RNAseq, '+
+                      'rnaIntegrate, '+
                       'stats', 
                       'green', attrs = ['bold']),
                       type=str,
@@ -168,11 +172,20 @@ parser.add_argument("--alignParam",
                     help=colored("alignment mode: ", 'green', attrs = ['bold']) +
                     "The alignment parameters of the bowtie2/bwa"+
                     ". The default parameter of bowtie2 in this pipeline is: --dovetail --local "+
-                    "--very-sensitive-local --no-unal --no-mixed --no-discordant -I 10 -X 700 (based on Meers et al. (2019)). For single-end default "+
+                    "--very-sensitive-local --no-unal --no-mixed --no-discordant -I 10 -X 700 (based on Meers et al. (2019))."+
+                    " For single-end default "+
                     "parameters of the program of bwa was used." +
                     "If you want to change it, give parameter as comma seperated values e.g. for bowtie2 "+
-                    "--no-unal,--no-mixed,--no-discordant,-I,0,-X,1500 and for bwa see the manual of bwa (for mem)",
+                    "--no-unal,--no-mixed,--no-discordant,-I,0,-X,1500 and for bwa see the manual of bwa (for mem)."+
+                    " If --gpu is True, then see the options of the nvBowtie: https://nvlabs.github.io/nvbio/nvbowtie_page.html",
                     default='None')
+
+parser.add_argument("--gpu", 
+                    help="If you have good source of the GPU. Use this option to activate. "+
+                    "Wherever neccessary tool automatically recognize and use the GPU source.",
+                    default='False',
+                    choices=['True','False']
+                    )
 
 parser.add_argument("--SelectReads", 
                     help=colored("equalRead mode: ", 'green', attrs = ['bold'])+ 
@@ -403,7 +416,7 @@ parser.add_argument("--overDist",
                     default = '400'
                    )
 parser.add_argument("--annpeakFiles",
-                    help=colored("UserAnnotation mode: ", 'green', attrs = ['bold']) + 
+                    help=colored("UserAnnotation/annotation mode: ", 'green', attrs = ['bold']) + 
                     "in this mode you can provide peaks which can be annotated "+
                     "by user provided annotations files (--annFiles). "+
                     "Multiple peak files can be given as comma seperated values.",
@@ -435,7 +448,7 @@ parser.add_argument("--annName",
                     default='None')
 
 parser.add_argument("--annPrefix",
-                    help=colored("UserAnnotation mode: ", 'green', attrs = ['bold']) + 
+                    help=colored("UserAnnotation/annotation mode: ", 'green', attrs = ['bold']) + 
                     "prefix of the output annotated files. Use this option if peak information "+
                     "is given by users by --annpeakFiles",
                     type = str,
@@ -489,9 +502,9 @@ parser.add_argument("--cMaN",
                    )
 
 parser.add_argument("--cGVersion",
-                    help=colored("cutfrequency mode: ", 'green', attrs = ['bold']) + 
-                    "If --cMotif is true, provide the version of the genome, "+
-                    "so that location of the motifs can be generated.",
+                    help=colored("cutfrequency/annotation: ", 'green', attrs = ['bold']) + 
+                    "In the cutfrequency mode, if --cMotif is true, provide the version of the genome, "+
+                    "so that location of the motifs can be generated. This one is also require in the annotation mode",
                     type = str,
                     default = 'hg38'
                    )
@@ -690,7 +703,7 @@ parser.add_argument("--Species",
                    )
 
 parser.add_argument("--sFasta",
-                    help=colored("piggyBack and doughnut mode: ", 'green', attrs = ['bold']) + 
+                    help=colored("piggyBack/doughnut/annotation mode: ", 'green', attrs = ['bold']) + 
                     "Fasta file of the species genome",
                     default="NA",
                     type=str
@@ -753,6 +766,7 @@ libraryType=args.libraryType
 #------
 threads=args.threads
 effectiveGenomeSize=args.effectiveGenomeSize
+gpu=args.gpu
 #------
 spikein=args.spikein
 refgenome=args.refgenome
@@ -1016,10 +1030,7 @@ except FileNotFoundError:
 
 def main ():
     for mode in modes.split(','):
-        if mode != 'idr' 
-        and mode != 'doughnut' 
-        and (mode == 'PeakComparison' and overFiles == 'NA') 
-        and (mode == "UserAnnotation'"  and ):
+        if mode != 'idr' and mode != 'doughnut' and (mode == 'PeakComparison' and overFiles == 'NA') and mode != "UserAnnotation":
             if inputdir=="NA" or inputfile == "NA" or libraryType=="NA": #or experimentType == "NA"
                 print(colored("Options --inputdir, --inputfile, --libraryType"+ #or --experimentType
                               " is missing",
@@ -1144,7 +1155,7 @@ def main ():
 #            if experimentType == "greencutrun":
             for i in range(0,myin.shape[0]):
                 Name = myin.loc[i,4]
-                align.alignment(libraryType, outputdir, Name, refgenome, spikein, threads, alignParam)
+                align.alignment(libraryType, outputdir, Name, refgenome, spikein, threads, alignParam, gpu)
             
         #-- selecting equal number of the reads
         if mode == 'equalRead':
@@ -1505,45 +1516,7 @@ def main ():
         #-- annotation of peaks: user provided peak file and/or annotation bed files 
         #_____________________________________________________________________________________________________
         if mode == 'UserAnnotation':
-            annR=psource.resource_filename(__name__, "rscripts/ann.R")
-
-            if annpeakFiles=='None':
-                print(colored("UserAnnotation mode is active. Using default peaks from "+
-                              outputdir + '/Peaks/ folder.',
-                              'green',
-                              attrs = ['bold']
-                             )
-                     )
-                annpeakFile=[]
-                for i in range(0,myin.shape[0]):
-                    annpeakFile.append(outputdir + '/Peaks/' + myin.loc[i,4] + '.Clean.bed')
-                samples = list(myin.loc[:,4])
-                for i in combinations(samples,2):
-                    annpeakFile.append(outputdir+'/Peaks/DifferentialPeaks/'+i[0]+'.vs.'+i[1]+'.differentialPeaks.txt')
-            else:
-                annpeakFile=annpeakFiles.split(',')
-            
-            annPrefixes=annPrefix.split(',')
-            totalCmd=[]
-            if len(annPrefixes) != len(annpeakFile):
-                print(colored("number of the --annPrefix is not equal to the number of --annpeakFiles",
-                              "green",
-                              attrs = ["bold"]
-                             )
-                     )
-                exit()
-                              
-            for i in range(0,len(annpeakFile)):
-                f=annpeakFile[i]
-                totalCmd.append(ann.ann(outputdir,
-                                        f,
-                                        annFiles,
-                                        annSize,
-                                        annName,
-                                        annPrefixes[i],
-                                        threads,
-                                        annR)
-                               )
+            totalCmd = ann.UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads)
             print(totalCmd)
             with Pool (threads) as p:
                 p.starmap(universal.run_cmd,
@@ -1551,6 +1524,14 @@ def main ():
                               repeat(outputdir)
                              )
                          )
+        if mode == 'annotation':
+          print(colored("using genome version: "+cGVersion+" in annotation mode",
+                        "green",
+                        attrs= ["bold"]
+                       )
+               )
+          ann.Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads)
+       
                 
         #-- Coverage of the tracks with or without spikeIn normalization
         #_____________________________________________________________________________________________________

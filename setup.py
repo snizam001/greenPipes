@@ -13,7 +13,7 @@ setup(
 	version=__version__,
 	description="pipeline for the analysis of greenCUTRUN datasets and integrated analysis with RNAseq and MassSpectrometry",
 	author="Sheikh Nizamuddin",
-	license="MIT",
+	license="DKFZ",
 	include_package_data=True,
 	package_data={"greenPipe": ["data/*"]},
 #	scripts=['rscripts/*'],

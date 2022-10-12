@@ -155,13 +155,10 @@ if (nrow(mybed) == 0)
     #--- 
 
     data.frame(total) -> total
-    try(ftable(total[,-c(1:5)]) -> totalOutput
-
-    write.ftable(totalOutput,
-        outputTxt,
-        quote=F,
-        sep="\t")
-        
+    try({
+            ftable(total[,-c(1:5)]) -> totalOutput
+            write.ftable(totalOutput,outputTxt,quote=F,sep="\t")
+            }
        )
     outputTxt = paste(output,".totalOutput.txt",sep="")
     outputMat = paste(output,".totalMatrix.txt",sep="")

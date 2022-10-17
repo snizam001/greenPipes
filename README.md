@@ -173,5 +173,14 @@ USAGE:
      2. Create Bowtie2 index of mm10 mouse genome index
      3. Run this command: 
      
-     greenPipe --modes qc,alignment,initPeakCalling,callPeaks,annotation,coverageTracks,initHeatmap,heatmap --inputdir /media/sheikh/Swift0/dTAGSystemTBP/CUTRUN2/Fastq --inputfile ./SampleInfo.txt --threads 30 --outputdir /media/sheikh/Swift0/dTAGSystemTBP/CUTRUN2 --refgenome /media/txpn/nvme/Databases/mm10/mm10 --spikein /media/txpn/nvme/Databases/Drosophilla/Bowtie2/Drosophila_melanogaster --blackListedRegions mm10.blacklist.bed  --pStyle narrow --covSpike True --hCovComp coverage --hDiffPeaks False 
+     greenPipe --modes qc,alignment,initPeakCalling,
+     callPeaks,annotation,coverageTracks,initHeatmap,heatmap 
+     --inputdir /media/sheikh/Swift0/dTAGSystemTBP/CUTRUN2/Fastq 
+     --inputfile ./SampleInfo.txt --threads 30 --outputdir 
+     /media/sheikh/Swift0/dTAGSystemTBP/CUTRUN2 
+     --refgenome /media/txpn/nvme/Databases/mm10/mm10 
+     --spikein /media/txpn/nvme/Databases/Drosophilla/Bowtie2/
+     Drosophila_melanogaster --blackListedRegions mm10.blacklist.bed 
+     --pStyle narrow --covSpike True --hCovComp coverage 
+     --hDiffPeaks False 
      

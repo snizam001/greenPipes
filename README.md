@@ -4,3 +4,10 @@
 
 # citation:
 Unpublished work
+
+INSTALLATION:
+       
+       git clone https://github.com/snizam001/greenPipe.git
+       cd greenPipe
+       pip install ./
+       

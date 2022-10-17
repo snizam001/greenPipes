@@ -158,3 +158,20 @@ USAGE:
        --threads THREADS     number of threads (default is: total CPU - 2)
 
       Authors: (a) Sheikh Nizamuddin: snizam001@gmail.com, (b) H.Th. Marc Timmers: m.timmers@dkfz-heidelberg.de 
+
+
+
+
+     Format of the SampleInfo.txt
+     
+     Control_R1     Control_R2     Experiment_R1  Experiment_R2  Prefix/Name     
+     IgG-neg_R1.fastq.gz	IgG-neg_R2.fastq.gz	TBP2-neg_R1.fastq.gz	TBP2-neg_R2.fastq.gz	TBP_neg
+     
+     Example command to run:
+     
+     1. Prepare the SampleInfo.txt
+     2. Create Bowtie2 index of mm10 mouse genome index
+     3. Run this command: 
+     
+     greenPipe --modes qc,alignment,initPeakCalling,callPeaks,annotation,coverageTracks,initHeatmap,heatmap --inputdir /media/sheikh/Swift0/dTAGSystemTBP/CUTRUN2/Fastq --inputfile ./SampleInfo.txt --threads 30 --outputdir /media/sheikh/Swift0/dTAGSystemTBP/CUTRUN2 --refgenome /media/txpn/nvme/Databases/mm10/mm10 --spikein /media/txpn/nvme/Databases/Drosophilla/Bowtie2/Drosophila_melanogaster --blackListedRegions mm10.blacklist.bed  --pStyle narrow --covSpike True --hCovComp coverage --hDiffPeaks False 
+     

@@ -284,8 +284,8 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
            'reference-point',
            '--referencePoint',
            'center', 
-           '-R', hBed.split(','), 
-           '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz', 
+           '-R'] + hBed.split(',') + 
+           ['-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz', 
            '--missingDataAsZero', 
            '-bl', blackListedRegions, 
            '--smartLabels', 

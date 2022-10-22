@@ -168,7 +168,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
             os.makedirs(d)
             
     #-----
-    if regionMode == "metagene":
+    if hregionMode == "metagene":
         if inFiles == "NA":
             print (colored("--inFiles option is missing",
                            "green",
@@ -215,7 +215,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
 
         universal.run_cmd(c,outputdir)
     #------------
-    elif regionMode == "tss":
+    elif hregionMode == "tss":
         if inFiles == "NA":
             print (colored("--inFiles option is missing",
                            "green",
@@ -264,7 +264,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
         
         universal.run_cmd(c,outputdir)
     #------------
-    elif regionMode == "bed":
+    elif hregionMode == "bed":
         if inFiles == "NA":
             print (colored("--inFiles option is missing",
                            "green",
@@ -313,14 +313,14 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
         
         universal.run_cmd(c,outputdir)
     #------------
-    elif regionMode == "peaks":
+    elif hregionMode == "peaks":
         hBed=[]
         for inName in inNames:
             hBed.append(outputdir + '/Peaks/' + inName + '.Clean.bed')
         e_file=0
         for f in hBed:
             if not os.path.exists(f):
-                print(colored(f+" : file does not exit. These files require in the --regionMode peaks." + 
+                print(colored(f+" : file does not exit. These files require in the --hregionMode peaks." + 
                               "Call peaks before this step.",
                               "green",
                               attrs = ["bold"]

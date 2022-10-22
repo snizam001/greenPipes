@@ -9,6 +9,7 @@ from termcolor import colored
 import glob
 from greenPipe import initPeakCalling
 from greenPipe import universal
+import pkg_resources as psource
 
 def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,libraryType,effectiveGenomeSize, initHeatmapOtherOptions):
     cmd_rs=['bamCompare']

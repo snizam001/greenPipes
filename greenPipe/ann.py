@@ -158,9 +158,9 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
     if annpeakFiles=='None':
         for z in zz:
             if os.path.exists(outputdir + '/' + z + '/'):
-                myPeakFolders = myPeakFolders + [outputdir + '/' + z + '/']
+                myPeakFolders = myPeakFolders + ['/' + z + '/']
             else:
-                print ("Folder " + z + 'does not exist.')
+                print ("Folder " + z + ' does not exist.')
         annpeakFile = []
         for myPeakFolder in myPeakFolders:
             annpeakFile = annpeakFile + glob.glob(outputdir + '/' + myPeakFolder + '/' + '*.Clean.bed')

@@ -45,6 +45,10 @@ __description__ = """
 
 greenPipe pipeline (version 1.0): incomplete
 
+#--note: for modes using homer, first customize homer if you are using species other than human. See http://homer.ucsd.edu/homer/introduction/update.html
+
+
+
 1. qc mode
     greenPipe --modes qc --outputdir $(pwd) --inputdir $(pwd)/Fastq --inputfile sampleInfo.txt --libraryType pair 
 
@@ -504,7 +508,9 @@ parser.add_argument("--cMaN",
 parser.add_argument("--cGVersion",
                     help=colored("cutfrequency/annotation: ", 'green', attrs = ['bold']) + 
                     "In the cutfrequency mode, if --cMotif is true, provide the version of the genome, "+
-                    "so that location of the motifs can be generated. This one is also require in the annotation mode",
+                    "so that location of the motifs can be generated. This one is also require in "+
+                    "the annotation mode "+
+                    " if you are using other species than human. Specify here. For mouse use mm10.",
                     type = str,
                     default = 'hg38'
                    )

@@ -208,6 +208,12 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
                                     stderr = logfile)
                 stdout, stderr = p2.communicate()
                 stdout, stderr
+            c=['samtools', 'index', '-@', str(threads),outfile+Expr[k]+'.bam']
+            universal.run_cmd(c,outputdir)
+            #----
+            c=['samtools', 'flagstat', '-@', str(threads),outfile+Expr[k]+'.bam']
+            with open(outfile+Expr[k]+'.Flagstats.txt', "w+") as f:
+                universal.run_cmd_file(c,f,outputdir)
           #-----
           elif gpu == "True":
             if libraryType=="pair":

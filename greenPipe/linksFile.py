@@ -24,7 +24,10 @@ def linksFile (libraryType,myin,inputdir,outputdir):
                 print("["+dst+"]")
                 if not os.path.exists(dst):
                     os.symlink(source, dst)
-                    
+                else:
+                    os.unlink(dst)
+                    os.symlink(source, dst)
+
     elif libraryType=="single":
         xx=['_control.fastq.gz','NA','_expr.fastq.gz','NA']
         for i in range(0,myin.shape[0]):
@@ -34,4 +37,6 @@ def linksFile (libraryType,myin,inputdir,outputdir):
                 print("["+dst+"]")
                 if not os.path.exists(dst):
                     os.symlink(source, dst)
-                    
+                else:
+                    os.unlink(dst)
+                    os.symlink(source, dst)

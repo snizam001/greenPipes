@@ -78,7 +78,7 @@ opt <- parse_args(parser)
             count, 
             ",")))
 
-    if (is.na(sampleLabels)) {
+    if (any(is.na(sampleLabels))) {
 		sampleLabels = paste("Samples",seq(1,length(count)), sep = "-")	
     }
 

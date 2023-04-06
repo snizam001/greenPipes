@@ -1,6 +1,5 @@
 #----------- bamcoverage with without spike in 
-#}_______________________________________________________
-
+#}_______________________________________________________ 
 import os
 import subprocess
 from datetime import datetime
@@ -83,7 +82,12 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
         vals = initPeakCalling.spike_normalization2(l_samples, libraryType)
         valsExpr = initPeakCalling.spike_normalization2(l_samplesExpr, libraryType)
         SpikeRatios = [x / y for x, y in zip(vals, valsExpr)]
-        SpikeVal = [ min(SpikeRatios) / SpikeRatio for SpikeRatio in SpikeRatios]
+
+        #--- change in version 3: 20 Jan, 2023
+        #--- this SpikeVal was as such that spikeIn normalzation can not be compared among batches  # version 3 
+        # SpikeVal = [ min(SpikeRatios) / SpikeRatio for SpikeRatio in SpikeRatios]  # version 3 
+        SpikeVal = [ 0.05 / SpikeRatio for SpikeRatio in SpikeRatios]  # version 3 
+
         print(pd.DataFrame({'Name':Names,'Spike':vals, 'Experiment':valsExpr, 'Ratio of Spike':SpikeRatios, "Normalization":  SpikeVal}))
         j=-1
         for Name in Names:

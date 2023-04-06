@@ -358,6 +358,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                '-o', outputdir + '/idr_homer/peaks/replicates/' + idrName + '_replicate' + str(replicate) + '.peaks.txt',
                '-P','.1',
                '-LP','.1',
+               '-C', '0', # version 3 
                '-poisson', '.1',
                '-style', idrStyle]
             
@@ -367,6 +368,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                '-o', outputdir + '/idr_homer/peaks/replicates/' + idrName + '_replicate' + str(replicate) + '.peaks.txt',
                '-P','.1',
                '-LP','.1',
+               '-C', '0', # version 3 
                '-poisson', '.1',
                '-style', idrStyle]
         
@@ -379,6 +381,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
            '-o', outputdir + '/idr_homer/peaks/pooled/TotalExperiment.peaks.txt',
            '-P','.1',
            '-LP','.1',
+           '-C', '0', # version 3 
            '-poisson', '.1',
            '-style', idrStyle]
         totalCmd.append(c)
@@ -388,6 +391,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
            '-o', outputdir + '/idr_homer/peaks/pooled/TotalExperiment.peaks.txt',
            '-P','.1',
            '-LP','.1',
+           '-C', '0', # version 3 
            '-poisson', '.1',
            '-style', idrStyle]
         totalCmd.append(c)        
@@ -424,6 +428,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             c=['findPeaks', f, 
                '-P', '.1',
                '-LP', '.1', 
+               '-C', '0', # version 3 
                '-poisson', '.1',
                '-style', idrStyle,
                '-i', outputdir+'/idr_homer/TagDir/TotalControl',
@@ -442,6 +447,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             c=['findPeaks', f,
                '-P', '.1',
                '-LP', '.1',
+               '-C', '0', # version 3 
                '-poisson', '.1',
                '-style', idrStyle,
                '-o', f+'_peaks.txt'
@@ -461,6 +467,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             c=['findPeaks', f, 
                '-P', '.1',
                '-LP', '.1', 
+               '-C', '0', # version 3 
                '-poisson', '.1',
                '-style', idrStyle,
                '-i', outputdir+'/idr_homer/TagDir/TotalControl',
@@ -478,6 +485,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             c=['findPeaks', f,
                '-P', '.1',
                '-LP', '.1', 
+               '-C', '0', # version 3 
                '-poisson', '.1',
                '-style', idrStyle,
                '-o', f+'_peaks.txt'

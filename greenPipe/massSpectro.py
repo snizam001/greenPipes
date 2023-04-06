@@ -534,5 +534,6 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
         outDir=outputdir+'/'+'MassSpectrometry'
         outfile1=outputdir+'/'+'MassSpectrometry/' + Name + '.peaks_WithoutPwmSeqOnly'+HugoSymbol+'.txt'
         pwm=outputdir+'/'+'MassSpectrometry/'+'temporary.pwm'
-        proof_of_piggyBack (inFile,metadata_file,EntrezIDs,HugoSymbol,outDir,outfile1,distPiggy,Name,gVer,tempDir,size,threads,pwm,outputdir)
+        proof_of_piggyBack (inFile,metadata_file,EntrezIDs,HugoSymbol,outDir,
+            outfile1,distPiggy,Name,gVer,tempDir,size,threads,pwm,outputdir)
 

@@ -43,7 +43,7 @@ from greenPipe import comparePeak
 
 __description__ = """
 
-greenPipe pipeline (version 1.0): incomplete
+greenPipe pipeline (version 3.0): 23rd January, 2023
 
 #--note: for modes using homer, first customize homer if you are using species other than human. See http://homer.ucsd.edu/homer/introduction/update.html
 
@@ -99,6 +99,7 @@ reqNamed.add_argument("--modes",
                       "qcExperiment, "+
                       'initPeakCalling, '+
                       'qcTagDirectories, '+
+                      'readSummary, ' +
                       'callPeaks, '+
                       'idr, '+
                       'doughnut, '+

@@ -4,15 +4,15 @@
 if(!require(optparse)){
         install.packages("optparse")}
 library(optparse)
-#--- 
+#---
 if(!require(data.table)){
         install.packages("data.table")}
 library(data.table)
-#--- 
+#---
 if (!requireNamespace("BiocManager", quietly = TRUE)){
     install.packages("BiocManager")
 }
-#--- 
+#---
 if(!require(GenomicRanges)){
     print ("GenomicRanges is not avaiable in your system")
     system('sudo apt-get install libcurl4-openssl-dev')
@@ -20,52 +20,52 @@ if(!require(GenomicRanges)){
         }
 
 library(GenomicRanges)
-#--- 
+#---
 if(!require(plot.matrix)){
         install.packages("plot.matrix")}
 library(plot.matrix)
 #--
-#--- 
+#---
 if(!require(UpSetR)){
         install.packages("UpSetR")}
 library(UpSetR)
-#--- 
+#---
 option_list = list(
-make_option(c("-m", "--myMaxGap"), 
-    type="character", 
+make_option(c("-m", "--myMaxGap"),
+    type="character",
     default="200",
     help="maximum gap between peaks (comma seperated values)",
     metavar="character"
            ),
 
-make_option(c("-i", "--input"), 
-    type="character", 
+make_option(c("-i", "--input"),
+    type="character",
     default=NA,
-    help="Input bedfile", 
+    help="Input bedfile",
     metavar="character"),
 
-make_option(c("-d", "--datalist"), 
-    type="character", 
+make_option(c("-d", "--datalist"),
+    type="character",
     default=NA,
-    help="List of files with which input will be matched", 
+    help="List of files with which input will be matched",
     metavar="character"),
 
-make_option(c("-c", "--core"), 
-    type="integer", 
+make_option(c("-c", "--core"),
+    type="integer",
     default=NA,
-    help="Number of threads", 
+    help="Number of threads",
     metavar="character"),
 
-make_option(c("-n", "--names"), 
-    type="character", 
+make_option(c("-n", "--names"),
+    type="character",
     default=NA,
-    help="Name of the experiments (comma seperated values)", 
+    help="Name of the experiments (comma seperated values)",
     metavar="character"),
 
-make_option(c("-o", "--output"), 
-    type="character", 
+make_option(c("-o", "--output"),
+    type="character",
     default=NA,
-    help="Prefix of the output files", 
+    help="Prefix of the output files",
     metavar="character")
 
 );
@@ -78,20 +78,20 @@ opt <- parse_args(parser)
     output=opt$output
     input=opt$input
     datalist=opt$datalist
-#--- 
+#---
 mynames=unlist(
         strsplit(
-            mynames, 
+            mynames,
             ","))
 
 datalist=unlist(
         strsplit(
-            datalist, 
+            datalist,
             ","))
 
 myMaxGaps=unlist(
         strsplit(
-            as.character(myMaxGap), 
+            as.character(myMaxGap),
             ","))
 
 if (length(myMaxGaps) == 1){
@@ -100,14 +100,14 @@ if (length(myMaxGaps) == 1){
 
 if (length(myMaxGaps) != length(datalist) ){
     stop("number of annSize is not equal to input annotation bed files. you can give single annSize for all input annotation bed fils\n----------------------------------")
-    
+
 }
 
 mybed=fread(input,
         header=F,
         sep='\t')
 
-if (nrow(mybed) == 0) 
+if (nrow(mybed) == 0)
     {
         print (paste(input, ":Number of the rows in file is zero (?)", sep = ""))
 } else {
@@ -119,7 +119,7 @@ if (nrow(mybed) == 0)
 
     mybed=makeGRangesFromDataFrame(mybed)
 
-    #--- 
+    #---
     for(i in c(1:length(datalist))) {
 
                 mydata = datalist[i]
@@ -136,9 +136,9 @@ if (nrow(mybed) == 0)
                 match=unique(
                     data.frame(
                         findOverlaps(
-                            mybed, 
-                            mydata, 
-                            ignore.strand=TRUE, 
+                            mybed,
+                            mydata,
+                            ignore.strand=TRUE,
                             maxgap = as.integer(myMaxGaps[i])))[,1])
 
                 up=mybed[match,]
@@ -152,12 +152,12 @@ if (nrow(mybed) == 0)
                 print (paste('-> Finished (Myannotations): ', myname,sep=''))
 
     }
-    #--- 
+    #---
 
     data.frame(total) -> total
     try({
             ftable(total[,-c(1:5)]) -> totalOutput
-            write.ftable(totalOutput,outputTxt,quote=F,sep="\t")
+            write.ftable (totalOutput, outputTxt,quote=F,sep="\t")
             }
        )
     outputTxt = paste(output,".totalOutput.txt",sep="")
@@ -169,7 +169,7 @@ if (nrow(mybed) == 0)
         sep="\t",
         row.names=F)
 
-    #--- 
+    #---
     if (ncol (total) == 6) {
         print ("Heatmap or UpSetPlot can not be generated for one factor (given using --annFiles) in the UserAnnotation mode ")
     } else {
@@ -203,7 +203,7 @@ if (nrow(mybed) == 0)
                 yaxs = "i",
                 axes=F,
                 xlab='',
-                ylab=''); 
+                ylab='');
 
         axis(1)
 
@@ -211,7 +211,7 @@ if (nrow(mybed) == 0)
         abline(v=0,lty=2,col='orange')
 
         system('rm Rplots.pdf')
-        dev.off() 
+        dev.off()
 
         jpeg(paste(output,'.UpSetPlot.jpeg',sep=''),unit='in',res=300,height=3.5,width=5)
         upset(total[,-c(1:5)], mainbar.y.label = "Overlap", sets.x.label = "Individuals")
@@ -219,4 +219,3 @@ if (nrow(mybed) == 0)
 
     }
 }
-

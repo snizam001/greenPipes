@@ -27,10 +27,10 @@ def run_cmd_file (mycmd,f,outputdir):
         with open(f,'w') as file:
             logfile.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
             process = subprocess.Popen(mycmd,
-                                       stdout=file, 
+                                       stdout=file,
                                        stderr=logfile)
             stdout, stderr = process.communicate()
-            stdout, stderr 
+            stdout, stderr
     if process.returncode != 0:
         err_msg = ["error in the code, check log file:"]
         raise Exception(err_msg)
@@ -45,9 +45,9 @@ def macs2idrCommand (mysamples,peakList,inputFiletype,outputFile,IdrThreshold):
                                    '--plot']
     return(c)
 
-        
+
 def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pvalue,effectiveGenomeSize,myratio):
-    #---  
+    #---
     if Style == "broad" or Style=="histone":
         if CtrlInclude == "True" and SpikeInclude == "False":
             c=['macs2',
@@ -89,7 +89,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
                '--broad',
                '--ratio', str(myratio)
               ]
-            
+
     if Style == "narrow" or Style=="factor":
         if CtrlInclude == "True" and SpikeInclude == "False":
             c=['macs2',
@@ -129,7 +129,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
                '--ratio', str(myratio)
               ]
     return(c)
-            
+
 def macs2SpikeInratio (idrExprSpike, idrCtrlSpike, n_expr, n_ctrl, outputdir, idrName, threads, libraryType):
     idrExprSpikes=idrExprSpike.split(',')
     idrCtrlSpikes=idrCtrlSpike.split(',')
@@ -196,7 +196,7 @@ def macs2SpikeInratio (idrExprSpike, idrCtrlSpike, n_expr, n_ctrl, outputdir, id
 
         totalCmdfile.append(f)
         totalCmd.append(c)
-            
+
     with Pool (threads) as p:
         p.starmap(run_cmd_file,
               zip(totalCmd,
@@ -214,24 +214,24 @@ def macs2SpikeInratio (idrExprSpike, idrCtrlSpike, n_expr, n_ctrl, outputdir, id
     for f in n_ctrlSpike:
         oValFiles.append(f+".Flagstats.txt")
     c_ctrlSpike = initPeakCalling.spike_normalization2(oValFiles, libraryType)
-    
+
     oValFiles   = []
     for f in n_expr:
         oValFiles.append(f+".Flagstats.txt")
     c_expr = initPeakCalling.spike_normalization2(oValFiles, libraryType)
-    
+
     oValFiles   = []
     for f in n_ctrl:
         oValFiles.append(f+".Flagstats.txt")
     c_ctrl = initPeakCalling.spike_normalization2(oValFiles, libraryType)
-    
+
     #------
     c_totalCtrl = sum(c_ctrl)
     c_totalCtrlSpike = sum(c_ctrlSpike)
-    
+
     #------
     myratios=[]
-    
+
     for i in range(0,len(n_expr)):
         myratios.append((c_exprSpike[i]/c_expr[i])/(c_totalCtrlSpike/c_totalCtrl))
 
@@ -239,18 +239,18 @@ def macs2SpikeInratio (idrExprSpike, idrCtrlSpike, n_expr, n_ctrl, outputdir, id
     TotalExprRatio=(
         (sum(c_exprSpike)/sum(c_expr))/(c_totalCtrlSpike/c_totalCtrl)
     )
-    
+
     #------
     return(myratios, TotalExprRatio)
 
 
 
 def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,blackListedRegions,threads):
-    
+
     idrScript=psource.resource_filename(__name__, "otherScripts/idr/run_idr.py")
     totalCmd=[]
     totalCmd2=[]
-    
+
     dirs=[outputdir+'/idr_homer/',
           outputdir+'/idr_homer/TagDir',
           outputdir+'/idr_homer/peaks/replicates/',
@@ -261,7 +261,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
           outputdir+'/idr_homer/pseudoreps/pooled',
           outputdir+'/idr_macs2/'+idrName
          ]
-          
+
     for d in dirs:
         if not os.path.exists(d):
             os.makedirs(d)
@@ -275,12 +275,13 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                           ': It is not installed in your computer or not in the PATH.',
                           'green', attrs=['bold']))
             exit()
-    
-    
+
+
     #--- link the tagdirectories to the idr/TagDir folder
     #_____________________________________________________
     replicate = 0
     n_expr = []
+    n_expr_forTotalMergeCounts = 0.0
     tag_present=0
     for exp in idrExpr.split(','):
         replicate += 1
@@ -300,9 +301,15 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             pass
         n_expr.append(dst)
 
+        with open(dst+'/tagInfo.txt') as dst_tagInfo:
+            dst_Counts = float(dst_tagInfo.readlines()[1].split('\t')[2].split('\n')[0])
+
+        n_expr_forTotalMergeCounts = n_expr_forTotalMergeCounts + dst_Counts
+
     if idrControl=="True":
         replicate = 0
         n_ctrl = []
+        n_ctrl_forTotalMergeCounts = 0.0
         for ctr in idrCtrl.split(','):
             replicate += 1
             source = ctr
@@ -320,24 +327,30 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             except OSError:
                 pass
             n_ctrl.append(dst)
-    
+
+        with open(dst+'/tagInfo.txt') as dst_tagInfo:
+            dst_Counts = float(dst_tagInfo.readlines()[1].split('\t')[2].split('\n')[0])
+
+        n_ctrl_forTotalMergeCounts = n_ctrl_forTotalMergeCounts + dst_Counts
+
     if tag_present > 0:
         exit()
-        
+
     #-- Creating pooled directory
+    #_____________________________________________________
     c=['makeTagDirectory',
        outputdir+'/idr_homer/TagDir/TotalExperiment',
-       "-d"]+n_expr
-    
+       "-d"]+n_expr+['-totalReads', str(n_expr_forTotalMergeCounts)]
+
     totalCmd.append(c)
-    
+
     if idrControl == "True":
         c=['makeTagDirectory',
            outputdir+'/idr_homer/TagDir/TotalControl',
-           "-d"]+n_ctrl
+           "-d"]+n_ctrl+['-totalReads', str(n_ctrl_forTotalMergeCounts)]
 
         totalCmd.append(c)
-        
+
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,
               zip(totalCmd,
@@ -347,6 +360,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
 
 
     #-- Calling peaks
+    #_____________________________________________________
     totalCmd=[]
     replicate = 0
     for i in range(0,len(n_expr)):
@@ -358,22 +372,22 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                '-o', outputdir + '/idr_homer/peaks/replicates/' + idrName + '_replicate' + str(replicate) + '.peaks.txt',
                '-P','.1',
                '-LP','.1',
-               '-C', '0', # version 3 
+               '-C', '0', # version 3
                '-poisson', '.1',
                '-style', idrStyle]
-            
+
         else:
              c=['findPeaks',
                n_expr[i],
                '-o', outputdir + '/idr_homer/peaks/replicates/' + idrName + '_replicate' + str(replicate) + '.peaks.txt',
                '-P','.1',
                '-LP','.1',
-               '-C', '0', # version 3 
+               '-C', '0', # version 3
                '-poisson', '.1',
                '-style', idrStyle]
-        
+
         totalCmd.append(c)
-            
+
     if idrControl == "True":
         c=['findPeaks',
            outputdir+'/idr_homer/TagDir/TotalExperiment',
@@ -381,7 +395,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
            '-o', outputdir + '/idr_homer/peaks/pooled/TotalExperiment.peaks.txt',
            '-P','.1',
            '-LP','.1',
-           '-C', '0', # version 3 
+           '-C', '0', # version 3
            '-poisson', '.1',
            '-style', idrStyle]
         totalCmd.append(c)
@@ -391,19 +405,19 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
            '-o', outputdir + '/idr_homer/peaks/pooled/TotalExperiment.peaks.txt',
            '-P','.1',
            '-LP','.1',
-           '-C', '0', # version 3 
+           '-C', '0', # version 3
            '-poisson', '.1',
            '-style', idrStyle]
-        totalCmd.append(c)        
-    
-    #-- creating pseudoreplicates
+        totalCmd.append(c)
 
+    #-- creating pseudoreplicates
+    #_____________________________________________________
     c=['python',
        idrScript,
        'pseudoreplicate',
        '-d'] + n_expr + ['-o', outputdir+'/idr_homer/pseudoreps/individual']
     totalCmd.append(c)
-    
+
     c=['python',
        idrScript,
        'pseudoreplicate',
@@ -411,7 +425,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
        outputdir+'/idr_homer/TagDir/TotalExperiment',
        '-o', outputdir+'/idr_homer/pseudoreps/pooled']
     totalCmd.append(c)
-    
+
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,
               zip(totalCmd,
@@ -421,53 +435,52 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
 
     #--- calling peaks in psuedo-replicates
     totalCmd=[]
-    print ("_______________________________  nizam")
     files=glob.glob(outputdir+'/idr_homer/pseudoreps/individual/*')
     if idrControl=="True":
         for f in files:
-            c=['findPeaks', f, 
+            c=['findPeaks', f,
                '-P', '.1',
-               '-LP', '.1', 
-               '-C', '0', # version 3 
+               '-LP', '.1',
+               '-C', '0', # version 3
                '-poisson', '.1',
                '-style', idrStyle,
                '-i', outputdir+'/idr_homer/TagDir/TotalControl',
                '-o', f+'_peaks.txt'
               ]
             totalCmd.append(c)
-            
+
             c=['mv',
                f+'_peaks.txt',
                outputdir+'/idr_homer/peaks/pseudoreps'
               ]
             totalCmd2.append(c)
-        
+
     else:
          for f in files:
             c=['findPeaks', f,
                '-P', '.1',
                '-LP', '.1',
-               '-C', '0', # version 3 
+               '-C', '0', # version 3
                '-poisson', '.1',
                '-style', idrStyle,
                '-o', f+'_peaks.txt'
               ]
 
-            totalCmd.append(c)       
-        
+            totalCmd.append(c)
+
             c=['mv',
                f+'_peaks.txt',
                outputdir+'/idr_homer/peaks/pseudoreps'
               ]
             totalCmd2.append(c)
-        
+
     files=glob.glob(outputdir+'/idr_homer/pseudoreps/pooled/*')
     if idrControl == "True":
         for f in files:
-            c=['findPeaks', f, 
+            c=['findPeaks', f,
                '-P', '.1',
-               '-LP', '.1', 
-               '-C', '0', # version 3 
+               '-LP', '.1',
+               '-C', '0', # version 3
                '-poisson', '.1',
                '-style', idrStyle,
                '-i', outputdir+'/idr_homer/TagDir/TotalControl',
@@ -478,14 +491,14 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             c=['mv',
                f+'_peaks.txt',
                outputdir+'/idr_homer/peaks/pooled-pseudoreps'
-              ]    
+              ]
             totalCmd2.append(c)
     else:
         for f in files:
             c=['findPeaks', f,
                '-P', '.1',
-               '-LP', '.1', 
-               '-C', '0', # version 3 
+               '-LP', '.1',
+               '-C', '0', # version 3
                '-poisson', '.1',
                '-style', idrStyle,
                '-o', f+'_peaks.txt'
@@ -495,10 +508,10 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             c=['mv',
                f+'_peaks.txt',
                outputdir+'/idr_homer/peaks/pooled-pseudoreps'
-              ]    
+              ]
             totalCmd2.append(c)
 
-        
+
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,
               zip(totalCmd,
@@ -513,7 +526,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                  )
                  )
 
-    
+
     #--- calling IDRs
     p = glob.glob(outputdir+'/idr_homer/peaks/replicates/'+idrName+'*')
     if len(p) == 0:
@@ -522,7 +535,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                        attrs = ["bold"]
                       )
               )
-        
+
     pr = glob.glob(outputdir+'/idr_homer/peaks/pseudoreps/'+idrName+'*')
     if len(pr) == 0:
         print (colored("Peaks are not present in idr_homer/peaks/pseudoreps/ folder for "+idrName,
@@ -530,7 +543,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                        attrs = ["bold"]
                       )
               )
-        
+
     ppr = glob.glob(outputdir+'/idr_homer/peaks/pooled-pseudoreps/'+"TotalExperiment"+'*')
     if len(ppr) == 0:
         print (colored("Peaks are not present in idr_homer/peaks/pooled-pseudoreps/ folder for "+idrName,
@@ -545,20 +558,20 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
                        attrs = ["bold"]
                       )
               )
-        
+
     c=['python', idrScript, 'idr', '-p'] + p + ['-pr'] + pr + ['-ppr'] + ppr + ['--pooled_peaks'] + pooled + ['-o', outputdir + "/idr_homer/" + idrOutput]
 
     universal.run_cmd(c,outputdir)
 
     #------- TotalExperiment.peaks-top-set.txt
-   
+
     pd.read_csv(outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.txt',
                 sep="\t").iloc[:,[1,2,3,0,7,4]].to_csv(outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.bed',
                                                        sep="\t",header=None,index=None)
 
-    cmd=['intersectBed', 
-         '-a', outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.bed', 
-         '-b', blackListedRegions, 
+    cmd=['intersectBed',
+         '-a', outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.bed',
+         '-b', blackListedRegions,
          '-v']
 
     file=outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.removed.bed'
@@ -566,16 +579,19 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
         universal.run_cmd_file(cmd,f,outputdir)
 
     #-------
-    cmd=['grep', '^chr', outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.removed.bed'] 
+    cmd=['grep', '^chr', outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.removed.bed']
     file=outputdir + "/idr_homer/" + idrOutput + '/TotalExperiment.peaks-top-set.Clean.bed'
     with open(file,'w') as f:
         universal.run_cmd_file(cmd,f,outputdir)
-    
+
 #---------------------------------------------
 #))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrName,idrControl,idrStyle,idrOutput,blackListedRegions,threads,effectiveGenomeSize,libraryType):
-    
+
+    print(colored('MACS2 IDR : I did not play much with spikeIn normalization here.',
+                'green', attrs=['bold']))
+
     idrScript=psource.resource_filename(__name__, "otherScripts/idr_macs2/bin/idr")
     totalCmd=[]
     totalCmd2=[]
@@ -588,7 +604,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
           outputdir+'/idr_macs2/peaks/pooled-pseudoreps',
           outputdir+'/idr_macs2/pseudoreps/individual',
           outputdir+'/idr_macs2/pseudoreps/pooled',
-          outputdir+'/idr_macs2/'+idrName 
+          outputdir+'/idr_macs2/'+idrName
          ]
 
     for d in dirs:
@@ -603,9 +619,9 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
                           'green', attrs=['bold']))
-            exit() 
+            exit()
 
-            
+
     #--- link the bamfiles
     #)))))))))))))))))))))))))))))))))))))))))))))))))
     replicate = 0
@@ -614,7 +630,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
     for exp in idrExpr.split(','):
         replicate += 1
         source = exp
-        
+
         if not os.path.exists(source):
             print(colored(source + ": file does not exist",
                           'green',
@@ -622,7 +638,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                          )
                  )
             bam_present+=1
-        
+
         dst = outputdir+'/idr_macs2/bamfiles/' + idrName + "_expr_replicate" + str(replicate)
         try:
             if not os.path.exists(dst):
@@ -637,7 +653,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         for ctr in idrCtrl.split(','):
             replicate += 1
             source = ctr
-            
+
             if not os.path.exists(source):
                 print(colored(source + ": file does not exist",
                               'green',
@@ -653,10 +669,10 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             except OSError:
                 pass
             n_ctrl.append(dst)
-            
+
     if bam_present > 0:
         exit()
-        
+
     #-- Creating pooled bamfiles
     #))))))))))))))))))))))))))))
     c=['samtools',
@@ -665,9 +681,9 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
        '-O','BAM',
        '-@',str(threads),
        outputdir+'/idr_macs2/bamfiles/TotalExperiment']+n_expr
-    
+
     totalCmd.append(c)
-    
+
     if idrControl == "True":
         c=['samtools',
            'merge',
@@ -677,7 +693,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
            outputdir+'/idr_macs2/bamfiles/TotalControl']+n_ctrl
 
         totalCmd.append(c)
-        
+
 
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,
@@ -693,7 +709,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         else:
             TotalExprRatio = "NA"
             myratios = ["NA"] * len(n_expr)
-            
+
     #-- Calling peaks
     #)))))))))))))))))))))))))))))))))))))))))))))))))
     totalCmd=[]
@@ -701,7 +717,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
     inCtrl  = outputdir+'/idr_macs2/bamfiles/TotalControl'
     oDir   = outputdir + '/idr_macs2/peaks/pooled'
     Prefix = 'TotalExperiment'
-    
+
     c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, TotalExprRatio)
     totalCmd.append(c)
     #--
@@ -714,15 +730,15 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         Prefix = idrName + '_replicate' + str(replicate)
         c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, myratios[i])
         totalCmd.append(c)
-                
+
     #-- creating pseudoreplicates
     #)))))))))))))))))))))))))))))))))))))))))))))))))
-    cmd=['sambamba', 
-         'view', 
-         '-h', 
-         '-t', str(threads), 
+    cmd=['sambamba',
+         'view',
+         '-h',
+         '-t', str(threads),
          '-s', str(0.5),
-         '-f', 'bam', 
+         '-f', 'bam',
          '--subsampling-seed' + '=' + '786',
          outputdir+'/idr_macs2/bamfiles/TotalExperiment',
          '-o', outputdir+'/idr_macs2/pseudoreps/pooled/TotalExperiment-Pseudorep1'
@@ -731,20 +747,20 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
     totalCmd.append(cmd)
     replicate = 0
     for i in range(0,len(n_expr)):
-        replicate+=1    
+        replicate+=1
         inFile = outputdir+'/idr_macs2/bamfiles/' + idrName + "_expr_replicate" + str(replicate)
         outFile= outputdir+'/idr_macs2/pseudoreps/individual/' + idrName + "_expr_replicate" + str(replicate) + '-Pseudorep1'
-        cmd=['sambamba', 
-             'view', 
-             '-h', 
-             '-t', str(threads), 
+        cmd=['sambamba',
+             'view',
+             '-h',
+             '-t', str(threads),
              '-s', str(0.5),
-             '-f', 'bam', 
+             '-f', 'bam',
              '--subsampling-seed' + '=' + '786',
              inFile,
              '-o', outFile
             ]
-        
+
         totalCmd.append(cmd)
 
     with Pool (threads) as p:
@@ -753,55 +769,55 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                   repeat(outputdir)
                  )
                  )
-    #-- 
+    #--
     c1 = ['samtools',
           'view',
           outputdir+'/idr_macs2/pseudoreps/pooled/TotalExperiment-Pseudorep1'
          ]
     c2 = ['cut','-f1']
     with open(outputdir+'/idr_macs2/total.temp','w') as oFile:
-        p1=subprocess.Popen(c1, 
-                            stdout=subprocess.PIPE, 
+        p1=subprocess.Popen(c1,
+                            stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
-        p2=subprocess.Popen(c2, 
-                            stdin=p1.stdout, 
-                            stdout=oFile, 
+        p2=subprocess.Popen(c2,
+                            stdin=p1.stdout,
+                            stdout=oFile,
                             stderr = subprocess.PIPE)
         stdout, stderr = p2.communicate()
-        
+
     c1=['samtools',
         'view',
         '-h',
         outputdir+'/idr_macs2/bamfiles/TotalExperiment']
-    
+
     c2=['fgrep',
-        '-v', 
-        '-f', 
+        '-v',
+        '-f',
         outputdir+'/idr_macs2/total.temp']
-    
+
     c3=['samtools',
         'view',
-        '-h', 
+        '-h',
         '-',
         '-O','BAM',
         '-o',outputdir+'/idr_macs2/pseudoreps/pooled/TotalExperiment-Pseudorep2']
-    
-    p1=subprocess.Popen(c1, 
-                        stdout=subprocess.PIPE, 
+
+    p1=subprocess.Popen(c1,
+                        stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE)
     p2=subprocess.Popen(c2,
                         stdin  = p1.stdout,
                         stdout = subprocess.PIPE,
                         stderr = subprocess.PIPE)
-    p3=subprocess.Popen(c3, 
+    p3=subprocess.Popen(c3,
                         stdin  = p2.stdout,
                         stdout = subprocess.PIPE,
                         stderr = subprocess.PIPE)
     stdout, stderr = p3.communicate()
-        
+
     replicate = 0
     for i in range(0,len(n_expr)):
-        replicate+=1    
+        replicate+=1
         inFile = outputdir+'/idr_macs2/bamfiles/' + idrName + "_expr_replicate" + str(replicate)
         outFile= outputdir+'/idr_macs2/pseudoreps/individual/' + idrName + "_expr_replicate" + str(replicate) + '-Pseudorep2'
         c1 = ['samtools',
@@ -812,12 +828,12 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         print(c1)
         print(c2)
         with open(outputdir+'/idr_macs2/total.temp','w') as oFile:
-            p1=subprocess.Popen(c1, 
-                                stdout=subprocess.PIPE, 
+            p1=subprocess.Popen(c1,
+                                stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
-            p2=subprocess.Popen(c2, 
-                                stdin=p1.stdout, 
-                                stdout=oFile, 
+            p2=subprocess.Popen(c2,
+                                stdin=p1.stdout,
+                                stdout=oFile,
                                 stderr = subprocess.PIPE)
             stdout, stderr = p2.communicate()
 
@@ -827,28 +843,28 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             inFile]
 
         c2=['fgrep',
-            '-v', 
-            '-f', 
+            '-v',
+            '-f',
             outputdir+'/idr_macs2/total.temp']
 
         c3=['samtools',
             'view',
-            '-h', 
+            '-h',
             '-',
             '-O','BAM',
             '-o',outFile]
 
-        p1=subprocess.Popen(c1, 
-                            stdout=subprocess.PIPE, 
+        p1=subprocess.Popen(c1,
+                            stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
         p2=subprocess.Popen(c2,
                             stdin  = p1.stdout,
                             stdout = subprocess.PIPE)
-        p3=subprocess.Popen(c3, 
+        p3=subprocess.Popen(c3,
                             stdin  = p2.stdout,
                             stdout = subprocess.PIPE)
         stdout, stderr = p3.communicate()
-        
+
         c=['rm',outputdir+'/idr_macs2/total.temp']
         universal.run_cmd(c,outputdir)
 
@@ -862,7 +878,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         inCtrl = outputdir+'/idr_macs2/bamfiles/TotalControl'
         oDir   = outputdir+'/idr_macs2/peaks/pooled-pseudoreps/'
         Prefix = 'TotalExperiment' + pseudo
-    
+
         c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, TotalExprRatio)
         totalCmd.append(c)
 
@@ -877,7 +893,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             Prefix = idrName + '_replicate' + str(replicate) + pseudo
             c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, myratios[i])
             totalCmd.append(c)
-        
+
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,
               zip(totalCmd,
@@ -888,7 +904,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
     #)))))))))))))))))
     IdrThreshold = 0.05
     IdrThresholdLog = -math.log(IdrThreshold,10)
-    
+
     totalCmd = []
     if idrStyle == "narrow" or idrStyle=="factor":
         extensionFile = "_peaks.narrowPeak"
@@ -896,9 +912,9 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
     elif idrStyle == "broad" or idrStyle == "histone":
         extensionFile = "_peaks.broadPeak"
         inputFiletype = "broadPeak"
-        
+
     mysamples = []
-    
+
     if len(n_expr) == 2:
         #-- true replicates
         #))))))))))))))))))
@@ -906,12 +922,12 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         for i in range(0,len(n_expr)):
             replicate += 1
             mysamples.append(outputdir + '/idr_macs2/peaks/replicates/' + idrName + '_replicate' + str(replicate) + extensionFile)
-            
+
         peakList = outputdir + '/idr_macs2/peaks/pooled/' + 'TotalExperiment' + extensionFile
         outputFile = outputdir + '/idr_macs2/' + idrName + '/' + 'trueRep' + extensionFile
         c = macs2idrCommand (mysamples,peakList,inputFiletype,outputFile,IdrThreshold)
         totalCmd.append(c)
-  
+
         #-- pooled replicates
         #)))))))))))))))))))))
         mysamples=[
@@ -930,11 +946,11 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             outputdir + '/idr_macs2/peaks/pseudoreps/'+idrName+'_replicate1-Pseudorep2' + extensionFile
         ]
         peakList = outputdir + '/idr_macs2/peaks/replicates/' +idrName+'_replicate1' + extensionFile
-        
+
         outputFile = outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoRep1' + extensionFile
         c=macs2idrCommand (mysamples,peakList,inputFiletype,outputFile,IdrThreshold)
         totalCmd.append(c)
-        
+
         #--- pseudoreplicates of replicate 2
         #)))))))))))))))))))))
         mysamples=[
@@ -942,12 +958,12 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             outputdir + '/idr_macs2/peaks/pseudoreps/'+idrName+'_replicate2-Pseudorep2' + extensionFile
         ]
         peakList = outputdir + '/idr_macs2/peaks/replicates/' +idrName+'_replicate2' + extensionFile
-        
+
         outputFile = outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoRep2' + extensionFile
         c=macs2idrCommand (mysamples,peakList,inputFiletype,outputFile,IdrThreshold)
         totalCmd.append(c)
 
-        
+
         #--------
         with Pool (threads) as p:
             p.starmap(universal.run_cmd,
@@ -963,12 +979,12 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                  index  = None
                 )
         Nt = x.shape[0]
-        
+
         x.to_csv(outputdir + '/idr_macs2/' + idrName + '/' + 'trueRep' + extensionFile + "-conservativeSets.txt",
                  header = None,
                  index  = None
-                )      
-        
+                )
+
         y = pd.read_csv (outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoPooledRep' + extensionFile, sep="\t", header=None)
         y = y[y.iloc[:,11]>IdrThresholdLog]
         y.to_csv(outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoPooledRep' + extensionFile + "-IDRfilter",
@@ -976,7 +992,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                  index  = None
                 )
         Np = y.shape[0]
-        
+
         #-- rescue ratio
         #))))))))))))))))
         if min(Nt,Np) != 0:
@@ -989,27 +1005,27 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                           )
                   )
             exit()
-        
+
         #-----
-        
+
         z = pd.read_csv (outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoRep1' + extensionFile, sep="\t", header=None)
         z = z[z.iloc[:,11]>IdrThresholdLog]
         z.to_csv(outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoRep1' + extensionFile + "-IDRfilter",
                  header = None,
                  index  = None
                 )
-        N1 = z.shape[0]     
-        
-        
-        
+        N1 = z.shape[0]
+
+
+
         k = pd.read_csv (outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoRep2' + extensionFile, sep="\t", header=None)
         k = k[k.iloc[:,11]>IdrThresholdLog]
         k.to_csv(outputdir + '/idr_macs2/' + idrName + '/' + 'pseudoRep2' + extensionFile + "-IDRfilter",
                  header = None,
                  index  = None
                 )
-        N2 = k.shape[0]   
-        
+        N2 = k.shape[0]
+
         #-- Self-consistency score
         #)))))))))))))))))))))))))
         if min(N1,N2) != 0:
@@ -1045,7 +1061,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                   )
         #-- Optimal sets
         #)))))))))))))))
-        
+
         if Nt > Np:
             x.to_csv(outputdir + '/idr_macs2/' + idrName + '/' + 'trueRep' + extensionFile + "-optimalSets.txt",
                      header = None,
@@ -1062,5 +1078,3 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
                         attrs = ["bold"]
                        )
               )
-        
-

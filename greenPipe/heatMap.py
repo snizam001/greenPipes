@@ -20,10 +20,10 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of deepTools. Please install it.",
-                          'green', 
+                          'green',
                           attrs=['bold']))
             exit()
-            
+
     dirs=[outputdir+'/'+'bamcompare']
     for d in dirs:
         if not os.path.exists(d):
@@ -51,75 +51,77 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
 
     #----
     if heatmapSpikeIn=='True':
-        
+
         sCtrl =outputdir + '/SpikeIn/' + Name + '_control.Flagstats.txt'
         sExpr =outputdir + '/SpikeIn/' + Name + '_expr.Flagstats.txt'
         Ctrl  =outputdir + '/Bamfiles/' + Name + '_control.Flagstats.txt'
         Expr  =outputdir + '/Bamfiles/' + Name + '_expr.Flagstats.txt'
-        
+
         oVal  =initPeakCalling.spike_normalization2([sCtrl,sExpr,Ctrl,Expr],libraryType)
         print(colored("sCtrl sExpr sCtrl sExpr","green",attrs=["bold"]))
         print(oVal)
-        
-        
+
+
         oVal_norm = (oVal[0]/oVal[2])/(oVal[1]/oVal[3])
         oVal_norm = 1/oVal_norm
         if initHeatmapOtherOptions == "None":
-            mycmd=['bamCompare', 
-                   '-b1', eFile, 
-                   '-b2', cFile, 
-                   '-o', oFile, 
-                   '-p', str(threads), 
-                   '-bl', blackListedRegions, 
-                   '--scaleFactors', '1:'+str(oVal_norm), 
+            mycmd=['bamCompare',
+                   '-b1', eFile,
+                   '-b2', cFile,
+                   '-o', oFile,
+                   '-p', str(threads),
+                   '-bl', blackListedRegions,
+                   '--scaleFactors', '1:'+str(oVal_norm),
                    '--effectiveGenomeSize', effectiveGenomeSize ]
 
             universal.run_cmd(mycmd,outputdir)
         else:
-            mycmd=['bamCompare', 
-                   '-b1', eFile, 
-                   '-b2', cFile, 
-                   '-o', oFile, 
-                   '-p', str(threads), 
-                   '-bl', blackListedRegions, 
-                   '--scaleFactors', '1:'+str(oVal_norm), 
+            mycmd=['bamCompare',
+                   '-b1', eFile,
+                   '-b2', cFile,
+                   '-o', oFile,
+                   '-p', str(threads),
+                   '-bl', blackListedRegions,
+                   '--scaleFactors', '1:'+str(oVal_norm),
                    '--effectiveGenomeSize', effectiveGenomeSize ] + initHeatmapOtherOptions.split(',')
 
-            universal.run_cmd(mycmd,outputdir)    
+            universal.run_cmd(mycmd,outputdir)
 
     if heatmapSpikeIn=='False':
         if initHeatmapOtherOptions == "None":
-            mycmd=['bamCompare', 
-                   '-b1', eFile, 
-                   '-b2', cFile, 
-                   '-o', oFile, 
-                   '-p', str(threads), 
+            mycmd=['bamCompare',
+                   '-b1', eFile,
+                   '-b2', cFile,
+                   '-o', oFile,
+                   '-p', str(threads),
                    '-bl', blackListedRegions,
                    '--effectiveGenomeSize', effectiveGenomeSize ]
 
             universal.run_cmd(mycmd,outputdir)
         else:
-            mycmd=['bamCompare', 
-                   '-b1', eFile, 
-                   '-b2', cFile, 
-                   '-o', oFile, 
-                   '-p', str(threads), 
+            mycmd=['bamCompare',
+                   '-b1', eFile,
+                   '-b2', cFile,
+                   '-o', oFile,
+                   '-p', str(threads),
                    '-bl', blackListedRegions,
                    '--effectiveGenomeSize', effectiveGenomeSize ] + initHeatmapOtherOptions.split(',')
 
-            universal.run_cmd(mycmd,outputdir)            
+            universal.run_cmd(mycmd,outputdir)
 
-def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,blackListedRegions,hDiffPeaks, hMOpt, hPOpt):
+def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hCovMethod, blackListedRegions,hDiffPeaks, hMOpt, hPOpt, inCounts):
     heatmapNormalize=psource.resource_filename(__name__, "rscripts/heatmapNormalize.R")
     if hMOpt == "None":
         hMOpt = [
-        '-b', '5000', 
+        '-b', '5000',
         '-a', '5000']
     else:
         hMOpt = hMOpt.split(',')
+        print("Using following options in heatmap production (computeMatrix)")
+        print(hMOpt)
 
     if hPOpt == "None":
-        hPOpt = ['--colorMap', 'RdBu']
+        hPOpt = ['--colorMap', 'GnBu']
     else:
         hPOpt = hPOpt.split(',')
 
@@ -147,8 +149,8 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
             e_file = e_file + 1
     if e_file > 0:
         exit()
-            
-        
+
+
     cmd_rs=['computeMatrix','plotHeatmap']
     for cmd_r in cmd_rs:
         try:
@@ -157,16 +159,16 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of deepTools. Please install it.",
-                          'green', 
+                          'green',
                           attrs=['bold']))
             exit()
-            
-    #-----       
+
+    #-----
     dirs=[outputdir+'/'+'HeatMaps']
     for d in dirs:
         if not os.path.exists(d):
             os.makedirs(d)
-            
+
     #-----
     if hRegionMode == "metagene":
         if inFiles == "NA":
@@ -184,29 +186,48 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
                   )
             exit()
 
-        c=['computeMatrix', 
-           'scale-regions', 
-           '-R', gtf, 
-           '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz', 
-           '--missingDataAsZero',
-           '-bl', blackListedRegions, 
-           '--smartLabels', 
-           '-p', str(threads),
-           '--metagene', 
-           '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
-            
-        universal.run_cmd(c,outputdir)            
-        
-        c=['plotHeatmap', 
-           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz', 
-           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.jpeg', 
+        if hCovMethod == 1:
+            inCounts = [1]*len(inNames)
+        elif hCovMethod == 2:
+            inCounts = inCounts
+
+        if hCovMethod == 1:
+            c=['computeMatrix',
+               'scale-regions',
+               '-R', gtf,
+               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--metagene',
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        if hCovMethod == 2:
+            c=['computeMatrix',
+               'scale-regions',
+               '-R', gtf,
+               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--metagene',
+               '--averageTypeBins', 'sum',
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.jpeg',
            '--dpi', '300'] + hPOpt
-        
+
         universal.run_cmd(c,outputdir)
 
-        inCounts = [1]*len(inNames)
-
-        c=[heatmapNormalize, 
+        c=[heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metageneCoverage'
         '-l', inNames,
@@ -214,6 +235,8 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
         ]
 
         universal.run_cmd(c,outputdir)
+
+
     #------------
     elif hRegionMode == "tss":
         if inFiles == "NA":
@@ -231,37 +254,57 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
                   )
             exit()
 
-        c=['computeMatrix', 
-           'reference-point', 
-           '--referencePoint',
-           'TSS',
-           '-R', gtf, 
-           '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz', 
-           '--missingDataAsZero', 
-           '-bl', blackListedRegions, 
-           '--smartLabels', 
-           '-p', str(threads),
-           '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+        if hCovMethod == 1:
+            inCounts = [1]*len(inNames)
+        elif hCovMethod == 2:
+            inCounts = inCounts
+
+        if hCovMethod == 1:
+            c=['computeMatrix',
+               'reference-point',
+               '--referencePoint',
+               'TSS',
+               '-R', gtf,
+               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        elif hCovMethod == 2:
+            c=['computeMatrix',
+               'reference-point',
+               '--referencePoint',
+               'TSS',
+               '-R', gtf,
+               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--averageTypeBins', 'sum',
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "TSS"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        
-        c=['plotHeatmap', 
-           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz', 
-           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.jpeg',
-           '--dpi', '300', 
-           '--refPointLabel', "TSS"] + hPOpt
-        
-        universal.run_cmd(c,outputdir) 
 
-        inCounts = [1]*len(inNames)
-
-        c=[heatmapNormalize, 
+        c=[heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss'
         '-l', inNames,
         '-c', inCounts
         ]
-        
+
         universal.run_cmd(c,outputdir)
     #------------
     elif hRegionMode == "bed":
@@ -280,37 +323,57 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
                   )
             exit()
 
-        c=['computeMatrix', 
-           'reference-point',
-           '--referencePoint',
-           'center', 
-           '-R'] + hBed.split(',') + [
-            '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz', 
-           '--missingDataAsZero', 
-           '-bl', blackListedRegions, 
-           '--smartLabels', 
-           '-p', str(threads),
-           '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+        if hCovMethod == 1:
+            inCounts = [1]*len(inNames)
+        elif hCovMethod == 2:
+            inCounts = inCounts
+
+        if hCovMethod == 1:
+            c=['computeMatrix',
+               'reference-point',
+               '--referencePoint',
+               'center',
+               '-R'] + hBed.split(',') + [
+                '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        elif hCovMethod == 2:
+            c=['computeMatrix',
+               'reference-point',
+               '--referencePoint',
+               'center',
+               '-R'] + hBed.split(',') + [
+                '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--averageTypeBins', 'sum',
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        
-        c=['plotHeatmap', 
-           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz', 
-           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.jpeg',
-           '--dpi', '300', 
-           '--refPointLabel', "center"] + hPOpt
-        
-        universal.run_cmd(c,outputdir) 
 
-        inCounts = [1]*len(inNames)
-
-        c=[heatmapNormalize, 
+        c=[heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed'
         '-l', inNames,
         '-c', inCounts
         ]
-        
+
         universal.run_cmd(c,outputdir)
     #------------
     elif hRegionMode == "peaks":
@@ -320,49 +383,69 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
         e_file=0
         for f in hBed:
             if not os.path.exists(f):
-                print(colored(f+" : file does not exit. These files require in the --hRegionMode peaks." + 
+                print(colored(f+" : file does not exit. These files require in the --hRegionMode peaks." +
                               "Call peaks before this step.",
                               "green",
                               attrs = ["bold"]
                              )
                      )
-                e_file = e_file + 1 
+                e_file = e_file + 1
         if e_file > 0:
             exit()
-            
-        c=['computeMatrix', 
-           'reference-point',
-           '--referencePoint',
-           'center', 
-           '-R', hBed, 
-           '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz', 
-           '--missingDataAsZero', 
-           '-bl', blackListedRegions, 
-           '--smartLabels', 
-           '-p', str(threads),
-           '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+        if hCovMethod == 1:
+            inCounts = [1]*len(inNames)
+        elif hCovMethod == 2:
+            inCounts = inCounts
+
+        if hCovMethod == 1:
+            c=['computeMatrix',
+               'reference-point',
+               '--referencePoint',
+               'center',
+               '-R', hBed,
+               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        if hCovMethod == 2:
+            c=['computeMatrix',
+               'reference-point',
+               '--referencePoint',
+               'center',
+               '-R', hBed,
+               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
+               '--missingDataAsZero',
+               '-bl', blackListedRegions,
+               '--smartLabels',
+               '-p', str(threads),
+               '--averageTypeBins', 'sum',
+               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+            universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        
-        c=['plotHeatmap', 
-           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz', 
-           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.jpeg',
-           '--dpi', '300', 
-           '--refPointLabel', "center"] + hPOpt
-        
-        universal.run_cmd(c,outputdir)   
 
-        inCounts = [1]*len(inNames)
-
-        c=[heatmapNormalize, 
+        c=[heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks'
         '-l', inNames,
         '-c', inCounts
         ]
-        
+
         universal.run_cmd(c,outputdir)
-        
+
 #--
         if hDiffPeaks == "True":
             hBed=glob.glob(outputdir+ "/Peaks/DifferentialPeaks/" + "*.differentialPeaks.txt")
@@ -376,36 +459,57 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp,bla
                               )
                       )
                 exit()
-                
-            c=['computeMatrix', 
-               'reference-point', 
-               '--referencePoint',
-               'center', 
-               '-R', hBed, 
-               '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz', 
-               '--missingDataAsZero', 
-               '-bl', blackListedRegions, 
-               '--smartLabels', 
-               '-p', str(threads),
-               '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+
+            if hCovMethod == 1:
+                inCounts = [1]*len(inNames)
+            elif hCovMethod == 2:
+                inCounts = inCounts
+
+            if hCovMethod == 1:
+                c=['computeMatrix',
+                   'reference-point',
+                   '--referencePoint',
+                   'center',
+                   '-R', hBed,
+                   '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
+                   '--missingDataAsZero',
+                   '-bl', blackListedRegions,
+                   '--smartLabels',
+                   '-p', str(threads),
+                   '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+                universal.run_cmd(c,outputdir)
+
+            if hCovMethod == 2:
+                c=['computeMatrix',
+                   'reference-point',
+                   '--referencePoint',
+                   'center',
+                   '-R', hBed,
+                   '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
+                   '--missingDataAsZero',
+                   '-bl', blackListedRegions,
+                   '--smartLabels',
+                   '-p', str(threads),
+                   '--averageTypeBins', 'sum',
+                   '--samplesLabel'] +  inNames + ['-S'] + inFiles + hMOpt
+
+                universal.run_cmd(c,outputdir)
+
+            c=['plotHeatmap',
+               '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
+               '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.jpeg',
+               '--dpi', '300',
+               '--refPointLabel', "center"] + hPOpt
 
             universal.run_cmd(c,outputdir)
 
-            c=['plotHeatmap', 
-               '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz', 
-               '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.jpeg',
-               '--dpi', '300', 
-               '--refPointLabel', "center"] + hPOpt 
+            c=[heatmapNormalize,
+            '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz'
+            '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks'
+            '-l', inNames,
+            '-c', inCounts
+            ]
 
-            universal.run_cmd(c,outputdir)   
-
-        inCounts = [1]*len(inNames)
-
-        c=[heatmapNormalize, 
-        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz'
-        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks'
-        '-l', inNames,
-        '-c', inCounts
-        ]
-        
-        universal.run_cmd(c,outputdir)
+            universal.run_cmd(c,outputdir)

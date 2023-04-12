@@ -20,22 +20,13 @@ def rnaIntegrate (outputdir, peakFiles, rnaFiles, Names):
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
-                          'green', 
+                          'green',
                           attrs=['bold']
                          )
                  )
             exit()
-    
+
     dirs=[outputdir+'/'+'rnaIntegrate']
     for d in dirs:
         if not os.path.exists(d):
             os.makedirs(d)
-
-
-	rnaFiles=rnaFiles.split(',')
-    Names=Names.split(',')
-
-    if peakFiles!='NA':
-    	peakFiles=peakFiles.split(',')
-
-

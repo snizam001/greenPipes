@@ -8,7 +8,7 @@ from greenPipe import greenCutFrq
 from termcolor import colored
 
 def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
-    
+
     #---- find motif in the given input bed or homer file
     cmd_rs=['findMotifsGenome.pl']
     for cmd_r in cmd_rs:
@@ -18,7 +18,7 @@ def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of HOMER. Please install it.",
-                          'green', 
+                          'green',
                           attrs=['bold']))
             exit()
 
@@ -26,7 +26,7 @@ def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
         os.makedirs(out_dir)
 
     jFile=psource.resource_filename(__name__, "data/Jasper2018_homer.txt")
-    
+
     c=['findMotifsGenome.pl',
        mypeak,
        genomeversion,
@@ -35,12 +35,12 @@ def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
        '-nomotif',
        '-p', str(threads),
        '-mknown', jFile]
-    
+
     universal.run_cmd(c,outputdir)
 
 def ambDNA (seq):
     #--- ambigous DNA sequence: motif sequence e.g. TGANTCA
-    ambig = {"R": ["A", "G"], 
+    ambig = {"R": ["A", "G"],
              "V":["A", "C", "G"],
              "Y":["C","T"],
              "S":["G","C"],
@@ -62,16 +62,16 @@ def ambDNA (seq):
     return([''.join(p) for p in itertools.product(*splits)])
 
 def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,genomeversion,size,threads,seqDist,MassSpectro_Fasta,outputdir):
-    
+
     print (colored("Caution: remove chrM before running this.",
                    "green",
                    attrs = ["bold"]
                   )
           )
-    
+
     if not os.path.exists(infile):
         print(colored("filterMotifSequence: " + infile+' does not exist',
-                      'green', 
+                      'green',
                       attrs=['bold']
                      )
              )
@@ -86,25 +86,25 @@ def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,
         peakFile["Strand"] = ['+']*peakFile.shape[0]
 
     peakFile.to_csv(infile,sep="\t",header=None,index=None)
-    
-    
 
-    print ('Total number of the peaks in the ' + 
-           infile + ' is :' + 
-           str(peakFile.shape[0]))        
-    #-----    
+
+
+    print ('Total number of the peaks in the ' +
+           infile + ' is :' +
+           str(peakFile.shape[0]))
+    #-----
     pwms=pwm.split(',')
-    
+
     for pw in pwms:
         greenCutFrq.extrMotif([pw])
-        mycmd=['findMotifsGenome.pl', 
-               infile, 
-               genomeversion, 
-               tempDir, 
-               '-size', str(size), 
-               '-nomotif', 
-               '-p', str(threads), 
-               '-find', 'temp.motif'] 
+        mycmd=['findMotifsGenome.pl',
+               infile,
+               genomeversion,
+               tempDir,
+               '-size', str(size),
+               '-nomotif',
+               '-p', str(threads),
+               '-find', 'temp.motif']
 
         with open(outfile1, "w+") as f:
             universal.run_cmd_file(mycmd,f,outputdir)
@@ -119,19 +119,19 @@ def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,
     #-----
     for s in sequence.split(','):
         seqs=ambDNA(s)
-        
+
         print("Possible sequences for given motif is:")
         print(seqs)
         peakWithSeq=[]
         for i in range(0,peakFile.shape[0]):
             ID=peakFile.iloc[i,0]
-            
+
 #            Start=int((peakFile.iloc[i,1]+peakFile.iloc[i,2])/2)-seqDist
 #            End=int((peakFile.iloc[i,1]+peakFile.iloc[i,2])/2)+seqDist
-            
+
             Start=int(peakFile.iloc[i,1])-seqDist
             End=int(peakFile.iloc[i,2])+seqDist
-            
+
             Name=peakFile.iloc[i,3]
             SeqPos=MassSpectro_Fasta[ID][Start:End].seq
             SeqNeg=SeqPos[::-1].translate(SeqPos[::-1].maketrans("ATGCatgc", "TACGtacg"))
@@ -141,10 +141,9 @@ def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,
 
         peakFile=peakFile[~peakFile.iloc[:,3].isin(peakWithSeq)]
         print ('Total number of the peaks after filtering peaks containing'+
-               ' pwmProteinOfInterest motifs + sequenceProteinOfInterest '+ s + ' :' + 
+               ' pwmProteinOfInterest motifs + sequenceProteinOfInterest '+ s + ' :' +
                str(peakFile.shape[0]))
 
     peakFile.to_csv(outfile2, header=None, index=None, sep='\t')
-    
-    motifs_peaks(genomeversion, outfile2, outfile3, size, threads, outputdir)
 
+    motifs_peaks(genomeversion, outfile2, outfile3, size, threads, outputdir)

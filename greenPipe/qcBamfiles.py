@@ -1,7 +1,7 @@
 #-- count number of reads
 #____________________________________
 
-import pandas as pd 
+import pandas as pd
 import more_itertools as mit
 import pathlib
 import gzip
@@ -60,11 +60,14 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
             fastQs_counts.append(count)
     fastQs_counts=list(mit.chunked(fastQs_counts, 4))
 
+    print("---------------------------------------")
+
 
     #---- counts in the bamfiles
     #__________________________________________
     align_counts = []
     for i in range(0,len(FlagstatFiles)):
+        print(FlagstatFiles[i])
         with open(FlagstatFiles[i]) as f:
             for lines in f:
                 if libraryType=="pair":
@@ -82,19 +85,19 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
 
     total = pd.concat([
               pd.DataFrame(Names, columns = ['Name']),
-              pd.DataFrame(fastQs_counts, columns = [
-                                        'OriginalExpr(FQ)', 
+              (pd.DataFrame(fastQs_counts, columns = [
+                                        'OriginalExpr(FQ)',
                                         'OriginalCtrl(FQ)',
-                                        'FilterExpr(FQ)', 
+                                        'FilterExpr(FQ)',
                                         'FilterCtrl(FQ)',
-                                        ]), 
+                                        ]) + 1)/4,
               pd.DataFrame(align_counts, columns = [
-                                        'OrgExpr(Align)', 
+                                        'OrgExpr(Align)',
                                         'SpikeExpr(Align)',
-                                        'OrgCtrl(Align)', 
+                                        'OrgCtrl(Align)',
                                         'SpikeCtrl(Align)',
                                         ])
-              ], axis = 1) 
+              ], axis = 1)
 
     totalDiffExpr = (total.iloc[:,3] - (total.iloc[:,5] + total.iloc[:,6])) / total.iloc[:,3]
     totalDiffCtrl = (total.iloc[:,4] - (total.iloc[:,7] + total.iloc[:,8])) / total.iloc[:,4]
@@ -104,8 +107,8 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
     for x in totalDiffExpr.tolist():
         y += 1
         if x >= 0.1:
-            notice.append('Check contamination')
-            print(colored( Names[y] + ': Experiment -> Is it contaminated? Frequency of reads not aligning: ' + str(x),
+            notice.append('Check contamination  (True only if you did not use mode equalRead)')
+            print(colored( Names[y] + ': Experiment -> Is it contaminated? Frequency of reads not aligning (True only if you did not use mode equalRead): ' + str(x),
                 'green',
                 attrs = ['bold']
                 )
@@ -120,8 +123,8 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
     for x in totalDiffCtrl.tolist():
         y += 1
         if x >= 0.1:
-            notice.append('Check contamination')
-            print(colored( Names[y] + ': Control -> Is it contaminated? Frequency of reads not aligning: ' + str(x),
+            notice.append('Check contamination  (True only if you did not use mode equalRead)')
+            print(colored( Names[y] + ': Control -> Is it contaminated? Frequency of reads not aligning (True only if you did not use mode equalRead): ' + str(x),
                 'green',
                 attrs = ['bold']
                 )
@@ -173,8 +176,8 @@ def qc_bam (qcBfiles,outputdir,threads,blackListedRegions,Names):
     if bamFile_present > 0:
         exit()
 
-    output = outputdir + '/Bamfiles_QC/Correlation' 
-    outRawCount = outputdir + '/Bamfiles_QC/CorrelationRawCounts.txt' 
+    output = outputdir + '/Bamfiles_QC/Correlation'
+    outRawCount = outputdir + '/Bamfiles_QC/CorrelationRawCounts.txt'
     c=[
     'multiBamSummary',
     'bins',

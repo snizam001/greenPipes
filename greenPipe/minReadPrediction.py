@@ -1,7 +1,5 @@
 #- predict min reads to sequence using simulation or any other algorithms
-# Steps: 
+# Steps:
 
 def minReads (bamFiles, bedFiles, ):
-
-
-
+    print("Incomplete")

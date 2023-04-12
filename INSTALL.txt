@@ -1,1 +1,11 @@
 pip install ./
+
+Install HOMER
+Install bowtie2
+Install MACS2
+Install Fastqc
+Install fastq_screen
+Install bedtools
+Install subread
+#---
+Download references, blackListedRegions and example file.

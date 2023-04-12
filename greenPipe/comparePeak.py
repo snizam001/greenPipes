@@ -46,29 +46,29 @@ def realDiffPeaksHomer (rdTag1, rdTag2, rdPeak, rdPvalue, rdFoldChange, rdSize, 
 	if rdFile_present > 0:
 		exit()
 
-	cmd1=['getDifferentialPeaks', 
-		rdPeak, 
-		rdTag1, rdTag2, 
-		' -size', str(rdSize), 
-		'-P', str(rdPvalue), 
+	cmd1=['getDifferentialPeaks',
+		rdPeak,
+		rdTag1, rdTag2,
+		' -size', str(rdSize),
+		'-P', str(rdPvalue),
 		'-F', str(rdFoldChange)] + rdOther
 
 	totalCmd.append(cmd1)
 
-	cmd2=['getDifferentialPeaks', 
-		rdPeak, 
-		rdTag1, rdTag2, 
-		' -size', str(rdSize), 
-		'-P', str(1), 
+	cmd2=['getDifferentialPeaks',
+		rdPeak,
+		rdTag1, rdTag2,
+		' -size', str(rdSize),
+		'-P', str(1),
 		'-F', str(0)] + rdOther
 
 	totalCmd.append(cmd2)
+ 
 
 
 
 
 
-	
 """
 
 
@@ -106,14 +106,14 @@ def differential_peaks (genomeversion,out_dir,out_dir_annotation,mypeaks,tag1,ta
      i=[firstExpr,secondExpr]
      mycmd=['getDifferentialPeaks', mypeaks, tag1, tag2, ' -size', '200', '-P', str(pvalueD), '-F', str(foldchangeD)]
      with open(out_dir+i[0]+'.vs.'+i[1]+'.differentialPeaks.txt', "w+") as f:
-          run_cmd_file(mycmd,f)              
+          run_cmd_file(mycmd,f)
      mycmd=['getDifferentialPeaks', mypeaks, tag1, tag2, ' -size', '200', '-F', '0', '-P', '1']
      with open(out_dir+i[0]+'.vs.'+i[1]+'.TotalPeaks.txt', "w+") as f:
           run_cmd_file(mycmd,f)
 
 
 
-#-- Differential peaks   
+#-- Differential peaks
 for i in combinations(samples,2):
      tag1 = outputdir + '/Tagdirectories/' + i[0] + '_expr'
      tag2 = outputdir + '/Tagdirectories/' + i[1] + '_expr'
@@ -140,13 +140,13 @@ for i in combinations(samples,2):
 
 def peakAnn (mypeaks,genomeversion,outdir):
 
-    cmd=['annotatePeaks.pl', 
-        mypeaks, 
-        genomeversion, 
-        '-go', outdir+'_GO', 
-        '-genomeOntology', 
+    cmd=['annotatePeaks.pl',
+        mypeaks,
+        genomeversion,
+        '-go', outdir+'_GO',
+        '-genomeOntology',
         outdir+'_GenomeOntology']
-    
+
     retun (cmd)
 
 def peakMotifs (genomeversion,mypeak,out_dir,size,threads):
@@ -157,7 +157,7 @@ def peakMotifs (genomeversion,mypeak,out_dir,size,threads):
     jFile=psource.resource_filename(__name__, "data/Jasper2018_homer.txt")
 
     cmd=['findMotifsGenome.pl',
-        mypeak, genomeversion, 
+        mypeak, genomeversion,
         out_dir,
         '-size', str(size),
         '-nomotif',

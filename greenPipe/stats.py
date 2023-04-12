@@ -29,7 +29,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 	for d in dirs:
 		if not os.path.exists(d):
 			os.makedirs(d)
-	
+
 	exprBams = exprBam.split(',')
 	ctrlBams = ctrlBam.split(',')
 
@@ -63,7 +63,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 
 	g = read_gtf(gtfFile)
 	print (
-		"Total number of the genes in the GTF file is: " + 
+		"Total number of the genes in the GTF file is: " +
 		str(g.shape[0])
 		)
 
@@ -79,7 +79,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 		str(p.shape[0])
 		)
 
-	p["TSS_start"], p["TSS_end"] = p["start"] - tssDist, p["start"] + tssDist 
+	p["TSS_start"], p["TSS_end"] = p["start"] - tssDist, p["start"] + tssDist
 
 	p["genebody_start"], p["genebody_end"] = p["TSS_end"] + 1, p["end"]
 
@@ -87,7 +87,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 
 	print(
 		"After filtering with genebody size (>tssDist or >" +
-		str(tssDist) + 
+		str(tssDist) +
 		"), number of protein_coding genes on positive strand are: " +
 		str(p.shape[0])
 		)
@@ -98,7 +98,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 		str(n.shape[0])
 		)
 
-	n["TSS_start"], n["TSS_end"] = n["end"] - tssDist, n["end"] + tssDist 
+	n["TSS_start"], n["TSS_end"] = n["end"] - tssDist, n["end"] + tssDist
 
 	n["genebody_end"], n["genebody_start"] = n["TSS_start"] - 1, n["start"]
 
@@ -106,43 +106,43 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 
 	print(
 		"After filtering with genebody size (>tssDist or >" +
-		str(tssDist) + 
+		str(tssDist) +
 		"), number of protein_coding genes on negative strand are: " +
 		p.shape[0]
 		)
 
 	g = pd.concat([p,n])
 	g = g.sort_values(
-		["seqname", 
+		["seqname",
 		"start"]
 		)
 
-	tss = g[ ["gene_name", 
-		"seqname", 
+	tss = g[ ["gene_name",
+		"seqname",
 		"TSS_start",
 	 	"TSS_end",
 		"strand"] ]
 
-	genebody = g[ ["gene_name", 
-		"seqname", 
-		"genebody_start", 
-		"genebody_end", 
+	genebody = g[ ["gene_name",
+		"seqname",
+		"genebody_start",
+		"genebody_end",
 		"strand"] ]
 
-	tss.to_csv(outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'tss.saf', 
+	tss.to_csv(outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'tss.saf',
 		sep = '\t',
-		index = None, 
+		index = None,
 		header = None )
 
-	genebody.to_csv(outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'genebody.saf', 
-		sep = '\t', 
+	genebody.to_csv(outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'genebody.saf',
+		sep = '\t',
 		index = None,
 		header = None )
 
 	inFile =  outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'tss.saf'
 	outFile =  outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'tss.counts'
 
-	c=[featureCounts, 
+	c=[featureCounts,
 	'-a', inFile,
 	'-T', str(threads),
 	'-o', outFile] + totalbamfiles + [
@@ -158,7 +158,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 	inFile =  outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'genebody.saf'
 	outFile =  outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'genebody.counts'
 
-	c=[featureCounts, 
+	c=[featureCounts,
 	'-a', inFile,
 	'-T', str(threads),
 	'-o', outFile] + totalbamfiles + [
@@ -171,9 +171,4 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 
 	genebody = pd.read_csv(outFile, sep ="\t", header = None, index = None )
 
-	
-
-
-
-
-
+#--- Prediction to find if SpikeIn reads are true number for normalization ??????????????????????????/

@@ -11,11 +11,11 @@ from greenPipe import filterMotifSeq
 filterMotifSeq.motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir)
 
 def annotation_peaks (mypeaks,genomeversion,outdir):
-	cmd=['annotatePeaks.pl', 
-	mypeaks, 
-	genomeversion, 
-	'-go', outdir+'_GO', 
-	'-genomeOntology', 
+	cmd=['annotatePeaks.pl',
+	mypeaks,
+	genomeversion,
+	'-go', outdir+'_GO',
+	'-genomeOntology',
 	outdir+'_GenomeOntology']
 
 	retun (cmd)
@@ -33,7 +33,7 @@ def differential_peaks (genomeversion,out_dir,out_dir_annotation,mypeaks,tag1,ta
 	i=[firstExpr,secondExpr]
 	mycmd=['getDifferentialPeaks', mypeaks, tag1, tag2, ' -size', '200', '-P', str(pvalueD), '-F', str(foldchangeD)]
 	with open(out_dir+i[0]+'.vs.'+i[1]+'.differentialPeaks.txt', "w+") as f:
-		run_cmd_file(mycmd,f)			
+		run_cmd_file(mycmd,f)
 	mycmd=['getDifferentialPeaks', mypeaks, tag1, tag2, ' -size', '200', '-F', '0', '-P', '1']
 	with open(out_dir+i[0]+'.vs.'+i[1]+'.TotalPeaks.txt', "w+") as f:
 		run_cmd_file(mycmd,f)
@@ -53,7 +53,7 @@ def overlapPeaks ():
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is part of Homer or bedtools. It is not installed in your computer or not in the PATH.'+
-                          ' Install or copy the executables to the default PATH', 
+                          ' Install or copy the executables to the default PATH',
                           'green', attrs=['bold']))
             exit()
 
@@ -80,7 +80,7 @@ with open(out_dir+'Comparison.txt', "w+") as f:
 	run_cmd_file(mycmd,f)
 #---- cleaning of the files:1
 extensions=['Comparison_venn','Comparison.txt']
-for extension in extensions:	
+for extension in extensions:
 	venn = pd.read_csv(out_dir+extension,sep='\t',header=None)
 	venn = venn.astype(str).replace([outputdir+'/Peaks/','.Clean.bed','nan'],"",regex=True)
 	venn.to_csv(out_dir+extension,index = None, header=None,sep='\t')
@@ -107,7 +107,7 @@ for sampl in samples:
 	inpeak = outputdir + '/Peaks/' + sampl + '.Clean.bed'
 	outfile = out_dir_annotation +  sampl
 	annotation_peaks (inpeak,genomeversion,outfile)
-#-- Differential peaks	
+#-- Differential peaks
 for i in combinations(samples,2):
 	tag1 = outputdir + '/Tagdirectories/' + i[0] + '_expr'
 	tag2 = outputdir + '/Tagdirectories/' + i[1] + '_expr'
@@ -160,7 +160,7 @@ matrix_motifs_out=outputdir+'/Peaks/Peaks_matrix_motifs.txt'
 xx=[]
 for i in combinations(samples,2):
 	xx.append(i[0]+'.vs.'+i[1])
-	xx.append(i[1]+'.vs.'+i[0])	
+	xx.append(i[1]+'.vs.'+i[0])
 for i in samples:
 	xx.append(i)
 matrix_motifs=pd.read_csv(out_motifs+i+ '/' + 'knownResults.txt',sep='\t')
@@ -172,7 +172,6 @@ for i in xx:
 		new=motifs.iloc[:,[4,5,6]]
 		new=new.add_prefix(i+':')
 		matrix_motifs=pd.concat([matrix_motifs, new], axis=1)
-matrix_motifs.to_csv(matrix_motifs_out,index=None)	
+matrix_motifs.to_csv(matrix_motifs_out,index=None)
 #------ Matrix: gene ontology
-#_______________________________________		
-
+#_______________________________________

@@ -57,7 +57,7 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
                          '--effectiveGenomeSize', str(effectiveGenomeSize) ]
                     universal.run_cmd (c, outputdir)
                 else:
-                    covOtherOption = covOtherOptions.split(',')
+                    covOtherOption = covOtherOptions.replace("[","").replace("]","").split(',')
                     c = ['bamCoverage',
                          '-b', iCov + experiment + '.bam',
                          '-o', oCov + experiment + '.bw',
@@ -106,7 +106,7 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
                    '--scaleFactor', str(SpikeVal[j]) ]
                 universal.run_cmd (c, outputdir)
             else:
-                covOtherOption=covOtherOptions.split(",")
+                covOtherOption=covOtherOptions.replace("[","").replace("]","").split(',')
                 c=['bamCoverage',
                    '-b', iCov+'_expr.bam',
                    '-o', oCov+'_expr.ScaledSpikeIn.bw',

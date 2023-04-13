@@ -185,8 +185,8 @@ parser.add_argument("--alignParam",
                     "--very-sensitive-local --no-unal --no-mixed --no-discordant -I 10 -X 700 (based on Meers et al. (2019))."+
                     " For single-end default "+
                     "parameters of the program of bwa was used." +
-                    "If you want to change it, give parameter as comma seperated values e.g. for bowtie2 "+
-                    "--no-unal,--no-mixed,--no-discordant,-I,0,-X,1500 and for bwa see the manual of bwa (for mem)."+
+                    "If you want to change it, give parameter as comma seperated values in large bracket e.g. for bowtie2 "+
+                    "[--no-unal,--no-mixed,--no-discordant,-I,0,-X,1500] and for bwa see the manual of bwa (for mem)."+
                     " If --gpu is True, then see the options of the nvBowtie: https://nvlabs.github.io/nvbio/nvbowtie_page.html",
                     default='None')
 
@@ -320,7 +320,7 @@ parser.add_argument("--pSeacrThreshold",
 parser.add_argument("--pOpts",
                     help=colored("callPeaks mode: ", 'green', attrs = ['bold']) +
                     "Pipeline uses all default parameters. If you want to change something, "+
-                    "in the peakcalling from homer and macs2 you can give here as comma seperated values",
+                    "in the peakcalling from homer and macs2 you can give here as comma seperated values in bracket.",
                     type = str,
                     default = 'None'
                    )
@@ -509,7 +509,7 @@ parser.add_argument("--covOtherOptions",
                     help=colored("coverageTracks mode: ", 'green', attrs = ['bold']) +
                     "Pipeline uses all default parameters. If you want to change something, "+
                     "besides --bl, --effectiveGenomeSize and -p, the other options of "+
-                    " bamCoverage (deepTools) can be provided here as comma seperated values."+
+                    " bamCoverage (deepTools) can be provided here as comma seperated values but in bracket."+
                     " ",
                     type = str,
                     default = 'None'

@@ -83,7 +83,7 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
                    '-p', str(threads),
                    '-bl', blackListedRegions,
                    '--scaleFactors', '1:'+str(oVal_norm),
-                   '--effectiveGenomeSize', effectiveGenomeSize ] + initHeatmapOtherOptions.split(',')
+                   '--effectiveGenomeSize', effectiveGenomeSize ] + initHeatmapOtherOptions.replace("[","").replace("]","").split(',')
 
             universal.run_cmd(mycmd,outputdir)
 
@@ -105,7 +105,7 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
                    '-o', oFile,
                    '-p', str(threads),
                    '-bl', blackListedRegions,
-                   '--effectiveGenomeSize', effectiveGenomeSize ] + initHeatmapOtherOptions.split(',')
+                   '--effectiveGenomeSize', effectiveGenomeSize ] + initHeatmapOtherOptions.replace("[","").replace("]","").split(',')
 
             universal.run_cmd(mycmd,outputdir)
 
@@ -116,14 +116,14 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         '-b', '5000',
         '-a', '5000']
     else:
-        hMOpt = hMOpt.split(',')
+        hMOpt = hMOpt.replace("[","").replace("]","").split(',')
         print("Using following options in heatmap production (computeMatrix)")
         print(hMOpt)
 
     if hPOpt == "None":
         hPOpt = ['--colorMap', 'GnBu']
     else:
-        hPOpt = hPOpt.split(',')
+        hPOpt = hPOpt.replace("[","").replace("]","").split(',')
 
     if not isinstance(inFiles, list):
         inFiles = inFiles.split(",")

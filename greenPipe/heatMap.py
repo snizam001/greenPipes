@@ -121,7 +121,11 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         print(hMOpt)
 
     if hPOpt == "None":
-        hPOpt = ['--colorMap', 'GnBu']
+        hPOpt = ['--colorMap', 'GnBu',
+        '--yAxisLabel', 'Coverage',
+        '--heatmapWidth', '1.5',
+        '--heatmapHeight', '5']
+
     else:
         hPOpt = hPOpt.replace("[","").replace("]","").split(',')
 
@@ -227,7 +231,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
         universal.run_cmd(c,outputdir)
 
-        c=[heatmapNormalize,
+        c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metageneCoverage'
         '-l', inNames,
@@ -298,7 +302,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
         universal.run_cmd(c,outputdir)
 
-        c=[heatmapNormalize,
+        c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss'
         '-l', inNames,
@@ -367,7 +371,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
         universal.run_cmd(c,outputdir)
 
-        c=[heatmapNormalize,
+        c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed'
         '-l', inNames,
@@ -437,7 +441,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
         universal.run_cmd(c,outputdir)
 
-        c=[heatmapNormalize,
+        c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz'
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks'
         '-l', inNames,
@@ -505,7 +509,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
             universal.run_cmd(c,outputdir)
 
-            c=[heatmapNormalize,
+            c=['Rscript', heatmapNormalize,
             '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz'
             '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks'
             '-l', inNames,

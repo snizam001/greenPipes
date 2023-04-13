@@ -17,10 +17,10 @@ def run_cmd_file (mycmd,f,outputdir):
         logfile.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         with open(f,'w') as oFile:
             process = subprocess.Popen(mycmd,
-                                       stdout=oFile, 
+                                       stdout=oFile,
                                        stderr=logfile)
             stdout, stderr = process.communicate()
-            stdout, stderr 
+            stdout, stderr
 
 def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
     annR=psource.resource_filename(__name__, "rscripts/ann.R")
@@ -31,12 +31,12 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
-                          'green', 
+                          'green',
                           attrs=['bold']
                          )
                  )
             exit()
-    
+
     dirs=[outputdir+'/'+'UserAnnotation']
     for d in dirs:
         if not os.path.exists(d):
@@ -86,14 +86,14 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
     for c_file in c_files:
         if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
             e_file=e_file+1
-            print(colored(c_file+": does not exist or empty",
+            print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
                           'green',
                           attrs=['bold']
                          )
                  )
     if e_file > 0:
         exit()
-    
+
     if annSize == 'None' or annFiles == "None" or annName == "None":
         print(colored("Either --annSize or --annFiles or --annName is missing",
                       'green',
@@ -125,22 +125,22 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': Part of homer. It is not installed in your computer or not in the PATH.',
-                          'green', 
+                          'green',
                           attrs=['bold']
                          )
                  )
             exit()
-    
+
     dirs=[
-        
-        outputdir+'/'+'Annotation', 
+
+        outputdir+'/'+'Annotation',
         outputdir+'/'+'GeneOntology',
-        outputdir+'/'+'Motifs', 
+        outputdir+'/'+'Motifs',
         outputdir+'/'+'Motifs/Meme',
         outputdir+'/'+'Motifs/Homer'
-        
+
     ]
-    
+
     for d in dirs:
         if not os.path.exists(d):
             os.makedirs(d)
@@ -152,7 +152,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
                      )
              )
         exit()
-        
+
     myPeakFolders = []
     zz = ['Peaks', 'idr_homer', 'idr_macs2']
     if annpeakFiles=='None':
@@ -193,13 +193,13 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
            )
       exit()
     #-- checking if given file exists
-    c_files=annpeakFiles.split(',')
+    c_files=annpeakFile #.split(',')
     print(c_files)
     e_file=0
     for c_file in c_files:
         if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
             e_file=e_file+1
-            print(colored(c_file+": does not exist or empty",
+            print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
                           'green',
                           attrs=['bold']
                          )
@@ -218,13 +218,13 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
             '-annStats', outputdir + '/Annotation/' + annPrefixes[i] + '-annStats.txt',
             '-cpu', str(threads)
         ]
-        
+
         with open(outputdir + '/Annotation/' + annPrefixes[i] + '-annotation.txt', 'w') as anntotalCmdFile:
             universal.run_cmd_file(cmd,
                                    anntotalCmdFile,
                                    outputdir
                                   )
-    #-- motifs through homer 
+    #-- motifs through homer
     #______________________________________________
     for i in range(0,len(annpeakFile)):
         filterMotifSeq.motifs_peaks (
@@ -236,7 +236,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
             outputdir
         )
 
-    #-- motifs through meme 
+    #-- motifs through meme
     #______________________________________________
     totalCmd = []
     totalCmdFile = []

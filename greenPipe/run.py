@@ -1022,7 +1022,9 @@ myothercommands=['makeTagDirectory',
                  'trim_galore',
                  'fastqc',
                  'bowtie2',
-                 'fastq_screen'
+                 'fastq_screen',
+                 'pv',
+                 'pigz'
                 ]
 
 print(colored('-> Checking if other packages are installed or not',
@@ -1768,7 +1770,7 @@ def main ():
                 h_samplesExpr=[]
                 for i in range(0,myin.shape[0]):
                     Name = myin.loc[i,4]
-                    h_samplesExpr.append(outputdir + '/Bamfiles/' + Name + '_expr.Flagstats.txt')
+                    h_samplesExpr.append(outputdir + '/SpikeIn/' + Name + '_expr.Flagstats.txt')
                 vals = initPeakCalling.spike_normalization2(h_samplesExpr, libraryType)
                 hInCounts = [x / 10000 for x  in vals]
 

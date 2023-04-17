@@ -49,34 +49,10 @@ from greenPipe import hugo2Entrez
 
 __description__ = """
 
-greenPipe pipeline (version 3.0): 23rd January, 2023
+greenPipe pipeline (version 3.0): April, 2023
 
-#--note: for modes using homer, first customize homer if you are using species other than human. See http://homer.ucsd.edu/homer/introduction/update.html
-#--All fastqfiles must be in zip Format
+For the manual go to https://greenPipe.readthedocs.io/en/latest/
 
-
-1. qc mode
-    greenPipe --modes qc --outputdir $(pwd) --inputdir $(pwd)/Fastq --inputfile sampleInfo.txt --libraryType pair
-
-2. alignment mode
-    greenPipe --modes alignment --outputdir $(pwd) --inputdir $(pwd)/Fastq --inputfile sampleInfo.txt --libraryType pair
-    --refgenome /home/sheikh/Databases/hg38/GenCode/GRCh38.p13
-    -spikein /home/sheikh/Databases/Drosophila_genome/Drosophila_melanogaster
-
-3. equalRead mode
-    greenPipe --modes equalRead --outputdir $(pwd) --inputdir $(pwd)/Fastq --inputfile sampleInfo.txt --libraryType pair
-    --reverseName_equalRead True --SelectReads 10000000
-
-9. doughnut mode
-
-    best practice: --sDist should be half of the --mDist
-
-    greenPipe --modes doughnut --dPeakfiles ./Peaks/Jun_merged_narrow-homer.Clean.bed --dNames jun --sDist 200
-    --gVer hg38 --sFasta /home/sheikh/Databases/hg38/GenCode/GRCh38.p13.fa --mDist 400 --sProt TGA.TCA,TGA..TCA --mPwm MA0491 --outputdir $(pwd)
-
-
-
-#____________ > differential peaks should be in the outputdir + DifferentialPeaks
 """
 
 epilogue = """
@@ -108,7 +84,7 @@ reqNamed.add_argument("--modes",
                       'callPeaks, '+
                       'idr, '+
                       'doughnut, '+
-                      'PeakComparison, '+
+                      'PeakComparison, '+ #----- Overlap, bulky vs non-bulky, peakshift are missing
                       'annotation, '
                       'UserAnnotation, '+
                       'coverageTracks, '+
@@ -117,8 +93,9 @@ reqNamed.add_argument("--modes",
                       'heatmap, '+
 #                      'heatmapCoverage, ' +
                       'piggyBack, '+
-                      'rnaIntegrate, '+
-                      'stats',
+#                      'rnaIntegrate, '+
+#                      'stats',
+                      '',
                       'green', attrs = ['bold']),
                       type=str,
                       required=True)
@@ -439,6 +416,45 @@ parser.add_argument("--overDist",
                     default = '400'
                    )
 
+parser.add_argument("--compareInfile",
+                    help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
+                    "Input file for peak comparsion. Prepare a file with two column "+
+                    "and write each comparison in a single line e.g. ___\nsample1_condition1\tsample1_condition2"+
+                    "\nsample2_condition1\tsample2_condition2\n____. The sample1_condition1 ... should match with last"+
+                    " column of input.txt",
+                      default="NA")
+
+parser.add_argument("--rdPvalue",
+                    help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
+                    "p value in the differential homer peak calling. Default is 0.0001",
+                    type=str,
+                    default='0.0001'
+                    )
+
+parser.add_argument("--rdFoldChange",
+                    help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
+                    "Fold changes in the differential homer peak calling. Default is 4.0",
+                    type=str,
+                    default='4.0'
+                    )
+
+parser.add_argument("--rdSize",
+                    help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
+                    "size of region around peak to count tags. Default is 1000 base-pairs",
+                    type=str,
+                    default='1000'
+                    )
+
+parser.add_argument("--rdPeak",
+                    help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
+                    "List of the peak files for which differential peaks will be calculated"+
+                    ". For each line of --compareInfile, you can provide --rdPeak file as like this: "+
+                    "sample1_condition1:sample1_condition2,sample2_condition1:sample2_condition2. If you want to compare"+
+                    " only for same peak file then use: peak1:peak2, that's it. Leave it, if you have already run callPeak mode.",
+                    type=str,
+                    default='None'
+                    )
+
 parser.add_argument("--annpeakFiles",
                     help=colored("UserAnnotation/annotation mode: ", 'green', attrs = ['bold']) +
                     "in this mode you can provide peaks which can be annotated "+
@@ -543,7 +559,7 @@ parser.add_argument("--cMaN",
                    )
 
 parser.add_argument("--cGVersion",
-                    help=colored("cutfrequency/annotation: ", 'green', attrs = ['bold']) +
+                    help=colored("cutfrequency/annotation/PeakComparison: ", 'green', attrs = ['bold']) +
                     "In the cutfrequency mode, if --cMotif is true, provide the version of the genome, "+
                     "so that location of the motifs can be generated. This one is also require in "+
                     "the annotation mode "+
@@ -769,7 +785,7 @@ parser.add_argument("--Species",
                    )
 
 parser.add_argument("--sFasta",
-                    help=colored("piggyBack/doughnut/annotation mode: ", 'green', attrs = ['bold']) +
+                    help=colored("piggyBack/doughnut/annotation/PeakComparison mode: ", 'green', attrs = ['bold']) +
                     "Fasta file of the species genome",
                     default="NA",
                     type=str
@@ -878,6 +894,11 @@ idrSpike=args.idrSpike
 #-------
 overDist=args.overDist
 overFiles=args.overFiles
+compareInfile=args.compareInfile
+rdPvalue=args.rdPvalue
+rdFoldChange=args.rdFoldChange
+rdSize=args.rdSize
+rdPeak=args.rdPeak
 #-------
 covSpike=args.covSpike
 covOtherOptions=args.covOtherOptions
@@ -1022,9 +1043,7 @@ myothercommands=['makeTagDirectory',
                  'trim_galore',
                  'fastqc',
                  'bowtie2',
-                 'fastq_screen',
-                 'pv',
-                 'pigz'
+                 'fastq_screen'
                 ]
 
 print(colored('-> Checking if other packages are installed or not',
@@ -1598,6 +1617,49 @@ def main ():
                         outputdir+'/OverlappingPeaks/UserGiven'
                         )
 
+            if not os.path.exists(compareInfile):
+                print(colored(compareInfile+": does not exist",
+                        'green',
+                        attrs=['bold']
+                        )
+                        )
+                exit()
+            else:
+                compareInfileReads = pd.read_csv(compareInfile,
+                                                sep = '\t',
+                                                header = None)
+                if rdPeak != 'None':
+                    rdPeaks = rdPeak.split(',')
+                    if len(rdPeaks) != compareInfileReads.shape[0]:
+                        if len(rdPeaks) > 1:
+                            print(colored("length of --rdPeaks and rows of --compareInfile are not equal."+
+                                    " Either --rdPeak files should be one in form of file1:file1 or file1:file2 or"+
+                                    " it should be equal to the number of rows.",
+                                    'green',
+                                    attrs=['bold']
+                                    )
+                                    )
+                            exit()
+                    if len(rdPeaks) == 1:
+                        rdPeaks = rdPeaks * compareInfileReads.shape[0]
+
+                for cir in range(0,compareInfileReads.shape[0]):
+                    rdName1, rdName2 = compareInfileReads.iloc[cir,0], compareInfileRead.iloc[cir,1]
+                    rdInPeak = rdPeaks[cir]
+
+                    realDiffPeaksHomer (rdName1,
+                                        rdName2,
+                                        rdInPeak,
+                                        rdPvalue,
+                                        rdFoldChange,
+                                        rdSize,
+                                        rdOther,
+                                        outputdir,
+                                        libraryType,
+                                        cGVersion,
+                                        sFasta,
+                                        threads)
+
         #-- annotation of peaks: user provided peak file and/or annotation bed files
         #_____________________________________________________________________________________________________
         if mode == 'UserAnnotation':
@@ -1772,7 +1834,7 @@ def main ():
                     Name = myin.loc[i,4]
                     h_samplesExpr.append(outputdir + '/SpikeIn/' + Name + '_expr.Flagstats.txt')
                 vals = initPeakCalling.spike_normalization2(h_samplesExpr, libraryType)
-                hInCounts = [x / 10000 for x  in vals]
+                hInCounts = [str(x / 10000) for x  in vals]
 
             elif  hInFiles != "NA":
                 if hInCounts == "NA":

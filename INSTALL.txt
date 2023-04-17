@@ -7,5 +7,6 @@ Install Fastqc
 Install fastq_screen
 Install bedtools
 Install subread
+Install pv and pigz
 #---
 Download references, blackListedRegions and example file.

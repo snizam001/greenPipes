@@ -121,7 +121,7 @@ for(i in seq(1,ncol(d)-bins,bins)) {
 }
 
 #__________________
-jpeg(paste(output,'-',normLabels,".jpeg",sep=""),
+jpeg(paste(output,'-',normLabels-curve,".jpeg",sep=""),
 	unit = "in",
 	res = 300,
 	height = 3.5,

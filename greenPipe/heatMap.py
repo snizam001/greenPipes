@@ -111,6 +111,7 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
 
 def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hCovMethod, blackListedRegions,hDiffPeaks, hMOpt, hPOpt, inCounts):
     heatmapNormalize=psource.resource_filename(__name__, "rscripts/heatmapNormalize.R")
+
     if hMOpt == "None":
         hMOpt = [
         '-b', '5000',
@@ -232,14 +233,21 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         universal.run_cmd(c,outputdir)
 
         c=['Rscript', heatmapNormalize,
-        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz'
-        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metageneCoverage'
-        '-l', inNames,
-        '-c', inCounts
+        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz',
+        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metageneCoverage',
+        '-l', ",".join(inNames),
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
 
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene-normalized.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene-normalized.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "center"] + hPOpt
+
+        universal.run_cmd(c,outputdir)
 
     #------------
     elif hRegionMode == "tss":
@@ -303,13 +311,22 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         universal.run_cmd(c,outputdir)
 
         c=['Rscript', heatmapNormalize,
-        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz'
-        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss'
-        '-l', inNames,
-        '-c', inCounts
+        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz',
+        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss',
+        '-l', ",".join(inNames),
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss-normalized.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss-normalized.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "center"] + hPOpt
+
+        universal.run_cmd(c,outputdir)
+
     #------------
     elif hRegionMode == "bed":
         if inFiles == "NA":
@@ -372,13 +389,22 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         universal.run_cmd(c,outputdir)
 
         c=['Rscript', heatmapNormalize,
-        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz'
-        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed'
-        '-l', inNames,
-        '-c', inCounts
+        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz',
+        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed',
+        '-l', ",".join(inNames),
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed-normalized.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed-normalized.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "center"] + hPOpt
+
+        universal.run_cmd(c,outputdir)
+
     #------------
     elif hRegionMode == "peaks":
         hBed=[]
@@ -442,11 +468,19 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         universal.run_cmd(c,outputdir)
 
         c=['Rscript', heatmapNormalize,
-        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz'
-        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks'
-        '-l', inNames,
-        '-c', inCounts
+        '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
+        '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks',
+        '-l', ",".join(inNames),
+        '-c', ",".join(inCounts)
         ]
+
+        universal.run_cmd(c,outputdir)
+
+        c=['plotHeatmap',
+           '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks-normalized.gz',
+           '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks-normalized.jpeg',
+           '--dpi', '300',
+           '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
 
@@ -510,10 +544,19 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
             universal.run_cmd(c,outputdir)
 
             c=['Rscript', heatmapNormalize,
-            '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz'
-            '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks'
-            '-l', inNames,
-            '-c', inCounts
+            '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
+            '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks',
+            '-l', ",".join(inNames),
+            '-c', ",".join(inCounts)
             ]
+
+            universal.run_cmd(c,outputdir)
+
+
+            c=['plotHeatmap',
+               '-m', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks-normalized.gz',
+               '-out', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks-normalized.jpeg',
+               '--dpi', '300',
+               '--refPointLabel', "center"] + hPOpt
 
             universal.run_cmd(c,outputdir)

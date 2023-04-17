@@ -80,7 +80,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
            )
       exit()
     #-- checking if given file exists
-    c_files=annpeakFiles.split(',')+annFiles.split(',')
+    c_files=annpeakFiles.split(',') #+annFiles.split(',')
     print(c_files)
     e_file=0
     for c_file in c_files:
@@ -91,7 +91,22 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
                           attrs=['bold']
                          )
                  )
-    if e_file > 0:
+            annpeakFiles.remove(c_file)
+
+    c_files=annFiles.split(',') #+annFiles.split(',')
+    print(c_files)
+    e_file=0
+    for c_file in c_files:
+        if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
+            e_file=e_file+1
+            print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
+                          'green',
+                          attrs=['bold']
+                         )
+                 )
+            annFiles.remove(c_file)
+
+    if len(annFiles) == 0 or len(annpeakFiles) == 0:
         exit()
 
     if annSize == 'None' or annFiles == "None" or annName == "None":
@@ -265,8 +280,14 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
             outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
             '-dna',
             '-p', str(threads),
-            '-nmotifs', '10'
+            '-nmotifs', '10',
+            '-mod', 'zoops',
+            '-seed', '786',
+            '-revcomp',
+            '-minw', '6',
+            '-maxw', '15',
         ]
+
         universal.run_cmd(cmd, outputdir)
 
     totalCmd = []

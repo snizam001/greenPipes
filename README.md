@@ -21,7 +21,7 @@ usage:
 
           greenPipe pipeline (version 3.0): April, 2023
 
-          For the manual go to https://greenPipe.readthedocs.io/en/latest/
+          For the manual go to https://greenPipe.readthedocs.io/en/latest/ (not prepared)
 
           optional arguments:
             -h, --help            show this help message and exit

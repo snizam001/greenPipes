@@ -51,7 +51,8 @@ __description__ = """
 
 greenPipe pipeline (version 3.0): April, 2023
 
-For the manual go to https://greenPipe.readthedocs.io/en/latest/
+greenPipe [required arguments] [common arguments] [optional arguments]
+greenPipe --help
 
 """
 
@@ -75,10 +76,10 @@ reqNamed.add_argument("--modes",
                       "comma seperated values e.g. --modes qc,alignment. " +
                       "Choices are: " +
                       colored("qc, "+
-                      "contamination, "+
                       "alignment, "+
                       "equalRead, "+
                       "qcExperiment, "+
+                      "contamination, "+
                       'initPeakCalling, '+
                       'qcTagDirectories, '+
                       'callPeaks, '+
@@ -112,7 +113,7 @@ comNamed.add_argument("--inputdir",
                       default="NA")
 
 comNamed.add_argument("--inputfile",
-                      help="input file in .txt format",
+                      help="input_file/sample_sheet in .txt format",
                       default="NA")
 
 comNamed.add_argument("--libraryType",
@@ -451,6 +452,13 @@ parser.add_argument("--rdPeak",
                     ". For each line of --compareInfile, you can provide --rdPeak file as like this: "+
                     "sample1_condition1:sample1_condition2,sample2_condition1:sample2_condition2. If you want to compare"+
                     " only for same peak file then use: peak1:peak2, that's it. Leave it, if you have already run callPeak mode.",
+                    type=str,
+                    default='None'
+                    )
+
+parser.add_argument("--rdOther",
+                    help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
+                    "You can add additional parameters here for peak comparison",
                     type=str,
                     default='None'
                     )
@@ -899,6 +907,7 @@ rdPvalue=args.rdPvalue
 rdFoldChange=args.rdFoldChange
 rdSize=args.rdSize
 rdPeak=args.rdPeak
+rdOther=args.rdOther
 #-------
 covSpike=args.covSpike
 covOtherOptions=args.covOtherOptions
@@ -1234,17 +1243,27 @@ def main ():
 #         if experimentType == "greencutrun":
           for i in range(0,myin.shape[0]):
               Name = myin.loc[i,4]
-              x = contamination.contamination (libraryType, Name, inputdir, outputdir, threads)
-              for j in x:
-                  total_cmd.append(j)
-          print(total_cmd)
-          with Pool (threads) as p:
-              p.starmap(universal.run_cmd,
-                        zip(total_cmd,
-                            repeat(outputdir)
-                           )
-                       )
-
+              contamination.contamination (libraryType, Name, inputdir, outputdir, threads)
+#              x, y, z = contamination.contamination (libraryType, Name, inputdir, outputdir, threads)
+#              print(x)
+#              print(y)
+#              print(z)
+#              for j in x:
+#                  total_cmd.append(j)
+#          print(total_cmd)
+#          with Pool (threads) as p:
+#              p.starmap(universal.run_cmd,
+#                        zip(total_cmd,
+#                            repeat(outputdir)
+#                           )
+#                       )
+#          with Pool (threads) as p:
+#              p.starmap(universal.run_cmd_fileOpen,
+#                        zip(y,
+#                        z,
+#                            repeat(outputdir)
+#                            )
+#                            )
         #-- alignment
         #_____________________________________________________________________________________________________
         if mode == 'alignment':
@@ -1530,6 +1549,62 @@ def main ():
         #_____________________________________________________________________________________________________
 
         if mode == 'PeakComparison':
+            #---- finding differential Peaks
+            findYourOwnPeakFile = 0
+            if not os.path.exists(compareInfile):
+                print(colored(compareInfile+": does not exist",
+                        'green',
+                        attrs=['bold']
+                        )
+                        )
+                exit()
+            else:
+                compareInfileReads = pd.read_csv(compareInfile,
+                                                sep = '\t',
+                                                header = None)
+                if rdPeak != 'None':
+                    rdPeaks = rdPeak.split(',')
+                    if len(rdPeaks) != compareInfileReads.shape[0]:
+                        if len(rdPeaks) > 1:
+                            print(colored("length of --rdPeaks and rows of --compareInfile are not equal."+
+                                    " Either --rdPeak files should be one in form of file1:file1 or file1:file2 or"+
+                                    " it should be equal to the number of rows.",
+                                    'green',
+                                    attrs=['bold']
+                                    )
+                                    )
+                            exit()
+                    elif len(rdPeaks) == 1:
+                        rdPeaks = rdPeaks * compareInfileReads.shape[0]
+                else:
+                    findYourOwnPeakFile = 1
+
+                for cir in range(0,compareInfileReads.shape[0]):
+                    rdName1, rdName2 = compareInfileReads.iloc[cir,0], compareInfileReads.iloc[cir,1]
+                    if findYourOwnPeakFile != 0:
+                        rdInPeak = rdPeaks[cir]
+                    else:
+                        if os.path.exists(outputdir+'/'+'Peaks/' + rdName1 + '_all-homer.Clean.bed') and os.path.exists(outputdir+'/'+'Peaks/' + rdName2 + '_all-homer.Clean.bed'):
+                                rdInPeak = outputdir+'/'+'Peaks/' + rdName1 + '_all-homer.Clean.bed:'+outputdir+'/'+'Peaks/' + rdName2 + '_all-homer.Clean.bed'
+
+                        elif os.path.exists(outputdir+'/'+'Peaks/' + rdName1 + '_narrow-homer.Clean.bed') and os.path.exists(outputdir+'/'+'Peaks/' + rdName2 + '_narrow-homer.Clean.bed'):
+                                rdInPeak = outputdir+'/'+'Peaks/' + rdName1 + '_narrow-homer.Clean.bed:'+outputdir+'/'+'Peaks/' + rdName2 + '_narrow-homer.Clean.bed'
+
+                        elif os.path.exists(outputdir+'/'+'Peaks/' + rdName1 + '_broad-homer.Clean.bed') and os.path.exists(outputdir+'/'+'Peaks/' + rdName2 + '_broad-homer.Clean.bed'):
+                                rdInPeak = outputdir+'/'+'Peaks/' + rdName1 + '_broad-homer.Clean.bed:'+outputdir+'/'+'Peaks/' + rdName2 + '_broad-homer.Clean.bed'
+
+                    comparePeak.realDiffPeaksHomer (rdName1,
+                                        rdName2,
+                                        rdInPeak,
+                                        rdPvalue,
+                                        rdFoldChange,
+                                        rdSize,
+                                        rdOther,
+                                        outputdir,
+                                        libraryType,
+                                        cGVersion,
+                                        sFasta,
+                                        threads)
 
             #--- finding the overlapping peaks
             if overFiles == "NA":
@@ -1617,48 +1692,7 @@ def main ():
                         outputdir+'/OverlappingPeaks/UserGiven'
                         )
 
-            if not os.path.exists(compareInfile):
-                print(colored(compareInfile+": does not exist",
-                        'green',
-                        attrs=['bold']
-                        )
-                        )
-                exit()
-            else:
-                compareInfileReads = pd.read_csv(compareInfile,
-                                                sep = '\t',
-                                                header = None)
-                if rdPeak != 'None':
-                    rdPeaks = rdPeak.split(',')
-                    if len(rdPeaks) != compareInfileReads.shape[0]:
-                        if len(rdPeaks) > 1:
-                            print(colored("length of --rdPeaks and rows of --compareInfile are not equal."+
-                                    " Either --rdPeak files should be one in form of file1:file1 or file1:file2 or"+
-                                    " it should be equal to the number of rows.",
-                                    'green',
-                                    attrs=['bold']
-                                    )
-                                    )
-                            exit()
-                    if len(rdPeaks) == 1:
-                        rdPeaks = rdPeaks * compareInfileReads.shape[0]
 
-                for cir in range(0,compareInfileReads.shape[0]):
-                    rdName1, rdName2 = compareInfileReads.iloc[cir,0], compareInfileRead.iloc[cir,1]
-                    rdInPeak = rdPeaks[cir]
-
-                    realDiffPeaksHomer (rdName1,
-                                        rdName2,
-                                        rdInPeak,
-                                        rdPvalue,
-                                        rdFoldChange,
-                                        rdSize,
-                                        rdOther,
-                                        outputdir,
-                                        libraryType,
-                                        cGVersion,
-                                        sFasta,
-                                        threads)
 
         #-- annotation of peaks: user provided peak file and/or annotation bed files
         #_____________________________________________________________________________________________________

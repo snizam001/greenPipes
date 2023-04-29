@@ -12,6 +12,7 @@ from greenPipe import ann
 import pandas as pd
 import upsetplot
 import glob
+import pkg_resources as psource
 
 def overlapPeaks (overFiles, overDir, overDist, outputdir, overReplace):
 

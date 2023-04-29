@@ -142,6 +142,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 	inFile =  outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'tss.saf'
 	outFile =  outputdir + '/Statistics/' + 'PauseIndex' + '/' + 'tss.counts'
 
+
 	c=[featureCounts,
 	'-a', inFile,
 	'-T', str(threads),

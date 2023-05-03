@@ -227,8 +227,11 @@ parser.add_argument("--pStyle",
                     help=colored("callPeaks mode: ", 'green', attrs = ['bold']) +
                     "style of the peaks (narrow/broad/both). Default is the narrow. "+
                     "For each samples users can provide comma seperated styles"+
-                    "e.g. both,narrow,narrow,broad",
+                    "e.g. both,narrow,broad",
                     type=str,
+                    choices=['narrow',
+                             'broad',
+                             'both'],
                     default = 'narrow'
                     )
 

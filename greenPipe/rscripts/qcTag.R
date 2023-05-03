@@ -12,46 +12,46 @@ if(!require(data.table)){
 
 
 option_list = list(
-    make_option(c("-a", "--file1"), 
-                type="character", 
+    make_option(c("-a", "--file1"),
+                type="character",
                 default=NA,
-                help="tagCountDistribution: experiment", 
+                help="tagCountDistribution: experiment",
                 metavar="character"),
-    
-    make_option(c("-b", "--file2"), 
-                type="character", 
+
+    make_option(c("-b", "--file2"),
+                type="character",
                 default=NA,
-                help="tagCountDistribution: control", 
+                help="tagCountDistribution: control",
                 metavar="character"),
-    
-    make_option(c("-c", "--file3"), 
-                type="character", 
+
+    make_option(c("-c", "--file3"),
+                type="character",
                 default=NA,
-                help="tagAutocorrelation: experiment", 
+                help="tagAutocorrelation: experiment",
                 metavar="character"),
-    
-    make_option(c("-d", "--file4"), 
-                type="character", 
+
+    make_option(c("-d", "--file4"),
+                type="character",
                 default=NA,
-                help="tagAutocorrelation: control", 
+                help="tagAutocorrelation: control",
                 metavar="character"),
-    
-    make_option(c("-e", "--file5"), 
-                type="character", 
+
+    make_option(c("-e", "--file5"),
+                type="character",
                 default=NA,
-                help="FragmentLength: experiment", 
+                help="FragmentLength: experiment",
                 metavar="character"),
-    
-    make_option(c("-f", "--file6"), 
-                type="character", 
+
+    make_option(c("-f", "--file6"),
+                type="character",
                 default=NA,
-                help="FragmentLength: control", 
+                help="FragmentLength: control",
                 metavar="character"),
-    
-    make_option(c("-o", "--output"), 
-                type="character", 
+
+    make_option(c("-o", "--output"),
+                type="character",
                 default=NA,
-                help="Name and location of output JPEG file", 
+                help="Name and location of output JPEG file",
                 metavar="character")
 );
 
@@ -72,7 +72,7 @@ tgCor_expr=read.table(file3,skip=1)
 tgCor_ctrl=read.table(file4,skip=1)
 
 if ( !is.na(file5) || !is.na(file6) ){
-    
+
     tgFr_expr=fread(file5)
     tgFr_expr=data.frame(tgFr_expr)
     tgFr_ctrl=fread(file6)
@@ -92,8 +92,8 @@ jpeg(
     output,
     unit='in',
     res=300,
-    height=3.5*3,
-    width=3.5*2)
+    height=2.5*3,
+    width=2.5*2)
 
 opar<-par(
     mfrow=c(3,2)
@@ -103,14 +103,14 @@ plot(tgCnt_expr,
      ylim=c(0,1),
      xlab="Tag position",
      ylab="Frequency of tags per position",
-     main='Experiment: frequency'); 
+     main='Experiment: frequency');
 grid()
 
 plot(tgCnt_ctrl,
      ylim=c(0,1),
      xlab="Tag position",
      ylab="Frequency of tags per position",
-     main='Control: frequency'); 
+     main='Control: frequency');
 grid()
 
 #---
@@ -118,7 +118,7 @@ plot(tgCor_expr[,1],
      tgCor_expr[,2],
      xlab="Relative distance between reads (bps)",
      ylab="Total reads",main='Experiment: autocorrelation',
-     type='l'); 
+     type='l');
 lines(tgCor_expr[,1],
       tgCor_expr[,3],
       col='grey72')
@@ -129,7 +129,7 @@ plot(tgCor_ctrl[,1],
      xlab="Relative distance between reads (bps)",
      ylab="Total reads",
      main='Control: autocorrelation',
-     type='l'); 
+     type='l');
 
 lines(tgCor_ctrl[,1],
       tgCor_ctrl[,3],
@@ -137,7 +137,7 @@ lines(tgCor_ctrl[,1],
 grid()
 #---
 if (!is.na(file5) || !is.na(file6)){
-    
+
     plot(tgFr_expr_density$x,
          tgFr_expr_density$y,
          xlab="Fragment length in base-pairs",
@@ -146,11 +146,11 @@ if (!is.na(file5) || !is.na(file6)){
          xlim=c(min_x,max_x),
          ylim=c(min_y,max_y),
          type='l')
-    
+
     lines(tgFr_ctrl_density$x,
           tgFr_ctrl_density$y,
           col='grey72')
-    
+
     legend('topright',
            col=c('black','grey72'),
            lty=2,
@@ -161,4 +161,3 @@ if (!is.na(file5) || !is.na(file6)){
 }
 
 dev.off()
-

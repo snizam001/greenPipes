@@ -17,7 +17,7 @@ def spike_normalization (FlagstatFiles, libraryType):
                 if libraryType=="pair":
                     if re.search('read1',lines):
                         outvalues.append(int(lines.split(' ')[0]))
-                else: 
+                else:
                     if re.search('mapped',lines) and not re.search('mate',lines):
                         outvalues.append(int(lines.split(' ')[0]))
     values.append(outvalues[2]/(outvalues[1]/outvalues[0]))
@@ -36,18 +36,18 @@ def spike_normalization2 (FlagstatFiles, libraryType):
                     if re.search('mapped',lines) and not re.search('mate',lines):
                          outvalues.append(int(lines.split(' ')[0]))
     return (outvalues)
-    
+
 def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
     totalCmd=[]
     cmd_rs=['makeTagDirectory']
-    #---  
+    #---
     for cmd_r in cmd_rs:
         try:
             subprocess.call([cmd_r,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': it is part of Homer. It is not installed in your computer or not in the PATH.'+
-                          ' Install or copy the executables to the default PATH', 
+                          ' Install or copy the executables to the default PATH',
                           'green', attrs=['bold']))
             exit()
 
@@ -59,13 +59,13 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
     #---
 
     homerNormFile=outputdir + '/Peaks/' + 'Homer_normalization.txt'
-    prnt=('Experiment' + '\t' + 
-          'Read_number_expr' + '\t' + 
-          'Read_number_control' + '\t' + 
-          'Read_number_SpikeIn_expr' + '\t' + 
-          'Read_number_SpikeIn_control'  + '\t' + 
-          'SpikeIn-ratio' + '\t' + 
-          'SpikeIn_normalized_controlReadsOld' + '\t' + 
+    prnt=('Experiment' + '\t' +
+          'Read_number_expr' + '\t' +
+          'Read_number_control' + '\t' +
+          'Read_number_SpikeIn_expr' + '\t' +
+          'Read_number_SpikeIn_control'  + '\t' +
+          'SpikeIn-ratio' + '\t' +
+          'SpikeIn_normalized_controlReadsOld' + '\t' +
           'perReadsSpike_expr' + '\t' +
           'perReadsSpike_ctrl' + '\t' +
           'SpikeIn_normalized_controlReadsNew'
@@ -76,7 +76,7 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
 
     print(colored(prnt, 'green', attrs=['bold']))
 
-    #---  
+    #---
     for Name in Names:
 
         spikein_ctrl=outputdir + '/SpikeIn/' + Name + '_control.Flagstats.txt'
@@ -105,15 +105,15 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
                 else:
                     if re.search('mapped',lines) and not re.search('mate',lines):
                         readN_exp=int(lines.split(' ')[0])
-                        
-        SpikeIn_normalized_controlReadsNew = outvalues[2] * ((outvalues[0]/(outvalues[2]+outvalues[0])) / (outvalues[1]/(readN_expr+outvalues[1])))
         
-        prnt=(Name + '\t' + 
-              str(readN_expr) + '\t' + 
-              str(outvalues[2]) + '\t' + 
-              str(outvalues[1]) + '\t' + 
-              str(outvalues[0]) + '\t' + 
-              str(values[1]) + '\t' + 
+        SpikeIn_normalized_controlReadsNew = outvalues[2] * ((outvalues[0]/(outvalues[2]+outvalues[0])) / (outvalues[1]/(readN_expr+outvalues[1])))
+
+        prnt=(Name + '\t' +
+              str(readN_expr) + '\t' +
+              str(outvalues[2]) + '\t' +
+              str(outvalues[1]) + '\t' +
+              str(outvalues[0]) + '\t' +
+              str(values[1]) + '\t' +
               str(values[0]) + '\t' +
               str(outvalues[1]/(readN_expr+outvalues[1])) + '\t' +
               str(outvalues[0]/(outvalues[2]+outvalues[0])) + '\t' +
@@ -128,8 +128,8 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
             print(colored('NOTE: SpikeIn reads per true-reads are less in control compared to your experiment.'+
                           ' Consider peak calling without control (--Control_homer False) or inititate peakcalling'+
                           ' (initPeakCalling) with --spikeNormPeak False. '+
-                          'Expr = ' + str(outvalues[1]/(readN_expr+outvalues[1])) + ' vs Ctrl=' + str(outvalues[0]/(outvalues[2]+outvalues[0])), 
-                          'red', 
+                          'Expr = ' + str(outvalues[1]/(readN_expr+outvalues[1])) + ' vs Ctrl=' + str(outvalues[0]/(outvalues[2]+outvalues[0])),
+                          'red',
                           attrs=['bold','underline']))
 #---
         outExpr=outputdir + '/Tagdirectories/' + Name + '_expr'
@@ -146,9 +146,7 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
             totalCmd.append(['makeTagDirectory', outCtrl, inCtrl,'-totalReads',str(SpikeIn_normalized_controlReadsNew) ])
         else:
             totalCmd.append(['makeTagDirectory', outCtrl, inCtrl])
-    
+
     print(colored(prnt, 'green', attrs=['bold']))
-    
+
     return(totalCmd)
-
-

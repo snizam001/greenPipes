@@ -7,8 +7,9 @@ from termcolor import colored
 from greenPipe import initPeakCalling
 from greenPipe import universal
 import pandas as pd
+from random import randint
 
-def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGenomeSize,libraryType, covOtherOptions, covSpike_NormalizationFormula):
+def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGenomeSize,libraryType, covOtherOptions, covSpike_NormalizationFormula, covExprType):
 
     cmd_rs=['bamCoverage']
     for cmd_r in cmd_rs:
@@ -81,16 +82,38 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
             l_samplesExpr.append(outputdir + '/Bamfiles/' + Name + '_expr.Flagstats.txt')
         vals = initPeakCalling.spike_normalization2(l_samples, libraryType)
         valsExpr = initPeakCalling.spike_normalization2(l_samplesExpr, libraryType)
-        SpikeRatios = [x / y for x, y in zip(vals, valsExpr)]
-
+        #--- This formula was changed on 10 May, 2023
+        # SpikeRatios = [x / y for x, y in zip(vals, valsExpr)]
+        SpikeRatios = [x / (x+y) for x, y in zip(vals, valsExpr)]
         #--- change in version 3: 20 Jan, 2023
         #--- this SpikeVal was as such that spikeIn normalzation can not be compared among batches  # version 1
         if covSpike_NormalizationFormula == 1:
             SpikeVal = [ min(SpikeRatios) / SpikeRatio for SpikeRatio in SpikeRatios]  # version 1-2
         elif covSpike_NormalizationFormula == 2:
-            SpikeVal = [ 0.05 / SpikeRatio for SpikeRatio in SpikeRatios]  # version 3
+            #--- Change in version3: 10 May, 2023
+            #SpikeVal = [ 0.05 / SpikeRatio for SpikeRatio in SpikeRatios]  # version 3
+            if covExprType == "NA":
+                print(colored("Specify if you experiment is greenCUT&RUN or CUT&RUN. Use gCR for greenCUT&RUN and CR for CUT&RUN with option --covExprType.",
+                              "green",
+                              attrs = ["bold"]
+                             )
+                     )
+                exit()
+            #-------------------------------------------------
+            # you can change the 0.05 and 0.1 number according to your laboratory set up
+            #-------------------------------------------------
+            elif covExprType == "gCR":
+                SpikeVal = [ 0.05 / SpikeRatio for SpikeRatio in SpikeRatios]
+            elif covExprType == "CR":
+                SpikeVal = [ 0.1 / SpikeRatio for SpikeRatio in SpikeRatios]
+            #-------------------------------------------------
+            #
+            #-------------------------------------------------
 
-        print(pd.DataFrame({'Name':Names,'Spike':vals, 'Experiment':valsExpr, 'Ratio of Spike':SpikeRatios, "Normalization":  SpikeVal}))
+        oPanda = (pd.DataFrame({'Name':Names,'Spike':vals, 'Experiment':valsExpr, 'Ratio of Spike':SpikeRatios, "Normalization":  SpikeVal}))
+        print(oPanda)
+        oPanda.to_csv(outputdir+'/bamcoverage/'+'Normalization'+str(randint(0, 100))+'.txt')
+
         j=-1
         for Name in Names:
             iCov=outputdir + '/Bamfiles/' + Name

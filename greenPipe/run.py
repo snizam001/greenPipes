@@ -527,9 +527,8 @@ parser.add_argument("--covSpike_NormalizationFormula",
                     " given set of samples only. If you want to compare new samples, then you have to "
                     "generate coverage file again.",
                     type = int,
-                    choices=['1',
-                             '2'],
-                    default = '1'
+                    choices=[1,2],
+                    default = 1
                    )
 
 parser.add_argument("--covOtherOptions",
@@ -540,6 +539,14 @@ parser.add_argument("--covOtherOptions",
                     " ",
                     type = str,
                     default = 'None'
+                   )
+
+parser.add_argument("--covExprType",
+                    help=colored("coverageTracks mode: ", 'green', attrs = ['bold']) +
+                    "Specify if you experiment is greenCUT&RUN or CUT&RUN. Use gCR for "+
+                    "greenCUT&RUN and CR for CUT&RUN ",
+                    type = str,
+                    default = 'NA'
                    )
 
 parser.add_argument("--cMotif",
@@ -915,6 +922,7 @@ rdOther=args.rdOther
 covSpike=args.covSpike
 covOtherOptions=args.covOtherOptions
 covSpike_NormalizationFormula=args.covSpike_NormalizationFormula
+covExprType=args.covExprType
 #-------
 cMotif=args.cMotif
 cMaN=args.cMaN
@@ -1144,7 +1152,7 @@ def main ():
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
 
-        if mode!='idr' and mode != 'doughnut' and (mode == 'PeakComparison' and overFiles == 'NA'):
+        if mode!='idr' and mode != 'doughnut' and (mode == 'PeakComparison' and overFiles == 'NA') and mode!='UserAnnotation':
 
             if not os.path.exists(inputdir):
                 print(colored('Error: input directory does not exist.',
@@ -1185,7 +1193,7 @@ def main ():
 
         #-- link the fastq files
         #_____________________________________________________________________________________________________
-        if mode != 'idr' and mode != 'doughnut':
+        if mode!='idr' and mode != 'doughnut' and mode!='UserAnnotation' and mode!='coverageTracks':
             if not os.path.exists(outputdir+'/Fastq/'):
                 os.makedirs(outputdir+'/Fastq/')
 #           if experimentType == "greencutrun":
@@ -1343,6 +1351,10 @@ def main ():
         #_____________________________________________________________________________________________________
         if mode == "initPeakCalling":
 #            if experimentType == "greencutrun":
+          if libraryType == "NA":
+              print("Information of --libraryType is missing. Exit!")
+              exit()
+
           Names = []
           for i in range(0,myin.shape[0]):
               Name = myin.loc[i,4]
@@ -1728,6 +1740,7 @@ def main ():
             for i in range(0,myin.shape[0]):
                 Name = myin.loc[i,4]
                 Names.append(Name)
+
             covTracks.covTracks (Names,
                                  threads,
                                  outputdir,
@@ -1736,7 +1749,9 @@ def main ():
                                  effectiveGenomeSize,
                                  libraryType,
                                  covOtherOptions,
-                                 covSpike_NormalizationFormula)
+                                 covSpike_NormalizationFormula,
+                                 covExprType
+                                 )
 
         #-- Cut frequency mode
         #_____________________________________________________________________________________________________

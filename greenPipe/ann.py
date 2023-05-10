@@ -48,7 +48,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
     if annpeakFiles=='None':
         for z in zz:
             if os.path.exists(outputdir + '/' + z + '/'):
-                myPeakFolders = myPeakFolders + [outputdir + '/' + z + '/']
+                myPeakFolders = myPeakFolders + [z]
         annpeakFile = []
         for myPeakFolder in myPeakFolders:
             annpeakFile = annpeakFile + glob.glob(outputdir + '/' + myPeakFolder + '/' + '*.Clean.bed')

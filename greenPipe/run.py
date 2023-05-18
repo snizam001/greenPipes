@@ -571,7 +571,7 @@ parser.add_argument("--cMaN",
                     help=colored("cutfrequency mode: ", 'green', attrs = ['bold']) +
                     "Provide the MA number of the JASPER motif "+
                     "Go to http://jaspar.genereg.net/ for finding this number e.g. for TP53 "+
-                    " number is MA0106",
+                    " number is MA0106.",
                     type = str,
                     default="None"
                    )
@@ -597,10 +597,20 @@ parser.add_argument("--initHeatmapOtherOptions",
                     help=colored("initHeatmap mode: ", 'green', attrs = ['bold']) +
                     "Pipeline uses all default parameters. If you want to change something, "+
                     "besides --bl, --effectiveGenomeSize and -p, the other options of "+
-                    " bamCompare (deepTools) can be provided here as comma seperated values."+
-                    " ",
+                    " bamCompare (deepTools) can be provided here as comma seperated values in large bracket "+
+                    "eg. [-x,xyz,-a,abc].",
                     type = str,
                     default = 'None'
+                   )
+
+parser.add_argument("--hSpike",
+                    help=colored("initHeatmap mode: ", 'green', attrs = ['bold']) +
+                    "Should include spike in preparation of bamcompare files. "+
+                    "Default is True",
+                    type = str,
+                    choices=['True',
+                             'False'],
+                    default = 'True'
                    )
 
 parser.add_argument("--hMOpt",
@@ -621,16 +631,6 @@ parser.add_argument("--hPOpt",
                     "(moreover, by default--colorMap GnBu are used. It can be changed here.)",
                     type = str,
                     default = 'None'
-                   )
-
-parser.add_argument("--hSpike",
-                    help=colored("heatmap mode: ", 'green', attrs = ['bold']) +
-                    "Should include spike in preparation of bamcompare files. "+
-                    "Default is True",
-                    type = str,
-                    choices=['True',
-                             'False'],
-                    default = 'True'
                    )
 
 parser.add_argument("--hCovComp",
@@ -708,6 +708,21 @@ parser.add_argument("--hBed",
                     default = "NA"
                    )
 
+parser.add_argument("--hPeakType",
+                    help=colored("heatmap mode: ", 'green', attrs = ['bold']) +
+                    "Specify the type of peak if --hRegionMode is peak. It will help pipeline to find and choose "+
+                    "*-narrow*homer/*-broad*homer/*-all*homer/../*all*seacr*.Clean.bed file. "+
+                    "Default is to use narrow peaks of HOMER.",
+                    type = str,
+                    default = "narrow-homer",
+                    choices=['narrow-homer',
+                             'broad-homer',
+                             'all-homer',
+                             'seacr.stringent',
+                             'seacr.relaxed'
+                             ],
+                   )
+
 parser.add_argument("--hDiffPeaks",
                     help=colored("heatmap mode: ", 'green', attrs = ['bold']) +
                     "In the --hRegionMode peaks, should program consider differential peaks also ?"+
@@ -781,7 +796,7 @@ parser.add_argument("--mDist",
 parser.add_argument("--distPiggy",
                     help=colored("piggyBack and doughnut mode: ", 'green', attrs = ['bold']) +
                     "Distance to find piggy back binding events. Default is 400",
-                    default=400,
+                    default=600,
                     type=int
                    )
 
@@ -827,7 +842,7 @@ parser.add_argument("--sDist",
                     help=colored("piggyBack and doughnut mode: ", 'green', attrs = ['bold']) +
                     "Search sequence of the motif from the center of peak. Default is 200."+
                     " best practice: --sDist should be half of the --mDist",
-                    default=200,
+                    default=400,
                     type=int
                    )
 
@@ -944,6 +959,7 @@ hDiffPeaks=args.hDiffPeaks
 hMOpt=args.hMOpt
 hPOpt=args.hPOpt
 hInCounts=args.hInCounts
+hPeakType=args.hPeakType
 #hCoverage=args.hCoverage
 #----
 dPeakfiles=args.dPeakfiles
@@ -961,6 +977,9 @@ gVer=args.gVer
 sDist=args.sDist
 mPvalue=args.mPvalue
 mPrefix=args.mPrefix
+
+#--
+sDist = sDist/2
 #-- logfile
 #_____________________________________________________________________________________________________
 with open(outputdir+'/'+'log.txt','w') as logfile:
@@ -1193,7 +1212,7 @@ def main ():
 
         #-- link the fastq files
         #_____________________________________________________________________________________________________
-        if mode!='idr' and mode != 'doughnut' and mode!='UserAnnotation' and mode!='coverageTracks':
+        if mode!='idr' and mode != 'doughnut' and mode!='UserAnnotation':
             if not os.path.exists(outputdir+'/Fastq/'):
                 os.makedirs(outputdir+'/Fastq/')
 #           if experimentType == "greencutrun":
@@ -1851,6 +1870,8 @@ def main ():
                                     )
         if mode == "heatmap":
 
+            checkBlackList(blackListedRegions)
+
             if hInNames == "NA":
                 hInName = []
                 for i in range(0,myin.shape[0]):
@@ -1920,7 +1941,8 @@ def main ():
                              hDiffPeaks,
                              hMOpt,
                              hPOpt,
-                             hInCounts
+                             hInCounts,
+                             hPeakType
                              )
 
         #-- MassSpectrometry or piggy back binding event mode
@@ -1941,7 +1963,8 @@ def main ():
                                           mName,
                                           sDist,
                                           threads,
-                                          gVer)
+                                          gVer,
+                                          mDist)
             else:
                 if mPrefix == "NA":
                     print (colored("if giving your own bed files using --mPeak"+
@@ -1965,7 +1988,8 @@ def main ():
                                           mName[i],
                                           sDist,
                                           threads,
-                                          gVer)
+                                          gVer,
+                                          mDist)
 
 
 if __name__ == "__main__":

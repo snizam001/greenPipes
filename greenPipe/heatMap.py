@@ -61,8 +61,9 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
         print(colored("sCtrl sExpr sCtrl sExpr","green",attrs=["bold"]))
         print(oVal)
 
-
-        oVal_norm = (oVal[0]/oVal[2])/(oVal[1]/oVal[3])
+        # This one is changed on the 12 May, 2023
+        #oVal_norm = (oVal[0]/oVal[2])/(oVal[1]/oVal[3])
+        oVal_norm = (oVal[0]/(oVal[0]+oVal[2]))/(oVal[1]/(oVal[1]+oVal[3]))
         oVal_norm = 1/oVal_norm
         if initHeatmapOtherOptions == "None":
             mycmd=['bamCompare',
@@ -109,7 +110,7 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
 
             universal.run_cmd(mycmd,outputdir)
 
-def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hCovMethod, blackListedRegions,hDiffPeaks, hMOpt, hPOpt, inCounts):
+def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hCovMethod, blackListedRegions,hDiffPeaks, hMOpt, hPOpt, inCounts, hPeakType):
     heatmapNormalize=psource.resource_filename(__name__, "rscripts/heatmapNormalize.R")
 
     if hMOpt == "None":
@@ -343,7 +344,6 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                           )
                   )
             exit()
-
         if hCovMethod == 1:
             inCounts = [1]*len(inNames)
         elif hCovMethod == 2:
@@ -407,9 +407,18 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
     #------------
     elif hRegionMode == "peaks":
+        print (colored("Using peak type: "+ hPeakType,
+                       "green",
+                       attrs = ["bold"]
+                      )
+              )
         hBed=[]
-        for inName in inNames:
-            hBed.append(outputdir + '/Peaks/' + inName + '.Clean.bed')
+        if 'homer' in hPeakType:
+            for inName in inNames:
+                hBed.append(outputdir + '/Peaks/' + inName + '_' + hPeakType + '.Clean.bed')
+        else:
+            for inName in inNames:
+                hBed.append(outputdir + '/Peaks/' + inName + '-' + hPeakType + '.bed')
         e_file=0
         for f in hBed:
             if not os.path.exists(f):
@@ -422,7 +431,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                 e_file = e_file + 1
         if e_file > 0:
             exit()
-
+        print(hBed)
         if hCovMethod == 1:
             inCounts = [1]*len(inNames)
         elif hCovMethod == 2:
@@ -433,7 +442,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                'reference-point',
                '--referencePoint',
                'center',
-               '-R', hBed,
+               '-R'] + hBed + [
                '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
                '--missingDataAsZero',
                '-bl', blackListedRegions,
@@ -448,7 +457,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                'reference-point',
                '--referencePoint',
                'center',
-               '-R', hBed,
+               '-R'] + hBed + [
                '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
                '--missingDataAsZero',
                '-bl', blackListedRegions,
@@ -509,7 +518,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                    'reference-point',
                    '--referencePoint',
                    'center',
-                   '-R', hBed,
+                   '-R'] + hBed + [
                    '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
                    '--missingDataAsZero',
                    '-bl', blackListedRegions,
@@ -524,7 +533,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                    'reference-point',
                    '--referencePoint',
                    'center',
-                   '-R', hBed,
+                   '-R'] + hBed + [
                    '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
                    '--missingDataAsZero',
                    '-bl', blackListedRegions,

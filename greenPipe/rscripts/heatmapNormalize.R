@@ -84,6 +84,7 @@ opt <- parse_args(parser)
 
 
 #---
+print("Install pv and pigz, else normalized files will not generate.")
 #-----------------
 if (!file.exists(input)) {
 	print(paste(input, " :input file does not exist!", sep =""))
@@ -130,12 +131,16 @@ jpeg(paste(output,'-',"normalized-curve",".jpeg",sep=""),
 par(mar=c(10,4,4,2))
 plot(hMean, type = 'n', ylab = "Coverage", xlab = "", axes =F )
 
+xx = 0
 for(r in seq(1,
 				bins * (length(count)),
 				bins)
 			)
 		{
-			rect(1,-500000000000000000, bins, 5000000000000, col = "cyan", border=FALSE)
+      if (xx == 0) {xx = 1} else {xx = 0}
+      if (xx == 1) {
+			rect(r,-500000000000000000, (r+bins)-1, 5000000000000, col = "cyan", border=FALSE)
+      }
 			}
 
 lines(hMean, col = "black")

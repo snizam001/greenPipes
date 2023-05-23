@@ -31,7 +31,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -54,7 +54,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
             annpeakFile = annpeakFile + glob.glob(outputdir + '/' + myPeakFolder + '/' + '*.Clean.bed')
             print(colored("UserAnnotation mode is active. Using peaks from "+
                           outputdir + '/' + myPeakFolder + '/ folder and using following files: ',
-                          'green',
+                          'red',
                           attrs = ['bold']
                          )
                  )
@@ -64,7 +64,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
     else:
         annpeakFile=annpeakFiles.split(',')
         print(colored("UserAnnotation mode is active. User provided peak files: ",
-                      'green',
+                      'red',
                       attrs = ['bold']
                      )
              )
@@ -74,7 +74,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
         annPrefixes=annPrefix.split(',')
     if len(annPrefixes) != len(annpeakFile):
       print(colored("The lenght of the --annPrefix is not equal to the --annpeakFiles.",
-                    'green',
+                    'red',
                     attrs = ['bold']
                    )
            )
@@ -87,7 +87,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
         if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
             e_file=e_file+1
             print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -100,7 +100,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
         if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
             e_file=e_file+1
             print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -111,7 +111,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
 
     if annSize == 'None' or annFiles == "None" or annName == "None":
         print(colored("Either --annSize or --annFiles or --annName is missing",
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -140,7 +140,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': Part of homer. It is not installed in your computer or not in the PATH.',
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -162,7 +162,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
 
     if sFasta == 'NA':
         print(colored('--sFasta is missing',
-                      'green',
+                      'red',
                       attrs = ['bold']
                      )
              )
@@ -202,7 +202,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
 
     if len(annPrefixes) != len(annpeakFile):
       print(colored("The lenght of the --annPrefix is not equal to the --annpeakFiles.",
-                    'green',
+                    'red',
                     attrs = ['bold']
                    )
            )
@@ -214,13 +214,19 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
     for c_file in c_files:
         if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
             e_file=e_file+1
-            print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
-                          'green',
+            print(colored(c_file+": does not exist or empty. Opening this file and writing \"EMPTY\". "+
+            "If you forget to call peaks, use mode callPeak to find peaks. "+
+            "If you have already called peaks, it means this sample is failed and none of peaks were called.",
+                          'red',
                           attrs=['bold']
                          )
                  )
-    if e_file > 0:
-        exit()
+            with open(c_file, 'w') as f:
+                f.write('EMPTY')
+    # 
+    #
+    # if e_file > 0:
+    #     exit()
     #-- annotation and the gene ontologies
     #______________________________________________
     for i in range(0,len(annpeakFile)):

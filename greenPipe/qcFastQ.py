@@ -12,10 +12,10 @@ def qc (libraryType,Name,inputdir,outputdir,thread):
             subprocess.call([othercommand,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         except FileNotFoundError:
             print(colored(othercommand+' is not installed in your computer or not in the PATH.'+
-                          ' Install or copy the executables to the default PATH', 
-                          'green', attrs=['bold']))
+                          ' Install or copy the executables to the default PATH',
+                          'red', attrs=['bold']))
             exit()
-    
+
     folders=['FastqQC','Trim_galore']
     for folder in folders:
         if not os.path.exists(outputdir+'/'+folder):
@@ -25,10 +25,10 @@ def qc (libraryType,Name,inputdir,outputdir,thread):
     if libraryType=="pair":
         myfile=outputdir + '/Fastq/' + Name
 
-        if not (os.path.exists(myfile + '_control_R1.fastq.gz') or os.path.exists(myfile + '_control_R2.fastq.gz') or 
+        if not (os.path.exists(myfile + '_control_R1.fastq.gz') or os.path.exists(myfile + '_control_R2.fastq.gz') or
                 os.path.exists(myfile + '_expr_R1.fastq.gz') or os.path.exists(myfile + '_expr_R2.fastq.gz')):
-            print(colored('Input Fastq files does not exist. Check these paths:', 
-                          'green', attrs=['bold']))
+            print(colored('Input Fastq files does not exist. Check these paths:',
+                          'red', attrs=['bold']))
             print(myfile + '_control_R1.fastq.gz')
             print(myfile + '_control_R2.fastq.gz')
             print(myfile + '_expr_R1.fastq.gz')
@@ -46,10 +46,10 @@ def qc (libraryType,Name,inputdir,outputdir,thread):
     elif libraryType=="single":
         myfile=outputdir + '/Fastq/' + Name
 
-        if not (os.path.exists(myfile + '_control.fastq.gz') or 
+        if not (os.path.exists(myfile + '_control.fastq.gz') or
                 os.path.exists(myfile + '_expr.fastq.gz')):
-            print(colored('Input Fastq files does not exist. Check these paths:', 
-                          'green', attrs=['bold']))
+            print(colored('Input Fastq files does not exist. Check these paths:',
+                          'red', attrs=['bold']))
             print(myfile + '_control.fastq.gz')
             print(myfile + '_expr.fastq.gz')
             exit()
@@ -66,7 +66,7 @@ def qc (libraryType,Name,inputdir,outputdir,thread):
     #-- checking quality of the fastq files before and after trimming
     #____________________________________
     total_fastqc=[]
-    
+
     myfile=outputdir + '/Fastq/' + Name
     if libraryType=="pair":
         xx=['_control_R1.fastq.gz','_control_R2.fastq.gz',
@@ -88,7 +88,5 @@ def qc (libraryType,Name,inputdir,outputdir,thread):
         total_fastqc.append(['fastqc',
                              '-o',outputdir+'/'+'FastqQC',
                              myfile + x])
-    
+
     return(total_cmd,total_fastqc)
-
-

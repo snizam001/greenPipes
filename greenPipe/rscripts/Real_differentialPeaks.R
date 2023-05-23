@@ -39,7 +39,8 @@ print('Missing input file; run Rscript Real_differentialPeaks.R --help');
 		max_fc=max(max_fc,log2(Totaldata[[i]][,10]))
 		min_fc=min(min_fc,log2(Totaldata[[i]][,10]))
 		z=max(max_p,-log10(Totaldata[[i]][,11]))
-		if(z!=Inf) {max_p=z}
+		zz = -log10(Totaldata[[i]][,11])
+		if(z!=Inf) {max_p=z} else { max_p = max(zz[!is.infinite(zz)])}
 		min_p=min(min_p,-log10(Totaldata[[i]][,11]))
 	}
 	#---
@@ -53,7 +54,7 @@ print('Missing input file; run Rscript Real_differentialPeaks.R --help');
 			plot(log2(data$V10),-log10(data$V11),xlab='log2(Fold change)',ylab='-log10(pvalue)',col=as.vector(data$V12),pch=20,main=files[j],axes=F ,xlim=c(min_fc-4,max_fc+4),ylim=c(min_p-4,max_p+4))
 			axis(1)
 			axis(2)
-			abline(v= log2(opt$cvalue),lty=2)
+			abline(v= c(log2(opt$cvalue),-log2(opt$cvalue)),lty=2)
 			abline(h= -log10(opt$pvalue),lty=2)
 			box()
 			dim(data[(-log10(data[,11])>= -log10(opt$pvalue) & log2(data[,10]) >= log2(opt$cvalue)),])[1]-> value_upperRight

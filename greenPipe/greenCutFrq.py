@@ -44,7 +44,7 @@ def initgreenCutFrq (maN,gVersion,outputdir,threads):
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of HOMER/bedtools. Please install it.",
-                          'green',
+                          'red',
                           attrs=['bold']))
             exit()
 
@@ -132,7 +132,7 @@ def cutFreq (Names,threads,outputdir,cutMotif,cutCenter,maN):
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of deepTools. Please install it.",
-                          'green',
+                          'red',
                           attrs=['bold']))
             exit()
 
@@ -174,7 +174,7 @@ def cutFreq (Names,threads,outputdir,cutMotif,cutCenter,maN):
                 e_file = e_file + 1
                 print(colored(flagStatsF+": file is not present."+
                               "Did you align the files before calculating cut frequency?",
-                              'green',
+                              'red',
                               attrs = ['bold']
                              )
                      )

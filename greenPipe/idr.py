@@ -136,7 +136,7 @@ def macs2SpikeInratio (idrExprSpike, idrCtrlSpike, n_expr, n_ctrl, outputdir, id
     #------
     if len(idrExprSpikes) != len(n_expr) or len(idrCtrlSpikes) != len(n_ctrl):
         print ( colored ("Number of the SpikeIn files are not equal",
-                         "green",
+                         "red",
                          attrs = ["bold"]
                         )
               )
@@ -150,7 +150,7 @@ def macs2SpikeInratio (idrExprSpike, idrCtrlSpike, n_expr, n_ctrl, outputdir, id
 
         if not os.path.exists(source):
             print(colored(source + ": file does not exist",
-                          'green',
+                          'red',
                           attrs = ["bold"]
                          )
                  )
@@ -273,7 +273,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
 
@@ -288,7 +288,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
         source = exp
         if not os.path.exists(source):
             print(colored(source + ": file does not exist",
-                          'green',
+                          'red',
                           attrs = ["bold"]
                          )
                  )
@@ -315,7 +315,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
             source = ctr
             if not os.path.exists(source):
                 print(colored(source + ": file does not exist",
-                              'green',
+                              'red',
                               attrs = ["bold"]
                              )
                      )
@@ -531,7 +531,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
     p = glob.glob(outputdir+'/idr_homer/peaks/replicates/'+idrName+'*')
     if len(p) == 0:
         print (colored("Peaks are not present in idr_homer/peaks/replicates/ folder for "+idrName,
-                       "green",
+                       "red",
                        attrs = ["bold"]
                       )
               )
@@ -539,7 +539,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
     pr = glob.glob(outputdir+'/idr_homer/peaks/pseudoreps/'+idrName+'*')
     if len(pr) == 0:
         print (colored("Peaks are not present in idr_homer/peaks/pseudoreps/ folder for "+idrName,
-                       "green",
+                       "red",
                        attrs = ["bold"]
                       )
               )
@@ -547,14 +547,14 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
     ppr = glob.glob(outputdir+'/idr_homer/peaks/pooled-pseudoreps/'+"TotalExperiment"+'*')
     if len(ppr) == 0:
         print (colored("Peaks are not present in idr_homer/peaks/pooled-pseudoreps/ folder for "+idrName,
-                       "green",
+                       "red",
                        attrs = ["bold"]
                       )
               )
     pooled = glob.glob(outputdir+'/idr_homer/peaks/pooled/'+"TotalExperiment"+'*')
     if len(pooled) == 0:
         print (colored("Peaks are not present in idr_homer/peaks/pooled/ folder for "+idrName,
-                       "green",
+                       "red",
                        attrs = ["bold"]
                       )
               )
@@ -590,7 +590,7 @@ def idr_homer (outputdir,idrExpr,idrCtrl,idrName,idrControl,idrStyle,idrOutput,b
 def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrName,idrControl,idrStyle,idrOutput,blackListedRegions,threads,effectiveGenomeSize,libraryType):
 
     print(colored('MACS2 IDR : I did not play much with spikeIn normalization here.',
-                'green', attrs=['bold']))
+                'red', attrs=['bold']))
 
     idrScript=psource.resource_filename(__name__, "otherScripts/idr_macs2/bin/idr")
     totalCmd=[]
@@ -618,7 +618,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
 
@@ -633,7 +633,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
 
         if not os.path.exists(source):
             print(colored(source + ": file does not exist",
-                          'green',
+                          'red',
                           attrs = ["bold"]
                          )
                  )
@@ -656,7 +656,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
 
             if not os.path.exists(source):
                 print(colored(source + ": file does not exist",
-                              'green',
+                              'red',
                               attrs = ["bold"]
                              )
                      )
@@ -1000,7 +1000,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         else:
             print (colored("The number of the peaks is zero: (Nt = " + str(Nt) + ", Np = " + str(Np) + ")."+
                            " Exeriment quality is bad.",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
@@ -1033,7 +1033,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         else:
             print (colored("The number of the peaks is zero: (N1 = " + str(N1) + ", N2 = " + str(N2) + ")." +
                            " Experiment quality is bad.",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
@@ -1043,19 +1043,19 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         if Sc > 2:
             print (colored("It seems that replicates for the "+
                            idrName + "are not true replicates because self consistency score > 2. Score is: " +  str(Sc),
-                           "green",
+                           "red",
                            attrs =["bold"]
                           )
                   )
         if Rr > 2 and Sc > 2:
             print (colored ("Both rescue ratio and self consistency are >2. Recommended to not use these IDR peaks.",
-                            "green",
+                            "red",
                             attrs = ["bold"]
                            )
                   )
         elif Rr > 2 or Sc > 2:
             print (colored ( "Reproducibility is in borderline. Its up to you if you want to use IDR peaks.",
-                            "green",
+                            "red",
                             attrs = ["bold"]
                            )
                   )

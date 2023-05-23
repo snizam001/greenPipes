@@ -23,7 +23,7 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
     for fastQ in fastQs:
         if not os.path.exists(fastQ):
             print(colored(fastQ + " does not exist. Path of the file is correct? check --inputdir",
-                "green",
+                "red",
                 attrs=['bold']
                 )
             )
@@ -33,7 +33,7 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
         if not os.path.exists(FlagstatFile):
             print(colored(FlagstatFile + " does not exist. Path of the file is correct? " +
                 "Manually prepare flagstat files using command: samtools flagstat input.bam",
-                "green",
+                "red",
                 attrs=['bold']
                 )
             )
@@ -109,7 +109,7 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
         if x >= 0.1:
             notice.append('Check contamination  (True only if you did not use mode equalRead)')
             print(colored( Names[y] + ': Experiment -> Is it contaminated? Frequency of reads not aligning (True only if you did not use mode equalRead): ' + str(x),
-                'green',
+                'red',
                 attrs = ['bold']
                 )
             )
@@ -125,7 +125,7 @@ def countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType):
         if x >= 0.1:
             notice.append('Check contamination  (True only if you did not use mode equalRead)')
             print(colored( Names[y] + ': Control -> Is it contaminated? Frequency of reads not aligning (True only if you did not use mode equalRead): ' + str(x),
-                'green',
+                'red',
                 attrs = ['bold']
                 )
             )
@@ -152,7 +152,7 @@ def qc_bam (qcBfiles,outputdir,threads,blackListedRegions,Names):
             print(colored(cmd_r+
                 ': It is part of deeptools. It is not installed in your computer or not in the PATH.'+
                 ' Install or copy the executables to the default PATH',
-                'green',
+                'red',
                 attrs=['bold']
                 )
             )
@@ -167,7 +167,7 @@ def qc_bam (qcBfiles,outputdir,threads,blackListedRegions,Names):
     for qcBfile in qcBfiles.split(','):
         if not os.path.exists(qcBfile):
             print(colored(qcBfile + " does not exist. Did you forget to generate bamfiles?",
-                "green",
+                "red",
                 attrs=['bold']
                 )
             )

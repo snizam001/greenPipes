@@ -16,7 +16,7 @@ def contamination (libraryType,Name,inputdir,outputdir,thread):
     	except FileNotFoundError:
     		print(colored(cmd_r+
     						': It is not installed in your computer or not in the PATH.',
-    						'green',
+    						'red',
     						attrs=['bold']
     						)
     				)
@@ -29,7 +29,7 @@ def contamination (libraryType,Name,inputdir,outputdir,thread):
     	except FileNotFoundError:
     		print(colored(cmd_r+
     						': It is not installed in your computer or not in the PATH.',
-    						'green',
+    						'red',
     						attrs=['bold']
     						)
     				)
@@ -43,7 +43,7 @@ def contamination (libraryType,Name,inputdir,outputdir,thread):
 
         if not (os.path.exists(myfile + '_control_R1.fastq.gz') or os.path.exists(myfile + '_control_R2.fastq.gz') or os.path.exists(myfile + '_expr_R1.fastq.gz') or os.path.exists(myfile + '_expr_R2.fastq.gz')):
             print(colored('Input Fastq files does not exist. Check these paths:',
-                             'green', attrs=['bold']))
+                             'red', attrs=['bold']))
             print(myfile + '_control_R1.fastq.gz')
             print(myfile + '_control_R2.fastq.gz')
             print(myfile + '_expr_R1.fastq.gz')
@@ -87,7 +87,7 @@ def contamination (libraryType,Name,inputdir,outputdir,thread):
         if not (os.path.exists(myfile + '_control.fastq.gz') or
                 os.path.exists(myfile + '_expr.fastq.gz')):
             print(colored('Input Fastq files does not exist. Check these paths:',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             print(myfile + '_control.fastq.gz')
             print(myfile + '_expr.fastq.gz')
             exit()

@@ -1,4 +1,4 @@
-#-- Quality of the homer TagDirectories 
+#-- Quality of the homer TagDirectories
 #____________________________________
 #if mode == 'quality_tagDirectories' or mode == 'all':
 from multiprocessing import Pool
@@ -8,10 +8,10 @@ import subprocess
 from datetime import datetime
 from termcolor import colored
 import pkg_resources as psource
-import pandas as pd 
+import pandas as pd
 from greenPipe import universal
 
-       
+
 def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
     dirs=outputdir+'/'+'Tagdirectories_qualities/'
     folders=[dirs]
@@ -26,7 +26,7 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
             print(colored(outputdir + '/SpikeIn/' + Name + '_expr' + '.bam'+' or '+
                           outputdir + '/SpikeIn/' + Name + '_control' + '.bam' +
                           ':does not exit',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
     if not (os.path.exists(outputdir + '/Bamfiles/' + Name + '_expr' + '.bam') or
             os.path.exists(outputdir + '/Bamfiles/' + Name + '_control' + '.bam')
@@ -34,7 +34,7 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
         print(colored(outputdir + '/Bamfiles/' + Name + '_expr' + '.bam'+' or '+
                       outputdir + '/Bamfiles/' + Name + '_control' + '.bam' +
                       ':does not exit',
-                      'green', attrs=['bold']))
+                      'red', attrs=['bold']))
         exit()
     #--------------
     for ctrl_expr in ['_expr','_control']:
@@ -48,7 +48,7 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
                outputdir + '/SpikeIn/' + Name + ctrl_expr + '.bam']
 
             universal.run_cmd(c,outputdir)
-        
+
         c=['samtools',
            'sort',
            '-n',
@@ -59,7 +59,7 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
 
         universal.run_cmd(c,outputdir)
         #--------------
-        
+
         if qcSpike != "False":
             c=['bedtools',
                'bamtobed',
@@ -67,7 +67,7 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
                '-i', outputdir + '/SpikeIn/' + Name + ctrl_expr + '-sorted.bam']
             with open(dirs + Name + ctrl_expr  + '.spike.sorted.bed', "w+") as f:
                 universal.run_cmd_file(c,f,outputdir)
-                
+
         c=['bedtools',
            'bamtobed',
            '-bedpe',
@@ -93,9 +93,9 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
             cmd=['mv',dirs + '/' + Name + ctrl_expr  + '.spike.sorted.fragments.sorted.bed',
                  dirs + '/' + Name + ctrl_expr  + '.spike.sorted.fragments.bed']
             universal.run_cmd(cmd,outputdir)
-        
-        
-        
+
+
+
         seacrBed=pd.read_csv(dirs + Name + ctrl_expr  + '.sorted.bed',
                              sep='\t',header=None)
         seacrBed=seacrBed.iloc[:,[0,1,5]]
@@ -113,7 +113,7 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
              dirs + '/' + Name + ctrl_expr  + '.sorted.fragments.bed']
         universal.run_cmd(cmd,outputdir)
 
-    if qcSpike == "False":    
+    if qcSpike == "False":
         expr_fragmentLength=dirs + '/' + Name + '_expr.sorted.fragments.bed'
         ctrl_fragmentLength=dirs + '/' + Name + '_control.sorted.fragments.bed'
         return(expr_fragmentLength,ctrl_fragmentLength)
@@ -123,20 +123,20 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
         exprSpk_fragmentLength=dirs + '/' + Name + '_expr.spike.sorted.fragments.bed'
         ctrlSpk_fragmentLength=dirs + '/' + Name + '_control.spike.sorted.fragments.bed'
         return(expr_fragmentLength,ctrl_fragmentLength,exprSpk_fragmentLength,ctrlSpk_fragmentLength)
-        
+
 def qcTagD (libraryType,outputdir,Names,threads,qcTagR):
     totalCmd=[]
     bedpeCmd=[]
-    cmd_rs=['samtools','bedtools',qcTagR] 
-    #---  
+    cmd_rs=['samtools','bedtools',qcTagR]
+    #---
     for cmd_r in cmd_rs:
         try:
             subprocess.call([cmd_r,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': is not installed in your computer or not in the PATH.'+
-                          ' Install or copy the executables to the default PATH', 
-                          'green', attrs=['bold']))
+                          ' Install or copy the executables to the default PATH',
+                          'red', attrs=['bold']))
             exit()
 
     dirs=[outputdir+'/'+'Tagdirectories_qualities/', outputdir + '/Tagdirectories/']
@@ -157,15 +157,15 @@ def qcTagD (libraryType,outputdir,Names,threads,qcTagR):
         ctrl_tagAutocorrelation=infile_ctrl+'/'+'tagAutocorrelation.txt'
 
         tagFiles=[expr_tagCounts,ctrl_tagCounts,expr_tagAutocorrelation,ctrl_tagAutocorrelation]
-        
+
         p_tagFile=0
         for tagFile in tagFiles:
             if not os.path.exists(tagFile):
                 p_tagFile=p_tagFile+1
                 print(colored(tagFile+' :does not exit',
-                              'green', attrs=['bold']))
+                              'red', attrs=['bold']))
         if p_tagFile > 0:
-            exit()            
+            exit()
         #--- length of the fragments in expreriments
         #____
         if libraryType == 'pair':

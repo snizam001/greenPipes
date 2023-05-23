@@ -20,7 +20,7 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of deepTools. Please install it.",
-                          'green',
+                          'red',
                           attrs=['bold']))
             exit()
 
@@ -36,7 +36,7 @@ def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,librar
         if not os.path.exists(b_file):
             e_file=e_file+1
             print(colored(b_file+": does not exist",
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -139,7 +139,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
     e_file=0
     if len(inFiles) != len(inNames):
         print(colored("length of the input file (--infiles) and names (--inNames) are not equal",
-                      "green",
+                      "red",
                       attrs = ["bold"]
                      )
              )
@@ -148,7 +148,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
     for inFile in inFiles:
         if not os.path.exists(inFile):
             print(colored(inFile + ":given input files (--inFiles) does not exist",
-                          "green",
+                          "red",
                           attrs = ["bold"]
                          )
                  )
@@ -165,7 +165,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of deepTools. Please install it.",
-                          'green',
+                          'red',
                           attrs=['bold']))
             exit()
 
@@ -179,14 +179,14 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
     if hRegionMode == "metagene":
         if inFiles == "NA":
             print (colored("--inFiles option is missing",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
             exit()
         if gtf == "NA":
             print (colored("--gtf option is missing",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
@@ -254,14 +254,14 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
     elif hRegionMode == "tss":
         if inFiles == "NA":
             print (colored("--inFiles option is missing",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
             exit()
         if gtf == "NA":
             print (colored("--gtf option is missing",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
@@ -332,14 +332,14 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
     elif hRegionMode == "bed":
         if inFiles == "NA":
             print (colored("--inFiles option is missing",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
             exit()
         if hBed == "NA":
             print (colored("--hBed option is missing",
-                           "green",
+                           "red",
                            attrs = ["bold"]
                           )
                   )
@@ -424,7 +424,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
             if not os.path.exists(f):
                 print(colored(f+" : file does not exit. These files require in the --hRegionMode peaks." +
                               "Call peaks before this step.",
-                              "green",
+                              "red",
                               attrs = ["bold"]
                              )
                      )
@@ -501,7 +501,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                                " seems that files does not exist. Can you check *differentialPeaks.txt files" +
                                " in the folder " + outputdir+ "/Peaks/DifferentialPeaks/"+
                                " or use --hDiffPeaks False",
-                               "green",
+                               "red",
                                attrs = ["bold"]
                               )
                       )

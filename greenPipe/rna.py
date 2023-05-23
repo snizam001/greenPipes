@@ -20,7 +20,7 @@ def rnaIntegrate (outputdir, peakFiles, rnaFiles, Names):
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.',
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )

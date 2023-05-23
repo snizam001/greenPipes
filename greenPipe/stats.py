@@ -19,7 +19,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 			print(colored(cmd_r+
 				': It is part of subread package. It is not installed in your computer or not in the PATH.'+
 				' Install or copy the executables to the default PATH',
-				'green',
+				'red',
 				attrs=['bold']
 				)
 			)
@@ -36,7 +36,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 	if len(exprBams) != len(ctrlBams):
 		print(colored("The number of the bamfiles for control and experiment"+
 			" is not equal (stats mode: PolII pausing index).",
-			"green",
+			"red",
 			attrs = ['bold']
 			)
 		)
@@ -46,7 +46,7 @@ def pauseIndex (gtfFile, exprBam, exprSpike, ctrlBam, ctrlSpike, outputdir, tssD
 	for file in totalbam:
 		if not os.path.exists(file):
 			print(colored(file + ": does not exist",
-				"green",
+				"red",
 				attrs = ['bold']
 				)
 			)

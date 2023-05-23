@@ -49,7 +49,7 @@ def callPeaksHomer (outputdir,Names,threads,ControlPeak,styles,blackListedRegion
             print(colored(cmd_r+
                           ': It is part of Homer or bedtools. It is not installed in your computer or not in the PATH.'+
                           ' Install or copy the executables to the default PATH',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
     for d in dirs:
@@ -59,7 +59,7 @@ def callPeaksHomer (outputdir,Names,threads,ControlPeak,styles,blackListedRegion
     if len(styles.split(",")) > 1:
         if len(Names) != len(styles.split(",")):
             print(colored("number of the samples and style are not equal",
-                          "green",
+                          "red",
                           attrs = ["bold"]
                          )
                  )
@@ -83,7 +83,7 @@ def callPeaksHomer (outputdir,Names,threads,ControlPeak,styles,blackListedRegion
             if not os.path.exists(tagDir):
                 print(colored(tagDir+
                           ': Did you performed initialPeakCalling? The tagdirectory does not exist',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
 
         #----
         outPeak=outputdir + '/Peaks/' + Name
@@ -245,7 +245,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
             print(colored(cmd_r+
                           ': It is part of macs or bedtools. It is not installed in your computer or not in the PATH.'+
                           ' Install or copy the executables to the default PATH',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
     dirs=[outputdir+'/'+'Peaks']
@@ -263,7 +263,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
         if not os.path.exists(checkFile):
             exist_file=exist_file+1
             print(colored(blackListedRegions+": file does not exist",
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -273,7 +273,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
     if len(styles.split(",")) > 1:
         if len(Names) != len(styles.split(",")):
             print(colored("number of the samples and style are not equal",
-                          "green",
+                          "red",
                           attrs = ["bold"]
                          )
                  )
@@ -365,7 +365,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
             for allF in allFs:
                 if not os.path.exists(allF):
                     print(colored(allF+" : file does not exist. This is required to calculate normalization ratio."+
-                                  "green",
+                                  "red",
                                   attrs = ['bold']
                                  )
                          )
@@ -474,7 +474,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
 def callPeaksSEACR (outputdir,Names,threads,spikePeaks,ControlPeak,seacr,libraryType,seacrMode,seacrThreshold,blackListedRegions,genomeFile):
     if libraryType!='pair':
         print(colored('SEACR for single end reads is not implemented',
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -494,7 +494,7 @@ def callPeaksSEACR (outputdir,Names,threads,spikePeaks,ControlPeak,seacr,library
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           ' Install or copy the executables to the default PATH',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
     dirs=[outputdir+'/'+'Peaks']
@@ -512,7 +512,7 @@ def callPeaksSEACR (outputdir,Names,threads,spikePeaks,ControlPeak,seacr,library
         if not os.path.exists(checkFile):
             exist_file=exist_file+1
             print(colored(blackListedRegions+": file does not exist",
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -611,7 +611,7 @@ def callPeaksSEACR (outputdir,Names,threads,spikePeaks,ControlPeak,seacr,library
             for allF in allFs:
                 if not os.path.exists(allF):
                     print(colored(allF+" : file does not exist. This is required to calculate normalization ratio."+
-                                  "green",
+                                  "red",
                                   attrs = ['bold']
                                  )
                          )

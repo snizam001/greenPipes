@@ -307,7 +307,7 @@ parser.add_argument("--pOpts",
                    )
 
 parser.add_argument("--genomeFile",
-                    help=colored("callPeaks mode: ", 'green', attrs = ['bold']) +
+                    help=colored("callPeaks and PeakComparison mode: ", 'green', attrs = ['bold']) +
                     "With SEACR mode --genomeFile is require which contains the length of each chromosome."+
                     " These files can be downloaded from  https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes."+
                     "Preferebly generate your own genome file from fasta (used in the alignment) by using "+
@@ -426,7 +426,7 @@ parser.add_argument("--compareInfile",
                     "and write each comparison in a single line e.g. ___\nsample1_condition1\tsample1_condition2"+
                     "\nsample2_condition1\tsample2_condition2\n____. The sample1_condition1 ... should match with last"+
                     " column of input.txt",
-                    default="NA")
+                      default="NA")
 
 parser.add_argument("--rdPvalue",
                     help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
@@ -461,7 +461,9 @@ parser.add_argument("--rdPeak",
 
 parser.add_argument("--rdOther",
                     help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
-                    "You can add additional parameters here for peak comparison",
+                    "You can add additional parameters here for peak comparison. Provide it as "+
+                    "comma seprated value in large bracket e.g [-xyz,xx,-yy,kk]. To find additional option type: "+
+                    " getDifferentialPeaks --help in your computer or go to HOMER website.",
                     type=str,
                     default='None'
                     )
@@ -1591,7 +1593,7 @@ def main ():
             #---- finding differential Peaks
             findYourOwnPeakFile = 0
             if not os.path.exists(compareInfile) or compareInfile == "NA":
-                print(colored(compareInfile+": does not exist or does not specified by --compareInfile",
+                print(colored(compareInfile+": does not exist",
                         'green',
                         attrs=['bold']
                         )
@@ -1601,6 +1603,7 @@ def main ():
                 compareInfileReads = pd.read_csv(compareInfile,
                                                 sep = '\t',
                                                 header = None)
+                print(compareInfileReads)
                 if rdPeak != 'None':
                     rdPeaks = rdPeak.split(',')
                     if len(rdPeaks) != compareInfileReads.shape[0]:
@@ -1620,7 +1623,8 @@ def main ():
 
                 for cir in range(0,compareInfileReads.shape[0]):
                     rdName1, rdName2 = compareInfileReads.iloc[cir,0], compareInfileReads.iloc[cir,1]
-                    if findYourOwnPeakFile != 0:
+                    #print(rdName1, rdName2)
+                    if findYourOwnPeakFile == 0:
                         rdInPeak = rdPeaks[cir]
                     else:
                         if os.path.exists(outputdir+'/'+'Peaks/' + rdName1 + '_all-homer.Clean.bed') and os.path.exists(outputdir+'/'+'Peaks/' + rdName2 + '_all-homer.Clean.bed'):
@@ -1631,6 +1635,7 @@ def main ():
 
                         elif os.path.exists(outputdir+'/'+'Peaks/' + rdName1 + '_broad-homer.Clean.bed') and os.path.exists(outputdir+'/'+'Peaks/' + rdName2 + '_broad-homer.Clean.bed'):
                                 rdInPeak = outputdir+'/'+'Peaks/' + rdName1 + '_broad-homer.Clean.bed:'+outputdir+'/'+'Peaks/' + rdName2 + '_broad-homer.Clean.bed'
+
 
                     comparePeak.realDiffPeaksHomer (rdName1,
                                         rdName2,
@@ -1643,6 +1648,7 @@ def main ():
                                         libraryType,
                                         cGVersion,
                                         sFasta,
+                                        genomeFile,
                                         threads)
 
             #--- finding the overlapping peaks

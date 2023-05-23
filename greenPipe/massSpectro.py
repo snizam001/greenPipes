@@ -69,7 +69,7 @@ def massHugo2Entrez (infile,Species):
         d=pd.read_csv(infile,sep='\t',header=None)
     except IOError:
         print(colored("massHugo2Entrez: " + infile+' does not exist',
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -89,7 +89,7 @@ def massHugo2Entrez (infile,Species):
         print(colored("massHugo2Entrez: " +
                       Species+
                       ' is not correct. Possible options are (Case sensitive):',
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -103,7 +103,7 @@ def massHugo2Entrez (infile,Species):
             print(d.iloc[j,0])
             print(colored('The file '+ infile +' contains ";" or any other special character.'+
                           ' Did you read the manual? it should not be present in the file',
-                          'green',
+                          'red',
                           attrs=['bold']
                          )
                  )
@@ -163,7 +163,7 @@ def filterMotifSequence (infile,
 
     if not os.path.exists(infile):
         print(colored("filterMotifSequence: " + infile+' does not exist',
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -230,8 +230,8 @@ def filterMotifSequence (infile,
 
 def vennDiagram (outDir,infile,distance,Names):
     if len(infile) != len(Names):
-        print(colored("Length of name and infile are matching",
-                      'green',
+        print(colored("Length of name and infile are not matching",
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -265,7 +265,7 @@ def vennDiagram (outDir,infile,distance,Names):
         run_cmd(mycmd)
     else:
         print(colored("Unable to plot Venn diagram as categories are >5",
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )
@@ -328,12 +328,12 @@ def proof_of_piggyBack (inFile,
                         outputdir):
 
     if not os.path.exists(metaFile):
-        print(colored(metaFile+" does not exist",'green', attrs=['bold']) )
+        print(colored(metaFile+" does not exist",'red', attrs=['bold']) )
     else:
         metaEncode=pd.read_csv(metaFile,sep='\t')
 
     if metaEncode.shape == 0:
-        print(colored(metaFile+" is empty",'green', attrs=['bold']) )
+        print(colored(metaFile+" is empty",'red', attrs=['bold']) )
 
     #---
     jasper_motif_wrapper(HugoSymbol,pwm)
@@ -363,7 +363,7 @@ def proof_of_piggyBack (inFile,
     selFile=metaEncode[metaEncode['EntrezIDs']==int(EntrezID)]
     print(colored("Go throught this file and judge if the output reliable or not: "+
                   inFile.replace('.txt','')+'_'+str(EntrezID)+'_SelectedDataSetsEncode.txt',
-                  'green',
+                  'red',
                   attrs=['bold']) )
 
     selFile.to_csv(inFile.replace('.txt','')+'_'+str(EntrezID)+'_SelectedDataSetsEncode.txt',index=None,sep="\t")
@@ -434,7 +434,7 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
             print(colored(cmd_r+
                           ': is not installed in your computer or not in the PATH.'+
                           ' Install or copy the executables of HOMER to the default PATH',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
     #---
@@ -447,25 +447,25 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
 
     if mPwm=='NA':
         print(colored('--mPwm is missing in MassSpectromety mode. Exiting!',
-                      'green',
+                      'red',
                       attrs=['bold']) )
         exit()
 
     if sProt=='NA':
         print(colored('--sProt is missing in MassSpectromety mode. Exiting!',
-                      'green',
+                      'red',
                       attrs=['bold']) )
         exit()
 
     if Species=='NA':
         print(colored('--Species is missing in MassSpectromety mode. Exiting!',
-                      'green',
+                      'red',
                       attrs=['bold']) )
         exit()
 
     if lProt == 'NA':
         print(colored('--lProt is missing in MassSpectromety mode. Exiting!',
-                      'green',
+                      'red',
                       attrs=['bold']) )
         exit()
     else:
@@ -494,7 +494,7 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
             print(colored('Unable to calculate/find significant motifs in peak file: '+
                           peakFile +
                           '. Did you called peaks in your samples? You can give peak file (homer format) manually using --peak',
-                          'green',
+                          'red',
                           attrs=['bold']) )
             exit()
 
@@ -529,7 +529,7 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
 
     if not os.path.exists(Jasper2IDs_file):
         print(colored("Jasper2IDs_file files does not exist. Installation of the current tools was not proper.",
-                      'green',
+                      'red',
                       attrs=['bold']) )
     else:
         Jasper2IDs=pd.read_csv(Jasper2IDs_file,sep='\t',header=None)

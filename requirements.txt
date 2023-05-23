@@ -9,3 +9,4 @@ upsetplot
 gtfparse
 more_itertools
 filetype
+scipy

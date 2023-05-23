@@ -48,7 +48,7 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
             print(colored(cmd_r+
                           ': it is part of Homer. It is not installed in your computer or not in the PATH.'+
                           ' Install or copy the executables to the default PATH',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
             exit()
 
     dirs=[outputdir+'/'+'Tagdirectories', outputdir+'/'+'Peaks']
@@ -86,7 +86,7 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
         for txtFile in [spikein_ctrl,spikein_expr,genome_expr]:
             if not os.path.exists(txtFile):
                 print(colored(txtFile+' :does not exit'+
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
                 exit()
 
         values=spike_normalization ([spikein_ctrl,
@@ -105,7 +105,7 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
                 else:
                     if re.search('mapped',lines) and not re.search('mate',lines):
                         readN_exp=int(lines.split(' ')[0])
-        
+
         SpikeIn_normalized_controlReadsNew = outvalues[2] * ((outvalues[0]/(outvalues[2]+outvalues[0])) / (outvalues[1]/(readN_expr+outvalues[1])))
 
         prnt=(Name + '\t' +

@@ -13,6 +13,8 @@ import pandas as pd
 import upsetplot
 import glob
 import pkg_resources as psource
+import random
+import statistics
 
 def overlapPeaks (overFiles, overDir, overDist, outputdir, overReplace):
 
@@ -80,10 +82,19 @@ def overlapPeaks (overFiles, overDir, overDist, outputdir, overReplace):
 		)
 
 
-def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize, rdOther, outputdir, libraryType, cGVersion, sFasta, threads):
+def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize, rdOther, outputdir, libraryType, cGVersion, sFasta, genomeFile, threads):
 #(rdTag1, rdTag2, rdPeak, rdPvalue, rdFoldChange, rdSize, rdOther, outputdir, libraryType):
 	totalCmd = []
 	totalCmdFile = []
+
+	if genomeFile == "NA":
+		genomeFile = psource.resource_filename(__name__, "data/hg38.genome")
+		print(colored('Using human genome version hg38 specific genome file. If your organism is different,'+
+		' see option --genomeFile.',
+		'red',
+		attrs=['bold']
+		)
+		)
 
 	#-----
 	diffR=psource.resource_filename(__name__, "rscripts/Real_differentialPeaks.R")
@@ -102,7 +113,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	#--- checking if all neccessary tools exists or not??
 	#___________________________________________________________________________
 
-	cmd_rs=['getDifferentialPeaks']
+	cmd_rs=['getDifferentialPeaks','shuffleBed','getPeakTags']
 	for cmd_r in cmd_rs:
 		try:
 
@@ -118,81 +129,93 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				'green', attrs=['bold']))
 			exit()
 
+	if sFasta == "NA":
+		print(colored("--sFasta is missing",
+					"green",
+					attrs = ["bold"]
+					)
+		)
+
+	if rdOther == "None":
+		rdOther = []
+	else:
+		rdOther = rdOther.replace("[","").replace("]","").split(',')
+
 	#--- checking if all files and directory exists or not
 	#___________________________________________________________________________
 	rdTag1  = outputdir + '/Tagdirectories/' + rdName1 + '_expr'
 	rdTag2  = outputdir + '/Tagdirectories/' + rdName2 + '_expr'
 
-	if rdPeak != "None":
-		rdFiles = [rdTag1, rdTag2] + rdPeak.split(":")
-		rdPeak1 = rdPeak.split(":")[0]
-		rdPeak2 = rdPeak.split(":")[1]
+	# if rdPeak != "None":
+	rdFiles = [rdTag1, rdTag2] + rdPeak.split(":")
+	rdPeak1 = rdPeak.split(":")[0]
+	rdPeak2 = rdPeak.split(":")[1]
 
-	else:
-		if os.path.exists(outputdir + \
-								'/Peaks/' + \
-								rdName1 + \
-								'_all-homer.Clean.bed'):
+	# else:
+	# 	if os.path.exists(outputdir + \
+	# 							'/Peaks/' + \
+	# 							rdName1 + \
+	# 							'_all-homer.Clean.bed'):
+	#
+	# 		rdPeak1 = outputdir + \
+	# 							'/Peaks/' + \
+	# 							 rdName1 + \
+	# 							 '_all-homer.Clean.bed'
+	#
+	# 	elif os.path.exists(outputdir +\
+	# 	 						'/Peaks/' +\
+	# 							 rdName1 +\
+	# 							  '_narrow-homer.Clean.bed'):
+	#
+	# 		rdPeak1 = outputdir +\
+	# 		 					'/Peaks/' +\
+	# 							 rdName1 +\
+	# 							  '_narrow-homer.Clean.bed'
+	#
+	# 	elif os.path.exists(outputdir +\
+	# 	 						'/Peaks/' +\
+	# 							rdName1 +\
+	# 							'_broad-homer.Clean.bed'):
+	#
+	# 		rdPeak1 = outputdir +\
+	# 		 					'/Peaks/' +\
+	# 							rdName1 +\
+	# 							'_broad-homer.Clean.bed'
+	#
+	# 	if os.path.exists(outputdir +\
+	# 	 						'/Peaks/' +\
+	# 							rdName2 +\
+	# 							'_all-homer.Clean.bed'):
+	#
+	# 		rdPeak2 = outputdir +\
+	# 		 					'/Peaks/' +\
+	# 							rdName2 +\
+	# 							'_all-homer.Clean.bed'
+	#
+	# 	elif os.path.exists(outputdir +\
+	# 	 						'/Peaks/' +\
+	# 							rdName2 +\
+	# 							'_narrow-homer.Clean.bed'):
+	#
+	# 		rdPeak2 = outputdir +\
+	# 							'/Peaks/' +\
+	# 							rdName2 +\
+	# 							'_narrow-homer.Clean.bed'
+	#
+	# 	elif os.path.exists(outputdir +\
+	# 							'/Peaks/' +\
+	# 							rdName2 +\
+	# 							'_broad-homer.Clean.bed'):
+	#
+	# 		rdPeak2 = outputdir +\
+	# 							'/Peaks/' +\
+	# 							rdName2 +\
+	# 							'_broad-homer.Clean.bed'
 
-			rdPeak1 = outputdir + \
-								'/Peaks/' + \
-								 rdName1 + \
-								 '_all-homer.Clean.bed'
-
-		elif os.path.exists(outputdir +\
-		 						'/Peaks/' +\
-								 rdName1 +\
-								  '_narrow-homer.Clean.bed'):
-
-			rdPeak1 = outputdir +\
-			 					'/Peaks/' +\
-								 rdName1 +\
-								  '_narrow-homer.Clean.bed'
-
-		elif os.path.exists(outputdir +\
-		 						'/Peaks/' +\
-								rdName1 +\
-								'_broad-homer.Clean.bed'):
-
-			rdPeak1 = outputdir +\
-			 					'/Peaks/' +\
-								rdName1 +\
-								'_broad-homer.Clean.bed'
-
-		if os.path.exists(outputdir +\
-		 						'/Peaks/' +\
-								rdName2 +\
-								'_all-homer.Clean.bed'):
-
-			rdPeak2 = outputdir +\
-			 					'/Peaks/' +\
-								rdName2 +\
-								'_all-homer.Clean.bed'
-
-		elif os.path.exists(outputdir +\
-		 						'/Peaks/' +\
-								rdName2 +\
-								'_narrow-homer.Clean.bed'):
-
-			rdPeak2 = outputdir +\
-								'/Peaks/' +\
-								rdName2 +\
-								'_narrow-homer.Clean.bed'
-
-		elif os.path.exists(outputdir +\
-								'/Peaks/' +\
-								rdName2 +\
-								'_broad-homer.Clean.bed'):
-
-			rdPeak2 = outputdir +\
-								'/Peaks/' +\
-								rdName2 +\
-								'_broad-homer.Clean.bed'
-
-		rdFiles = [rdTag1, rdTag2, rdPeak1, rdPeak2]
+		# rdFiles = [rdTag1, rdTag2, rdPeak1, rdPeak2]
 
 	rdFile_present=0
-
+	# print(rdFiles)
 	for rdFile in rdFiles:
 		if not os.path.exists(rdFile):
 			print(colored(rdFile + " does not exist. Did forget to call the peaks?"+
@@ -203,10 +226,11 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				attrs=['bold']
 				)
 			)
-		rdFile_present += 1
+			rdFile_present = rdFile_present + 1
 
 	if rdFile_present > 0:
 		exit()
+
 
 	dirs=[outputdir+'/'+'comparePeaks',
 			outputdir+'/'+'comparePeaks/Peaks',
@@ -224,7 +248,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 		if not os.path.exists(d):
 			os.makedirs(d)
 
-
+	print("[#-------------- Normalizing with spikeIn]")
 	#-- normalizing the tagDirectories for differential peak calling
 	#___________________________________________________________________________
 	sExpr1 =outputdir + '/SpikeIn/' + rdName1 + '_expr.Flagstats.txt'
@@ -240,7 +264,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				attrs=['bold']
 				)
 			)
-		File_present += 1
+			File_present += 1
 
 	if File_present > 0:
 		exit()
@@ -248,25 +272,24 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	oVal  =initPeakCalling.spike_normalization2([sExpr1, sExpr2, Expr1, Expr2],libraryType)
 	print(colored("sExpr1 sExpr2 Expr1 Expr2","green",attrs=["bold"]))
 	print(oVal)
-
-	Expr1Spike_perReads = sExpr1/(sExpr1 + Expr1)
-	Expr2Spike_perReads = sExpr2/(sExpr2 + Expr2)
+	Expr1Spike_perReads =  oVal[0]/ (oVal [0] + oVal[2]) # sExpr1/(sExpr1 + Expr1)
+	Expr2Spike_perReads =  oVal[1]/ (oVal [1] + oVal[3]) # sExpr2/(sExpr2 + Expr2)
 
 	#-- normalization method copied from initPeakCalling.py: SpikeIn_normalized_controlReadsNew = outvalues[2] * ((outvalues[0]/(outvalues[2]+outvalues[0])) / (outvalues[1]/(readN_expr+outvalues[1])))
-	SpikeIn_normalized_ReadsNew = Expr1 * ( Expr1Spike_perReads / Expr2Spike_perReads)
-
-	cmd=['makeTagDirectory',
-		'/tmp/xYz786',
-		'-d', rdTag1,
-		'-totalReads', SpikeIn_normalized_ReadsNew]
-
-	universal.run_cmd(c, outputdir)
-
+	SpikeIn_normalized_ReadsNew =  oVal[2] * ( Expr1Spike_perReads / Expr2Spike_perReads) # Expr1 * ( Expr1Spike_perReads / Expr2Spike_perReads)
+#######################################33
+	# cmd=['makeTagDirectory',
+	# 	'./xYz786',
+	# 	'-d', rdTag1,
+	# 	'-totalReads', str(SpikeIn_normalized_ReadsNew)]
+	#
+	# universal.run_cmd(cmd, outputdir)
+#######################################33
 	#-- to find significant peaks
-
+	print("[#-------------- Finding differential peaks]")
 	cmd=['getDifferentialPeaks',
 		rdPeak1,
-		'/tmp/xYz786', rdTag2,
+		'./xYz786', rdTag2,
 		' -size', str(rdSize),
 		'-P', str(rdPvalue),
 		'-F', str(rdFoldChange)] + rdOther
@@ -277,7 +300,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 
 	cmd=['getDifferentialPeaks',
 		rdPeak2,
-		rdTag2, '/tmp/xYz786'
+		rdTag2, './xYz786'
 		' -size', str(rdSize),
 		'-P', str(rdPvalue),
 		'-F', str(rdFoldChange)] + rdOther
@@ -290,7 +313,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 
 	cmd=['getDifferentialPeaks',
 		rdPeak1,
-		'/tmp/xYz786', rdTag2,
+		'./xYz786', rdTag2,
 		' -size', str(rdSize),
 		'-P', str(1),
 		'-F', str(0)] + rdOther
@@ -301,7 +324,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 
 	cmd=['getDifferentialPeaks',
 		rdPeak2,
-		rdTag2, '/tmp/xYz786'
+		rdTag2, './xYz786'
 		' -size', str(rdSize),
 		'-P', str(1),
 		'-F', str(0)] + rdOther
@@ -310,56 +333,164 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	with open(file,'w') as f:
 		universal.run_cmd_file(cmd,f,outputdir)
 
+	print("[#-------------- Generating V plot]")
 	#--- v plot real differential Peaks
-	cmd = ['Rscript', diffR,
-			'-f', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.txt',
-			'-p', rdPvalue,
-			'-c', rdFoldChange,
-			'-d', outputdir+'/'+'comparePeaks/ImageVplot',
-			'-x', rdName1 + '-vs-' + rdName2
-			]
-	universal.run_cmd(cmd,outputdir)
+	try:
+		cmd = ['Rscript', diffR,
+				'-f', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.txt',
+				'-p', rdPvalue,
+				'-c', rdFoldChange,
+				'-d', outputdir+'/'+'comparePeaks/ImageVplot',
+				'-x', rdName1 + '-vs-' + rdName2
+				]
+		universal.run_cmd(cmd,outputdir)
+	except:
+		print(colored('There is error in generated differential peaks V plot. '+
+				'It is possible that none of the differential peaks were found'+
+				'. Check file: ' + outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.txt',
+				'red', attrs=['bold']))
+	try:
+		cmd = ['Rscript', diffR,
+				'-f', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + 'allPeaks.txt',
+				'-p', rdPvalue,
+				'-c', rdFoldChange,
+				'-d', outputdir+'/'+'comparePeaks/ImageVplot',
+				'-x', rdName2 + '-vs-' + rdName1
+				]
+		universal.run_cmd(cmd,outputdir)
+	except:
+		print(colored('There is error in generated differential peaks V plot. '+
+				'It is possible that none of the differential peaks were found'+
+				'. Check file: ' + outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName2 + '-' + 'allPeaks.txt',
+				'red', attrs=['bold']))
 
-	cmd = ['Rscript', diffR,
-			'-f', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + 'allPeaks.txt',
-			'-p', rdPvalue,
-			'-c', rdFoldChange,
-			'-d', outputdir+'/'+'comparePeaks/ImageVplot',
-			'-x', rdName2 + '-vs-' + rdName1
-			]
-	universal.run_cmd(cmd,outputdir)
-
+	print("[#-------------- Finding black and white peaks: using simulation]")
 	#--- finding black and white regions: for this I am using read less that or equal to 5 to match with background and greater than or equal to 15 to consider it as real Peak
-	#--- better whould have been to use backround read distribution but not doing it.
+	#--- better would have been to use backround read distribution and now adding it.
 
-	bw1 = pd.read_csv(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-			comment='#',
+	if os.path.getsize(rdPeak1) != 0 and os.path.getsize(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt') != 0:
+		pk1 = pd.read_csv(rdPeak1,
+				comment='#',
+				sep='\t',
+				header = None)
+		pk1_length = pk1.shape[0]
+		pk1_SimulationTimes = int(round(40000/pk1.shape[0],0))
+		print(pk1_SimulationTimes)
+		print(colored('Performing simulation for '+str(pk1_SimulationTimes)+ ' times to find on an average background reads in finding black and white peaks.',
+				'green', attrs=['bold']))
+
+		bw1 = pd.read_csv(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				comment='#',
+				sep='\t',
+				header = None)
+
+		# ./xYz786
+		# rdPeak1
+		open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed', "a").close()
+		for pk1_SimulationTime in range(0,pk1_SimulationTimes):
+			mySeed = random.randint(100,10000)
+			cmd = ['shuffleBed',
+					'-i', rdPeak1,
+					'-g', genomeFile,
+					'-seed', str(mySeed)]
+
+			with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed', "a") as f:
+					universal.run_cmd_file(cmd, f, outputdir)
+
+		cmd = ['getPeakTags',
+				outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed',
+				'./xYz786']
+
+		with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName1+'.txt', "a") as f:
+			universal.run_cmd_file(cmd, f, outputdir)
+
+		randomReadCount = pd.read_csv(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName1+'.txt', sep ='\t', header = None)
+
+		xx = randomReadCount.iloc[:,1].to_numpy()
+		md1 = statistics.median(xx)
+		#--- The default constant = 1.4826 (approximately = 1/qnorm(3/4)) ensures consistency and use of 3 to cover 99% area of distrbution
+		mad1 = 3*(1.4826*statistics.median([abs(number-md1) for number in xx]))
+
+		mCutoff = md1 + mad1
+
+		print(colored('To find black and white for :' + rdName1 + ', cutoff value is: backgroup <= '+str(mCutoff)+' and peak is: 4*' + str(mCutoff),
+				'green', attrs=['bold']))
+
+		bw1 = bw1[(bw1.iloc[:,8] <= mCutoff) & (bw1.iloc[:,7] >= (4*mCutoff))]
+
+		bw1.to_csv(
+			outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
 			sep='\t',
-			header = None)
+			header= None,
+			index = None
+			)
+	else:
+		print(colored('There is error in Finding black and white peaks for '+ rdName1 +
+				'It is possible that none of the differential peaks were found. Check file: '+
+				outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				'red', attrs=['bold']))
 
-	bw1 = bw1[(bw1.iloc[:,8] <= 5) & (bw1.iloc[:,7] >= 15)]
+	if os.path.getsize(rdPeak2) != 0 and os.path.getsize(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt') != 0:
+		pk2 = pd.read_csv(rdPeak2,
+				comment='#',
+				sep='\t',
+				header = None)
+		pk2_length = pk2.shape[0]
+		pk2_SimulationTimes = int(round(40000/pk2.shape[0],0))
+		print(pk2_SimulationTimes)
+		print(colored('Performing simulation for '+str(pk2_SimulationTimes)+ ' times to find on an average background reads in finding black and white peaks.',
+				'green', attrs=['bold']))
 
-	bw1.to_csv(
-	outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-	sep='\t',
-	header= None,
-	index = None
-	)
+		bw2 = pd.read_csv(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1  + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				comment='#',
+				sep='\t',
+				header = None)
 
-	bw2 = pd.read_csv(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1  + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-			comment='#',
-			sep='\t',
-			header = None)
+		open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed', "a").close()
+		for pk2_SimulationTime in range(0,pk2_SimulationTimes):
+			mySeed = random.randint(100,10000)
+			cmd = ['shuffleBed',
+					'-i', rdPeak2,
+					'-g', genomeFile,
+					'-seed', str(mySeed)]
 
-	bw2 = bw2[(bw2.iloc[:,8] <= 5) & (bw2.iloc[:,7] >= 15)]
+			with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed', "a") as f:
+					universal.run_cmd_file(cmd, f, outputdir)
 
-	bw2.to_csv(
-	outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName2 + '-vs-' + rdName1  + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-	sep='\t',
-	header= None,
-	index = None
-	)
+		cmd = ['getPeakTags',
+				outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed',
+				rdTag2]
 
+		with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName2+'.txt', "a") as f:
+			universal.run_cmd_file(cmd, f, outputdir)
+
+		randomReadCount = pd.read_csv(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName2+'.txt', sep ='\t', header = None)
+
+		xx = randomReadCount.iloc[:,1].to_numpy()
+		md1 = statistics.median(xx)
+		#--- The default constant = 1.4826 (approximately = 1/qnorm(3/4)) ensures consistency and use of 3 to cover 99% area of distrbution
+		mad1 = 3*(1.4826*statistics.median([abs(number-md1) for number in xx]))
+
+		mCutoff = md1 + mad1
+
+		print(colored('To find black and white for :' + rdName2 + ', cutoff value is: backgroup <= '+str(mCutoff)+' and peak is: 4*' + str(mCutoff),
+				'green', attrs=['bold']))
+
+		bw2 = bw2[(bw2.iloc[:,8] <= mCutoff) & (bw2.iloc[:,7] >= (4*mCutoff))]
+
+		bw2.to_csv(
+		outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName2 + '-vs-' + rdName1  + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+		sep='\t',
+		header= None,
+		index = None
+		)
+	else:
+		print(colored('There is error in Finding black and white peaks for '+ rdName1 +
+				'It is possible that none of the differential peaks were found. Check file: '+
+				outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				'red', attrs=['bold']))
+
+	print("[#-------------- Motifs, Annotations, gene Ontology]")
 	#--- Motifs, Annotations, gene Ontology
 
 	annPrefixes=[rdName1 + '-vs-' + rdName2,
@@ -367,15 +498,15 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				rdName1 + '-vs-' + rdName2 + '-BlackAndWhite',
 				rdName2 + '-vs-' + rdName1 + '-BlackAndWhite'
 				]
-
+	annPrefixes=",".join(annPrefixes)
 	annpeakFiles=[outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
 				outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
 				outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
 				outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
 				]
-
+	annpeakFiles=",".join(annpeakFiles)
 	ann.Ann (annpeakFiles,
-				annPrefix,
+				annPrefixes,
 				cGVersion,
 				sFasta,
 				outputdir+ '/' + 'comparePeaks/',

@@ -19,14 +19,14 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
         if not os.path.exists(refgenome+".1.bt2"):
             print(colored('Bowtie2 reference genome does not exist.'+
                           'Create index of the genome file using bowtie2-build',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
         if not os.path.exists(spikein+".1.bt2"):
             print(colored('Bowtie2 reference genome does not exist for SpikeIn.'+
                           ' Create index of the SpikeIn fasta file using bowtie2-build',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
 
         if alignParam == "None":
-            bowtie2_parameters=['--dovetail', 
+            bowtie2_parameters=['--dovetail',
                                 '--local',
                                 '--very-sensitive-local',
                                 '--no-unal',
@@ -46,7 +46,7 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
               print(colored(refFile+' :nvBowtie reference genome does not exist.'+
                             'Create index of the genome file using following command: '+
                             'nvBWT <input fasta file> <output index files prefix>',
-                            'green', attrs=['bold']))
+                            'red', attrs=['bold']))
               r_counts += 1
 
           if r_counts > 0:
@@ -71,11 +71,11 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
         if not os.path.exists(refgenome+".bwt"):
             print(colored('BWA reference genome does not exist. '+
                           'Create index of the genome file using bowtie2-build',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
         if not os.path.exists(spikein+".bwt"):
             print(colored('BWA reference genome does not exist for SpikeIn.'+
                           ' Create index of the SpikeIn fasta file using bowtie2-build',
-                          'green', attrs=['bold']))
+                          'red', attrs=['bold']))
 
         if alignParam == "None":
             bwa_parameters=['-t', str(threads)]
@@ -90,7 +90,7 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
               print(colored(refFile+' :nvBowtie reference genome does not exist.'+
                             'Create index of the genome file using following command: '+
                             'nvBWT <input fasta file> <output index files prefix>',
-                            'green', attrs=['bold']))
+                            'red', attrs=['bold']))
               r_counts += 1
 
           if r_counts > 0:
@@ -115,7 +115,7 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
         print(colored('bowtie2/bwa (if --gpu True then nvBowtie) is not installed in your computer '+
                       'or not in the PATH.'+
                       ' Install or copy the executables to the default PATH',
-                      'green', attrs=['bold']))
+                      'red', attrs=['bold']))
         exit()
 
     try:
@@ -123,14 +123,14 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
     except FileNotFoundError:
         print(colored('samtools is not installed in your computer or not in the PATH.'+
                       ' Install or copy the executables to the default PATH',
-                      'green', attrs=['bold']))
+                      'red', attrs=['bold']))
         exit()
 
     #--- creating folders
     if not os.path.exists(outputdir+'/Trim_galore/'):
         print(colored('Trim_galore folder does not exist in your output folder.'+
                       'Before running alignment, pass fastq files through quality control using qc mode of this pipeline',
-                      'green', attrs=['bold']))
+                      'red', attrs=['bold']))
         exit()
 
     myfolders=['Bamfiles', 'SpikeIn']
@@ -155,7 +155,7 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
         if not os.path.exists(x):
             l_exist = l_exist + 1
             print(colored('{} input file does not exist. Did you run qc?'.format(x),
-                          'green',
+                          'red',
                           attrs = ['bold']))
     if l_exist > 0:
         exit()

@@ -1,7 +1,6 @@
-#--- Linking the files 
+#--- Linking the files
 import pandas as pd
 import os
-from termcolor import colored
 
 """
 greencutrun, cutrun and cuttag inputfile type:
@@ -13,7 +12,7 @@ single-end:
 control NA experiment NA givenName
 
 """
-            
+
 def linksFile (libraryType,myin,inputdir,outputdir):
     if libraryType=="pair":
         xx=['_control_R1.fastq.gz','_control_R2.fastq.gz','_expr_R1.fastq.gz','_expr_R2.fastq.gz']

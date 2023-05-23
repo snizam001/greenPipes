@@ -19,7 +19,7 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of deepTools. Please install it.",
-                          'green',
+                          'red',
                           attrs=['bold']))
             exit()
 
@@ -36,7 +36,7 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
             if not os.path.exists(b_file):
                 e_file=e_file+1
                 print(colored(b_file+": does not exist",
-                              'green',
+                              'red',
                               attrs=['bold']
                              )
                      )
@@ -94,7 +94,7 @@ def covTracks (Names,threads,outputdir,covSpike,blackListedRegions,effectiveGeno
             #SpikeVal = [ 0.05 / SpikeRatio for SpikeRatio in SpikeRatios]  # version 3
             if covExprType == "NA":
                 print(colored("Specify if you experiment is greenCUT&RUN or CUT&RUN. Use gCR for greenCUT&RUN and CR for CUT&RUN with option --covExprType.",
-                              "green",
+                              "red",
                               attrs = ["bold"]
                              )
                      )

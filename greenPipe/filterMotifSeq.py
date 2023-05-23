@@ -18,7 +18,7 @@ def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
             print(colored(cmd_r+
                           ': It is not installed in your computer or not in the PATH.'+
                           " This tools is the part of HOMER. Please install it.",
-                          'green',
+                          'red',
                           attrs=['bold']))
             exit()
 
@@ -64,14 +64,14 @@ def ambDNA (seq):
 def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,genomeversion,size,threads,seqDist,MassSpectro_Fasta,outputdir):
 
     print (colored("Caution: remove chrM before running this.",
-                   "green",
+                   "red",
                    attrs = ["bold"]
                   )
           )
 
     if not os.path.exists(infile):
         print(colored("filterMotifSequence: " + infile+' does not exist',
-                      'green',
+                      'red',
                       attrs=['bold']
                      )
              )

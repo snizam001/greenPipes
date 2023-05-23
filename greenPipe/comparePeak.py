@@ -237,7 +237,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 			outputdir+'/'+'comparePeaks/Motifs',
 			outputdir+'/'+'comparePeaks/Annotation',
 			outputdir+'/'+'comparePeaks/GeneOntology',
-			outputdir+'/'+'comparePeaks/Overlap',
+			# outputdir+'/'+'comparePeaks/Overlap',
 			outputdir+'/'+'comparePeaks/ImageVplot',
 			outputdir+'/'+'comparePeaks/PeakShift',
 			outputdir+'/'+'comparePeaks/BlackAndWhite',
@@ -278,12 +278,12 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	#-- normalization method copied from initPeakCalling.py: SpikeIn_normalized_controlReadsNew = outvalues[2] * ((outvalues[0]/(outvalues[2]+outvalues[0])) / (outvalues[1]/(readN_expr+outvalues[1])))
 	SpikeIn_normalized_ReadsNew =  oVal[2] * ( Expr1Spike_perReads / Expr2Spike_perReads) # Expr1 * ( Expr1Spike_perReads / Expr2Spike_perReads)
 #######################################33
-	# cmd=['makeTagDirectory',
-	# 	'./xYz786',
-	# 	'-d', rdTag1,
-	# 	'-totalReads', str(SpikeIn_normalized_ReadsNew)]
-	#
-	# universal.run_cmd(cmd, outputdir)
+	cmd=['makeTagDirectory',
+		'./xYz786',
+		'-d', rdTag1,
+		'-totalReads', str(SpikeIn_normalized_ReadsNew)]
+
+	universal.run_cmd(cmd, outputdir)
 #######################################33
 	#-- to find significant peaks
 	print("[#-------------- Finding differential peaks]")
@@ -513,148 +513,3 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				threads)
 
 	#--- bulky vs non bulky, peak shift and Overlap
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def differential_peaks (genomeversion,out_dir,out_dir_annotation,mypeaks,tag1,tag2,firstExpr,secondExpr,pvalueD,foldchangeD):
-     if not os.path.exists(out_dir):
-          os.makedirs(out_dir)
-     if not os.path.exists(mypeak):
-          print(mypeak+' does not exist')
-     if not os.path.exists(tag1):
-          print(tag1+' does not exist')
-     if not os.path.exists(tag2):
-          print(tag2+' does not exist')
-     i=[firstExpr,secondExpr]
-     mycmd=['getDifferentialPeaks', mypeaks, tag1, tag2, ' -size', '200', '-P', str(pvalueD), '-F', str(foldchangeD)]
-     with open(out_dir+i[0]+'.vs.'+i[1]+'.differentialPeaks.txt', "w+") as f:
-          run_cmd_file(mycmd,f)
-     mycmd=['getDifferentialPeaks', mypeaks, tag1, tag2, ' -size', '200', '-F', '0', '-P', '1']
-     with open(out_dir+i[0]+'.vs.'+i[1]+'.TotalPeaks.txt', "w+") as f:
-          run_cmd_file(mycmd,f)
-
-
-
-#-- Differential peaks
-for i in combinations(samples,2):
-     tag1 = outputdir + '/Tagdirectories/' + i[0] + '_expr'
-     tag2 = outputdir + '/Tagdirectories/' + i[1] + '_expr'
-     mypeak = outputdir + '/Peaks/' + i[0] + '.Clean.bed'
-     differential_peaks(genomeversion,out_dir,out_dir_annotation,mypeak,tag1,tag2,i[0],i[1],pvalueD,foldchangeD)
-     motifs_peaks (genomeversion,mypeak,out_motifs+i[0]+'.vs.'+i[1],size,threads)
-     inpeak = out_dir+i[0]+'.vs.'+i[1]+'.differentialPeaks.txt'
-     outfile = out_dir_annotation+i[0]+'.vs.'+i[1]
-     annotation_peaks (inpeak,genomeversion,outfile)
-     #---
-     tag1 = outputdir + '/Tagdirectories/' + i[1] + '_expr'
-     tag2 = outputdir + '/Tagdirectories/' + i[0] + '_expr'
-     mypeak = outputdir + '/Peaks/' + i[1] + '.Clean.bed'
-     differential_peaks(genomeversion,out_dir,out_dir_annotation,mypeak,tag1,tag2,i[1],i[0],pvalueD,foldchangeD)
-     motifs_peaks (genomeversion,mypeak,out_motifs+i[1]+'.vs.'+i[0],size,threads)
-     inpeak = out_dir+i[1]+'.vs.'+i[0]+'.differentialPeaks.txt'
-     outfile = out_dir_annotation+i[1]+'.vs.'+i[0]
-     annotation_peaks (inpeak,genomeversion,outfile)
-
-
-
-
-
-
-def peakAnn (mypeaks,genomeversion,outdir):
-
-    cmd=['annotatePeaks.pl',
-        mypeaks,
-        genomeversion,
-        '-go', outdir+'_GO',
-        '-genomeOntology',
-        outdir+'_GenomeOntology']
-
-    retun (cmd)
-
-def peakMotifs (genomeversion,mypeak,out_dir,size,threads):
-
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-
-    jFile=psource.resource_filename(__name__, "data/Jasper2018_homer.txt")
-
-    cmd=['findMotifsGenome.pl',
-        mypeak, genomeversion,
-        out_dir,
-        '-size', str(size),
-        '-nomotif',
-        '-p', str(threads),
-        '-mknown', jFile]
-
-    return(cmd)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""

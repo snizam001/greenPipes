@@ -214,7 +214,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
     for c_file in c_files:
         if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
             e_file=e_file+1
-            print(colored(c_file+": does not exist or empty. Opening this file and writing \"EMPTY\". "+
+            print(colored(c_file+": does not exist or empty. Generating fake data for this file."+
             "If you forget to call peaks, use mode callPeak to find peaks. "+
             "If you have already called peaks, it means this sample is failed and none of peaks were called.",
                           'red',
@@ -222,8 +222,8 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
                          )
                  )
             with open(c_file, 'w') as f:
-                f.write('EMPTY')
-    # 
+                f.write("chr1\t1\t10")
+    #
     #
     # if e_file > 0:
     #     exit()

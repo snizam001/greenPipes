@@ -1,4 +1,4 @@
-#- ------------------- mass spectrometry or piggy back binding events 
+#- ------------------- mass spectrometry or piggy back binding events
 import pkg_resources
 import pkg_resources as psource
 import sys
@@ -17,13 +17,16 @@ import mygene
 mg = mygene.MyGeneInfo()
 from Bio.Seq import Seq
 import pyfaidx
+from greenPipe import greenCutFrq
+import gzip
+import urllib.request
 
 def run_cmd (c,outputdir):
     print(colored(c, 'green', attrs=['bold']))
     with open(outputdir+'/'+'log.txt','a') as logfile:
         logfile.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         process = subprocess.Popen(c,
-                                   stdout=subprocess.PIPE, 
+                                   stdout=subprocess.PIPE,
                                    stderr=logfile)
         stdout, stderr = process.communicate()
         stdout, stderr
@@ -36,13 +39,16 @@ def run_cmd_file (mycmd,f,outputdir):
     with open(outputdir+'/'+'log.txt','a') as logfile:
         logfile.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         process = subprocess.Popen(mycmd,
-                                   stdout=f, 
+                                   stdout=f,
                                    stderr=logfile)
         stdout, stderr = process.communicate()
         stdout, stderr
     if process.returncode != 0:
         err_msg = ["error in the code, check log file:"]
         raise Exception(err_msg)
+
+
+
 
 def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
     if not os.path.exists(out_dir):
@@ -52,7 +58,7 @@ def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):
        mypeak,
        genomeversion,
        out_dir,
-       '-size', str(size),
+       '-size', str(int(size)),
        '-nomotif',
        '-p', str(threads),
        '-mknown', jFile]
@@ -63,7 +69,7 @@ def massHugo2Entrez (infile,Species):
         d=pd.read_csv(infile,sep='\t',header=None)
     except IOError:
         print(colored("massHugo2Entrez: " + infile+' does not exist',
-                      'green', 
+                      'green',
                       attrs=['bold']
                      )
              )
@@ -78,28 +84,28 @@ def massHugo2Entrez (infile,Species):
                 "thale-cress",
                 "frog",
                 "pig"]
-    
+
     if Species not in Species_mg:
-        print(colored("massHugo2Entrez: " + 
+        print(colored("massHugo2Entrez: " +
                       Species+
                       ' is not correct. Possible options are (Case sensitive):',
-                      'green', 
+                      'green',
                       attrs=['bold']
-                     ) 
+                     )
              )
         print(Species_mg)
         exit()
-        
+
     d.columns=['Gene']
     entrezIds=[]
     for j in range(0,d.shape[0]):
         if ";" in d.iloc[j,0]:
             print(d.iloc[j,0])
             print(colored('The file '+ infile +' contains ";" or any other special character.'+
-                          ' Did you read the manual? it should not be present in the file', 
-                          'green', 
+                          ' Did you read the manual? it should not be present in the file',
+                          'green',
                           attrs=['bold']
-                         ) 
+                         )
                  )
             exit()
         else:
@@ -108,8 +114,8 @@ def massHugo2Entrez (infile,Species):
                            as_dataframe=True,
                            species=Species)
             if mgout.empty:
-                print('Can not find entrez gene id for '+ 
-                      d.iloc[j,0] +" for " + 
+                print('Can not find entrez gene id for '+
+                      d.iloc[j,0] +" for " +
                       Species)
             else:
                 entrezIds.append(mgout['entrezgene'].tolist()[0])
@@ -119,7 +125,7 @@ def massHugo2Entrez (infile,Species):
 
 
 def ambiguous_dnasequence (seq):
-    ambig = {"R": ["A", "G"], 
+    ambig = {"R": ["A", "G"],
              "V":["A", "C", "G"],
              "Y":["C","T"],
              "S":["G","C"],
@@ -157,39 +163,42 @@ def filterMotifSequence (infile,
 
     if not os.path.exists(infile):
         print(colored("filterMotifSequence: " + infile+' does not exist',
-                      'green', 
+                      'green',
                       attrs=['bold']
-                     ) 
+                     )
              )
-    
-    mycmd=['findMotifsGenome.pl', 
-           infile, 
-           genomeversion, 
-           tempDir, 
-           '-size', str(size), 
-           '-nomotif', 
-           '-p', str(threads), 
-           '-find', pwm] 
-    
+
+    greenCutFrq.extrMotif(pwm)
+
+    mycmd=['findMotifsGenome.pl',
+           infile,
+           genomeversion,
+           tempDir,
+           '-size', str(int(size)),
+           '-nomotif',
+           '-p', str(threads),
+           '-find', 'temp.motif']
+
     with open(outfile1, "w+") as f:
         run_cmd_file(mycmd,f,outputdir)
-        
+
     pwmPeaks=pd.read_csv(outfile1,sep='\t')
     peakFile=pd.read_csv(infile,
                          sep='\t',
-                         header=None)
-    print ('Total number of the peaks in the ' + 
-           infile + ' is :' + 
+                         header=None,
+                         comment='#')
+    print ('Total number of the peaks in the ' +
+           infile + ' is :' +
            str(peakFile.shape[0]))
-    
+
     peakFile=peakFile[~peakFile.iloc[:,3].isin(pwmPeaks['PositionID'])]
     print ('Total number of the peaks after filtering peaks'+
-           ' containing pwmProteinOfInterest motifs :' + 
+           ' containing pwmProteinOfInterest motifs :' +
            str(peakFile.shape[0]))
-    
+
     seqs=ambiguous_dnasequence(sequence)
     peakWithSeq=[]
-    
+
     for i in range(0,peakFile.shape[0]):
         ID=peakFile.iloc[i,0]
         Start=int((peakFile.iloc[i,1]+peakFile.iloc[i,2])/2)-dist
@@ -203,14 +212,14 @@ def filterMotifSequence (infile,
 
     peakFile=peakFile[~peakFile.iloc[:,3].isin(peakWithSeq)]
     print ('Total number of the peaks after filtering peaks containing'+
-           ' pwmProteinOfInterest motifs + sequenceProteinOfInterest :' + 
+           ' pwmProteinOfInterest motifs + sequenceProteinOfInterest :' +
            str(peakFile.shape[0]))
 
     peakFile.to_csv(outfile2,
                     header=None,
                     index=None,
                     sep='\t')
-    
+
     motifs_peaks(genomeversion,
                  outfile2,
                  outfile3,
@@ -218,27 +227,27 @@ def filterMotifSequence (infile,
                  threads,
                  outputdir)
 
-    
+
 def vennDiagram (outDir,infile,distance,Names):
     if len(infile) != len(Names):
         print(colored("Length of name and infile are matching",
-                      'green', 
+                      'green',
                       attrs=['bold']
-                     ) 
+                     )
              )
     if not os.path.exists(outDir):
         os.makedirs(outDir)
-        
-    mycmd=['mergePeaks', 
-           '-d', str(distance)] + infile + ['-venn', out_dir+'/'+'Comparison_venn', 
+
+    mycmd=['mergePeaks',
+           '-d', str(distance)] + infile + ['-venn', out_dir+'/'+'Comparison_venn',
                                             '-matrix', out_dir+'/'+'Comparison_matrix']
-    
+
     with open(out_dir+'/'+'Comparison.txt', "w+") as f:
         run_cmd_file(mycmd,f,outputdir)
-        
+
     #---- cleaning of the files:1
     extensions=['Comparison_venn','Comparison.txt']
-    
+
     for extension in extensions:
         venn = pd.read_csv(out_dir+extension,sep='\t',header=None)
         i=-1
@@ -247,7 +256,7 @@ def vennDiagram (outDir,infile,distance,Names):
             venn = venn.astype(str).replace(infile[i],Name,regex=True)
         venn.to_csv(outDir+"/"+Name+"."+extension,index = None, header=None,sep='\t')
     venn = pd.read_csv(outDir+"/"+Name+"."+'Comparison_venn',sep='\t',header=None)
-    
+
     if (venn.shape[1]-2) < 5:
         vennR=psource.resource_filename(__name__, "rscripts/venn.R")
         mycmd=[vennR,
@@ -256,9 +265,9 @@ def vennDiagram (outDir,infile,distance,Names):
         run_cmd(mycmd)
     else:
         print(colored("Unable to plot Venn diagram as categories are >5",
-                      'green', 
+                      'green',
                       attrs=['bold']
-                     ) 
+                     )
              )
 
 def jasper_motif_wrapper (Name,outFile):
@@ -275,37 +284,37 @@ def jasper_motif_wrapper (Name,outFile):
         if on == 1:
             AT_freq.append(list(d.iloc[i,:]))
     pd.DataFrame(AT_freq).to_csv(outFile,sep="\t",header=None,index=None)
-        
+
 def intersect_mass_green (Jasper2IDs,mIn,mOut,pvalue):
-    
+
     Common_geneIDs = []
     mInfo = pd.read_csv(mIn,sep='\t')
     mInfo = mInfo.loc[mInfo.iloc[:,4]<pvalue,]
-    mEntrezIDs = []
-    
+    entrezOfProteins = []
+
     for mInfo_i in range(0,mInfo.shape[0]):
         mName = mInfo.iloc[mInfo_i,0]
         for Jasper2ID_i in range(0,Jasper2IDs.shape[0]):
             Jasper2IDs_name = Jasper2IDs.iloc[Jasper2ID_i,0]
             if mName == Jasper2IDs_name:
-                mEntrezIDs.append(Jasper2IDs.iloc[Jasper2ID_i,2])
-                
-    mInfo['entrezIDs'] = mEntrezIDs
-    
+                entrezOfProteins.append(Jasper2IDs.iloc[Jasper2ID_i,2])
+
+    mInfo['entrezIDs'] = entrezOfProteins
+
     Common_geneIDs = set(mInfo.loc[:,'entrezIDs']).intersection(set(entrezOfProteins))
-    
+
     mInfo = mInfo[mInfo.entrezIDs.isin(Common_geneIDs)]
-    
+
     mInfo.to_csv(mOut,
-                 sep = '\t', 
+                 sep = '\t',
                  index = None)
-    
+
     return(mInfo)
 
 
 def proof_of_piggyBack (inFile,
                         metaFile,
-                        EntrezIDs,
+                        EntrezID,
                         HugoSymbol,
                         outDir,
                         outFile,
@@ -317,58 +326,70 @@ def proof_of_piggyBack (inFile,
                         threads,
                         pwm,
                         outputdir):
-    
+
     if not os.path.exists(metaFile):
         print(colored(metaFile+" does not exist",'green', attrs=['bold']) )
     else:
         metaEncode=pd.read_csv(metaFile,sep='\t')
-    
+
     if metaEncode.shape == 0:
         print(colored(metaFile+" is empty",'green', attrs=['bold']) )
-    
-    #---
-    jasper_motif_wrapper(HugoSymbol,pwm) 
 
-    mycmd=['findMotifsGenome.pl', 
-           inFile, 
-           genomeversion, 
-           tempDir, 
-           '-size', str(size), 
-           '-nomotif', 
-           '-p', str(threads), 
-           '-find', pwm] 
-    
+    #---
+    jasper_motif_wrapper(HugoSymbol,pwm)
+
+    mycmd=['findMotifsGenome.pl',
+           inFile,
+           genomeversion,
+           tempDir,
+           '-size', str(int(size)),
+           '-nomotif',
+           '-p', str(threads),
+           '-find', pwm]
+
     with open(outFile, "w+") as f:
         run_cmd_file(mycmd,f,outputdir)
-        
+
     pwmPeaks=pd.read_csv(outFile,sep='\t')
-    
+
     peakFile=pd.read_csv(inFile,sep='\t',header=None)
-    
+
     peakFile=peakFile[peakFile.iloc[:,3].isin(pwmPeaks['PositionID'])]
-    
+
     peakFile.to_csv(outFile,sep="\t",header=None,index=None)
-    
+
     #---
-    
-    selFile=metaEncode[metaEncode['EntrezIDs']==int(EntrezIDs)]
+#    for EntrezID in EntrezIDs.split(','):
+    selFile=metaEncode[metaEncode['EntrezIDs']==int(EntrezID)]
     print(colored("Go throught this file and judge if the output reliable or not: "+
-                  inFile.replace('.txt','')+'_SelectedDataSetsEncode.txt',
-                  'green', 
+                  inFile.replace('.txt','')+'_'+str(EntrezID)+'_SelectedDataSetsEncode.txt',
+                  'green',
                   attrs=['bold']) )
-    
-    selFile.to_csv(inFile.replace('.txt','')+'_SelectedDataSetsEncode.txt',index=None,sep="\t")
-    
+
+    selFile.to_csv(inFile.replace('.txt','')+'_'+str(EntrezID)+'_SelectedDataSetsEncode.txt',index=None,sep="\t")
+
     #---
     if selFile.shape[0] != 0:
         for i in range(0,selFile.shape[0]):
             ENCName=selFile.iloc[i,22].replace('-human','')
             ENCCellLines=selFile.iloc[i,10].replace(" ","_")
-            selectedFile="/media/linux/HD/greeCUTRUN/Data/Encode_tf/" + selFile.iloc[i,0]+'.bed'    #------------ change here the package in a way that metadata automatically uploaded
-            
-            mycmd=['mergePeaks', 
+            url = selFile.iloc[i,47]
+            try:
+                # Read the file inside the .gz archive located at url
+                with urllib.request.urlopen(url) as response:
+                    with gzip.GzipFile(fileobj=response) as uncompressed:
+                        file_content = uncompressed.read()
+                # write to file in binary mode 'wb'
+                with open(outDir + selFile.iloc[i,0]+'.bed', 'wb') as f:
+                    f.write(file_content)
+            except Exception as e:
+                print(e)
+
+            selectedFile= outDir + selFile.iloc[i,0]+'.bed'   #------------ change here the package in a way that metadata automatically uploaded
+
+            mycmd=['mergePeaks',
                    '-d', str(distanceOverlapPiggyBinding)] + [selectedFile,outFile] + ['-venn', outDir+'/'+'Comparison']
-            
+
             with open(outDir+'/'+Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison.txt','w') as f:
                 run_cmd_file(mycmd,f,outputdir)
 
@@ -376,47 +397,47 @@ def proof_of_piggyBack (inFile,
             venn = venn.astype(str).replace("/media/linux/HD/greeCUTRUN/Data/Encode_tf/" + selFile.iloc[i,0]+'.bed',ENCName,regex=True)
             venn = venn.astype(str).replace(outFile,Name,regex=True)
             venn.to_csv(outDir+'/'+'Comparison',index = None, header=None,sep='\t')
-            
-            
+
+
             vennR=psource.resource_filename(__name__, "rscripts/venn.R")
             mycmd=[vennR,
                    Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison',
                    outDir+'/'+'Comparison']
-            
+
             run_cmd(mycmd,outputdir)
-            
+
             mycmd=['mv',
                    outDir+'/'+Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison_venn.pdf',
                    outputdir+'/'+'MassSpectrometry/'+'VennDiagrams'+'/'+Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison_venn.pdf']
-            
+
             run_cmd(mycmd,outputdir)
-            
+
             mycmd=['mv',
                    outDir+'/'+Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison.txt',
                    outputdir+'/'+'MassSpectrometry/'+'VennDiagrams'+'/'+Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison.txt']
-            
+
             run_cmd(mycmd,outputdir)
     else:
         print('Suitable data is not available for the proof of piggyback binding event.'+
               ' Search in the SRA/GEO database if the narrowPeaks bed files are available '+
               'for the piggy back transcription factor in the cell lines of your interest.')
-        
+
 ###############################################
 
-def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,gVer):
+def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,gVer,mDist, pvalue, distPiggy):
     cmd_rs=['findMotifsGenome.pl','mergePeaks']
-    #---  
+    #---
     for cmd_r in cmd_rs:
         try:
             subprocess.call([cmd_r,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': is not installed in your computer or not in the PATH.'+
-                          ' Install or copy the executables of HOMER to the default PATH', 
+                          ' Install or copy the executables of HOMER to the default PATH',
                           'green', attrs=['bold']))
             exit()
-            
-    #---  
+
+    #---
     out_motifs=outputdir+'/Peaks/Peaks_DNAmotifs/'
     tempDir=outputdir+"/"+"temporary/"
     dirs=[outputdir+'/'+'MassSpectrometry/',tempDir,out_motifs]
@@ -425,32 +446,32 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
             os.makedirs(d)
 
     if mPwm=='NA':
-        print(colored('--mPwm is missing in MassSpectromety mode. Exiting!', 
-                      'green', 
+        print(colored('--mPwm is missing in MassSpectromety mode. Exiting!',
+                      'green',
                       attrs=['bold']) )
         exit()
 
     if sProt=='NA':
-        print(colored('--sProt is missing in MassSpectromety mode. Exiting!', 
-                      'green', 
+        print(colored('--sProt is missing in MassSpectromety mode. Exiting!',
+                      'green',
                       attrs=['bold']) )
         exit()
 
     if Species=='NA':
-        print(colored('--Species is missing in MassSpectromety mode. Exiting!', 
-                      'green', 
+        print(colored('--Species is missing in MassSpectromety mode. Exiting!',
+                      'green',
                       attrs=['bold']) )
         exit()
 
     if lProt == 'NA':
-        print(colored('--lProt is missing in MassSpectromety mode. Exiting!', 
-                      'green', 
+        print(colored('--lProt is missing in MassSpectromety mode. Exiting!',
+                      'green',
                       attrs=['bold']) )
         exit()
     else:
         entrezOfProteins=massHugo2Entrez(lProt,Species)
 
-    #--- 
+    #---
     motifOfgreenPipelist=[]
     motifOfgreenPipe_withoutpwm_withoutsesquencelist=[]
     MassSpectro_Fasta=pyfaidx.Fasta(sFasta)
@@ -460,21 +481,23 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
     motifFile=out_motifs + Name + '/' + 'knownResults.txt'
 
     peakFile=peak
-        
-    #---- Motifs in the total peaks
-    if not os.path.exists(motifFile):
 
+    #---- Motifs in the total peaks
+    if os.path.exists(motifFile):
+        motifOfgreenPipelist.append(motifFile)
+    else:
         motifs_peaks(gVer,peakFile,out_motifs + Name,size,threads,outputdir)
         motifOfgreenPipelist.append(motifFile)
 
         if not os.path.exists(motifFile):
 
-            print(colored('Unable to calculate/find significant motifs in peak file: '+ 
+            print(colored('Unable to calculate/find significant motifs in peak file: '+
                           peakFile +
-                          '. Did you called peaks in your samples? You can give peak file (homer format) manually using --peak', 
-                          'green', 
+                          '. Did you called peaks in your samples? You can give peak file (homer format) manually using --peak',
+                          'green',
                           attrs=['bold']) )
             exit()
+
 
     outfile1=outputdir+'/'+'MassSpectrometry/' + Name + '.motifs_pwm.txt'
     outfile2=outputdir+'/'+'MassSpectrometry/' + Name + '.peaks_WithoutPwmSeq.txt'
@@ -495,45 +518,55 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
                         outputdir)
 
     motifOfgreenPipe_withoutpwm_withoutsesquencelist.append(
-        outputdir+'/'+'MassSpectrometry/' + Name + '.motifs_WithoutmPwmWithoutSequence/knownResults.txt'
+        outputdir+'/'+'MassSpectrometry/' + Name + '.peaks_WithoutPwmSeq/knownResults.txt'
     )
 
     #-- (Intersecting the proteins of the mass spectrometry and greenCUT&RUN)
 
-    metadata_file   = psource.resource_filename(__name__, "data/Encode_tf/metadata.tsv")
+    metadata_file   = psource.resource_filename(__name__, "data/Encode_tf_metadata.tsv")
     Jasper2IDs_file = psource.resource_filename(__name__, "data/Jasper_geneIDconversion.txt")
     mVenn           = outputdir+'/'+'MassSpectrometry/'+'VennDiagrams'
-    
+
     if not os.path.exists(Jasper2IDs_file):
         print(colored("Jasper2IDs_file files does not exist. Installation of the current tools was not proper.",
-                      'green', 
+                      'green',
                       attrs=['bold']) )
     else:
-        Jasper2IDs=pd.read_csv(Jasper2IDs_file,sep='\t',header=None)  
+        Jasper2IDs=pd.read_csv(Jasper2IDs_file,sep='\t',header=None)
 
     if not os.path.exists(mVenn):
         os.makedirs(mVenn)
 
+    print(motifOfgreenPipelist)
+    print(motifFile)
     #--- (total peaks)
     motifInfo=intersect_mass_green(
         Jasper2IDs,
-        motifOfgreenPipelist[i],
+        motifOfgreenPipelist[0],
         outputdir+'/'+'MassSpectrometry/'+ Name + '.totalPeaks.txt',
-        mPvalue)      
+        pvalue)
+    print(motifInfo)
     #--- (peaks without PWM and Sequence of motifs)
     motifInfo=intersect_mass_green(
         Jasper2IDs,
-        motifOfgreenPipe_withoutpwm_withoutsesquencelist[i],
+        motifOfgreenPipe_withoutpwm_withoutsesquencelist[0],
         outputdir+'/'+'MassSpectrometry/'+ Name + '.WithoutmPwmWithoutSequence.txt',
-        mPvalue)
-
+        pvalue)
+    print(motifInfo)
     for j in range(0,motifInfo.shape[0]):
         inFile=outputdir+'/'+'MassSpectrometry/' + Name + '.peaks_WithoutPwmSeq.txt'
-        EntrezIDs=int(motifInfo.iloc[j,9])
+        EntrezIDs=motifInfo.iloc[j,9]
         HugoSymbol=motifInfo.iloc[j,0].split(':')[-1]
         outDir=outputdir+'/'+'MassSpectrometry'
         outfile1=outputdir+'/'+'MassSpectrometry/' + Name + '.peaks_WithoutPwmSeqOnly'+HugoSymbol+'.txt'
         pwm=outputdir+'/'+'MassSpectrometry/'+'temporary.pwm'
-        proof_of_piggyBack (inFile,metadata_file,EntrezIDs,HugoSymbol,outDir,
-            outfile1,distPiggy,Name,gVer,tempDir,size,threads,pwm,outputdir)
 
+        for EntrezID in EntrezIDs.split(','):
+            print ("------------------------")
+            print(motifInfo.iloc[j,0])
+            if str(EntrezID) in entrezOfProteins:
+                print("Running for the " + str(EntrezID) + ": " + str(HugoSymbol) + ": ")
+                proof_of_piggyBack (inFile,metadata_file,int(EntrezID),HugoSymbol,outDir,
+                    outfile1,distPiggy,Name,gVer,tempDir,size,threads,pwm,outputdir)
+            else:
+                print(EntrezID + ": Motif enriched, but not an a interacting partner as revealed in IP-MS.")

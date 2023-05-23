@@ -426,7 +426,7 @@ parser.add_argument("--compareInfile",
                     "and write each comparison in a single line e.g. ___\nsample1_condition1\tsample1_condition2"+
                     "\nsample2_condition1\tsample2_condition2\n____. The sample1_condition1 ... should match with last"+
                     " column of input.txt",
-                      default="NA")
+                    default="NA")
 
 parser.add_argument("--rdPvalue",
                     help=colored("PeakComparison mode: ", 'green', attrs = ['bold']) +
@@ -835,7 +835,7 @@ parser.add_argument("--mPvalue",
                     help=colored("piggyBack mode: ", 'green', attrs = ['bold']) +
                     "Motif finding pvalue for piggy back binding events. Default is 0.05",
                     default=0.05,
-                    type=int
+                    type=float
                    )
 
 parser.add_argument("--sDist",
@@ -1545,7 +1545,12 @@ def main ():
                 if not os.path.exists(d):
                     os.makedirs(d)
 
-
+            if sFasta == "NA":
+                print(colored("--sFasta is missing",
+                              "green",
+                              attrs = ["bold"]
+                             )
+                     )
             inFiles = dPeakfiles.split(',')
 
             if len(inFiles) != len(dNames.split(',')):
@@ -1585,8 +1590,8 @@ def main ():
         if mode == 'PeakComparison':
             #---- finding differential Peaks
             findYourOwnPeakFile = 0
-            if not os.path.exists(compareInfile):
-                print(colored(compareInfile+": does not exist",
+            if not os.path.exists(compareInfile) or compareInfile == "NA":
+                print(colored(compareInfile+": does not exist or does not specified by --compareInfile",
                         'green',
                         attrs=['bold']
                         )
@@ -1964,7 +1969,9 @@ def main ():
                                           sDist,
                                           threads,
                                           gVer,
-                                          mDist)
+                                          mDist,
+                                          mPvalue,
+                                          distPiggy)
             else:
                 if mPrefix == "NA":
                     print (colored("if giving your own bed files using --mPeak"+
@@ -1989,7 +1996,9 @@ def main ():
                                           sDist,
                                           threads,
                                           gVer,
-                                          mDist)
+                                          mDist,
+                                          mPvalue,
+                                          distPiggy)
 
 
 if __name__ == "__main__":

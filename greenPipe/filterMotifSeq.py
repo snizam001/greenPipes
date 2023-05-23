@@ -96,6 +96,7 @@ def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,
     pwms=pwm.split(',')
 
     for pw in pwms:
+        print (pw)
         greenCutFrq.extrMotif([pw])
         mycmd=['findMotifsGenome.pl',
                infile,
@@ -125,12 +126,21 @@ def filterMotifSequence (infile,outfile1,outfile2,outfile3,pwm,sequence,tempDir,
         peakWithSeq=[]
         for i in range(0,peakFile.shape[0]):
             ID=peakFile.iloc[i,0]
+            if 'chrM' in ID:
+                print (colored("Remove chrM from peak file before running this.",
+                               "red",
+                               attrs = ["bold"]
+                              )
+                      )
+                exit()
+        for i in range(0,peakFile.shape[0]):
+            ID=peakFile.iloc[i,0]
 
 #            Start=int((peakFile.iloc[i,1]+peakFile.iloc[i,2])/2)-seqDist
 #            End=int((peakFile.iloc[i,1]+peakFile.iloc[i,2])/2)+seqDist
 
-            Start=int(peakFile.iloc[i,1])-seqDist
-            End=int(peakFile.iloc[i,2])+seqDist
+            Start=int(peakFile.iloc[i,1] - seqDist)
+            End=int(peakFile.iloc[i,2] + seqDist)
 
             Name=peakFile.iloc[i,3]
             SeqPos=MassSpectro_Fasta[ID][Start:End].seq

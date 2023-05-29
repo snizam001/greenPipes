@@ -293,9 +293,11 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
             '-minw', '6',
             '-maxw', '15',
         ]
-
-        universal.run_cmd(cmd, outputdir)
-
+        try:
+            universal.run_cmd(cmd, outputdir)
+        except:
+            print(colored('There is error in running meme. Check log file.',
+                'red', attrs=['bold']))
     totalCmd = []
     target=psource.resource_filename(__name__, "data/JASPAR2018_CORE_non-redundant.meme")
     for i in range(0,len(annpeakFile)):
@@ -306,10 +308,13 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
         target
         ]
         totalCmd.append(cmd)
-
-    with Pool (threads) as p:
-        p.starmap(universal.run_cmd,
-                  zip(totalCmd,
-                      repeat(outputdir)
+    try:
+        with Pool (threads) as p:
+            p.starmap(universal.run_cmd,
+                      zip(totalCmd,
+                          repeat(outputdir)
+                         )
                      )
-                 )
+    except:
+        print(colored('There is error in running meme. Check log file.',
+            'red', attrs=['bold']))

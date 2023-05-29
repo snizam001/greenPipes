@@ -169,7 +169,6 @@ def filterMotifSequence (infile,
              )
 
     greenCutFrq.extrMotif(pwm)
-
     mycmd=['findMotifsGenome.pl',
            infile,
            genomeversion,
@@ -424,7 +423,7 @@ def proof_of_piggyBack (inFile,
 
 ###############################################
 
-def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,gVer,mDist, pvalue, distPiggy):
+def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,gVer,mDist, pvalue, distPiggy, peakType):
     cmd_rs=['findMotifsGenome.pl','mergePeaks']
     #---
     for cmd_r in cmd_rs:
@@ -438,7 +437,8 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
             exit()
 
     #---
-    out_motifs=outputdir+'/Peaks/Peaks_DNAmotifs/'
+    #### out_motifs=outputdir+'/Peaks/Peaks_DNAmotifs/'
+    out_motifs=outputdir+'/Motifs/Homer/'
     tempDir=outputdir+"/"+"temporary/"
     dirs=[outputdir+'/'+'MassSpectrometry/',tempDir,out_motifs]
     for d in dirs:
@@ -478,7 +478,8 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
 
     #-- Reading peak files, finding significant Jasper motifs, find user provided motifs and unexplained peaks with motifs
     #____________________
-    motifFile=out_motifs + Name + '/' + 'knownResults.txt'
+
+    motifFile=out_motifs + Name + "_" + peakType + '-homer/' + 'knownResults.txt'
 
     peakFile=peak
 
@@ -486,7 +487,7 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
     if os.path.exists(motifFile):
         motifOfgreenPipelist.append(motifFile)
     else:
-        motifs_peaks(gVer,peakFile,out_motifs + Name,size,threads,outputdir)
+        motifs_peaks(gVer,peakFile,out_motifs + Name + "_" + peakType + '-homer/',size,threads,outputdir)
         motifOfgreenPipelist.append(motifFile)
 
         if not os.path.exists(motifFile):

@@ -52,12 +52,7 @@ __description__ = """
 greenPipe pipeline (version 3.0): April, 2023
 
 greenPipe [required arguments] [common arguments] [optional arguments]
-
-Use following command to see all options:
-
-    greenPipe --help
-
-_____________________________________________________________________
+greenPipe --help
 
 """
 
@@ -223,7 +218,7 @@ parser.add_argument("--pMethod",
                     "peak calling algorithm. Default is homer",
                     type=str,
                     choices=['homer',
-                             'macs2 (not supported)',
+                             'macs2',
                              'seacr'],
                     default = 'homer'
                    )
@@ -306,8 +301,7 @@ parser.add_argument("--pSeacrThreshold",
 parser.add_argument("--pOpts",
                     help=colored("callPeaks mode: ", 'green', attrs = ['bold']) +
                     "Pipeline uses all default parameters. If you want to change something, "+
-                    "in the peakcalling from homer, you can give here as comma seperated values in bracket.",
-                    # "in the peakcalling from homer and macs2 you can give here as comma seperated values in bracket.",
+                    "in the peakcalling from homer and macs2 you can give here as comma seperated values in bracket.",
                     type = str,
                     default = 'None'
                    )
@@ -328,8 +322,8 @@ parser.add_argument("--idrExprs",
                     "List of the tagDirectories of the experiments (IDR mode). "+
                     "If --idrMethod is homer then, give as follows: "+
                     " /home/dir1/exp1_rep1,/home/dir1/exp1_rep2;/home/dir1/exp2_rep1,/home/dir1/exp2_rep2,/home/dir1/exp2_rep3."+
-                    " Give full path.", # +
-                    # ". If --idrMethod is macs2 then give list of the bamfiles",
+                    " Give full path" +
+                    ". If --idrMethod is macs2 then give list of the bamfiles",
                     type=str,
                     default = 'NA'
                    )
@@ -337,8 +331,8 @@ parser.add_argument("--idrExprs",
 parser.add_argument("--idrCtrl",
                     help=colored("idr mode: ", 'green', attrs = ['bold']) +
                     "List of the tagDirectories of the control (IDR mode). If --idrMethod is homer then, give as follows: "+
-                    " /home/dir1/ctrl1_rep1,/home/dir1/ctrl1_rep2;/home/dir1/ctrl2_rep1,/home/dir1/ctrl2_rep2,/home/dir1/ctrl2_rep3. Give full path.", #+
-                    # ". If --idrMethod is macs2 then give list of the bamfiles",
+                    " /home/dir1/ctrl1_rep1,/home/dir1/ctrl1_rep2;/home/dir1/ctrl2_rep1,/home/dir1/ctrl2_rep2,/home/dir1/ctrl2_rep3. Give full path"+
+                    ". If --idrMethod is macs2 then give list of the bamfiles",
                     type=str,
                     default = 'NA'
                    )
@@ -406,7 +400,7 @@ parser.add_argument("--idrMethod",
                     "Peak calling method: homer or macs2 in IDR",
                     type=str,
                     default = 'homer',
-                    choices =['homer','macs2 (not supported)']
+                    choices =['homer','macs2']
                    )
 
 parser.add_argument("--overFiles",
@@ -1020,14 +1014,6 @@ def checkBlackList (blackListedRegions):
              )
         exit()
 
-
-
-for mode in modes.split(','):
-    if mode not in ["alignment","equalRead","qcExperiment","contamination",'initPeakCalling','qcTagDirectories','callPeaks','idr','doughnut','PeakComparison','annotation','UserAnnotation','coverageTracks','cutfrequency','initHeatmap','heatmap','piggyBack','rnaIntegrate']:
-        print(colored(mode + ": False (spelling mistake?)",
-                      'red',
-                      attrs=['bold']))
-        exit()
 #--- check python packages installed or not
 #_____________________________________________________________________________________________________
 mypackages=['pkg_resources',
@@ -1282,9 +1268,6 @@ def main ():
                              )
                          )
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- contamination
         #_____________________________________________________________________________________________________
         if mode == 'contamination':
@@ -1313,9 +1296,6 @@ def main ():
 #                            repeat(outputdir)
 #                            )
 #                            )
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- alignment
         #_____________________________________________________________________________________________________
         if mode == 'alignment':
@@ -1349,9 +1329,6 @@ def main ():
                               SelectReads,
                               threads)
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- qc  of the bamfiles of samples
         #_____________________________________________________________________________________________________
         if mode == "qcExperiment":
@@ -1391,9 +1368,6 @@ def main ():
             qcBamfiles.countReads (Names, fastQs, FlagstatFiles, outputdir, libraryType)
             qcBamfiles.qc_bam (qcBfiles, outputdir, str(threads), blackListedRegions, Names)
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- initiate peak calling or generate tag directories
         #_____________________________________________________________________________________________________
         if mode == "initPeakCalling":
@@ -1418,10 +1392,6 @@ def main ():
                         repeat(outputdir)
                        )
                        )
-
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- qc of the tagdirectories
         #_____________________________________________________________________________________________________
         if mode=="qcTagDirectories":
@@ -1444,10 +1414,6 @@ def main ():
                               repeat(outputdir)
                              )
                          )
-
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- calling peaks
         #_____________________________________________________________________________________________________
         if mode == "callPeaks":
@@ -1504,9 +1470,6 @@ def main ():
                                          genome
                                         )
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
         #-- IDR peak idr_macs2 ():
         #_____________________________________________________________________________________________________
 
@@ -1573,9 +1536,7 @@ def main ():
                                   threads,
                                   effectiveGenomeSize,
                                   libraryType)
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
 
         #-- doughnut mode
         #______________________________________________________________________________________________________
@@ -1624,9 +1585,7 @@ def main ():
                 MassSpectro_Fasta=pyfaidx.Fasta(sFasta)
                 filterMotifSeq.filterMotifSequence(inFiles[x],o1,o2,o3,mPwm,sProt,tempDir,gVer,mDist,threads,sDist,MassSpectro_Fasta,outputdir)
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
         #-- differential peaks or mode PeakComparison
         #_____________________________________________________________________________________________________
 
@@ -1778,9 +1737,7 @@ def main ():
                         outputdir+'/OverlappingPeaks/UserGiven'
                         )
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
 
         #-- annotation of peaks: user provided peak file and/or annotation bed files
         #_____________________________________________________________________________________________________
@@ -1801,9 +1758,7 @@ def main ():
                )
           ann.Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads)
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
         #-- Coverage of the tracks with or without spikeIn normalization
         #_____________________________________________________________________________________________________
         if mode == 'coverageTracks':
@@ -1827,9 +1782,7 @@ def main ():
                                  covSpike_NormalizationFormula,
                                  covExprType
                                  )
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
         #-- Cut frequency mode
         #_____________________________________________________________________________________________________
         if mode == "cutfrequency":
@@ -1907,9 +1860,7 @@ def main ():
                                      cMotifFile,
                                      cCenter,
                                      cMaN)
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
         #-- Heatmap mode
         #_____________________________________________________________________________________________________
 
@@ -1929,7 +1880,7 @@ def main ():
                                      initHeatmapOtherOptions
                                     )
         if mode == "heatmap":
-            global hInCounts
+
             checkBlackList(blackListedRegions)
 
             if hInNames == "NA":
@@ -1952,11 +1903,6 @@ def main ():
                     hInFile = []
                     for i in range(0,myin.shape[0]):
                         hInFile.append(outputdir+"/bamcompare/"+ myin.loc[i,4] + ".bw")
-                else:
-                    print (colored("If --hInFiles is not provided, specify --hCovComp. So that pipeline can choose between coverage and compare files",
-                                   "red",
-                                   attrs = ["bold"]
-                                  ))
             else:
                 hInFile=hInFiles
 
@@ -2009,30 +1955,15 @@ def main ():
                              hInCounts,
                              hPeakType
                              )
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
+
         #-- MassSpectrometry or piggy back binding event mode
         #_____________________________________________________________________________________________________
         if mode == "MassSpectrometry" or mode == "piggyBack":
             if mPeak == "NA":
-                for i in range(0,myin.shape[0]):
+                for i in len(0,myin.shape[0]):
                     mName = myin.loc[i,4]
-                    if os.path.exists(outputdir + '/Peaks/' + mName +'_all-homer.Clean.bed'):
-                        peakFile =outputdir + '/Peaks/' + mName +'_all-homer.Clean.bed'
-                        peakType="all"
-                    elif os.path.exists(outputdir + '/Peaks/' + mName +'_narrow-homer.Clean.bed'):
-                        peakFile =outputdir + '/Peaks/' + mName +'_narrow-homer.Clean.bed'
-                        peakType="narrow"
-                    elif os.path.exists(outputdir + '/Peaks/' + mName +'_broad-homer.Clean.bed'):
-                        peakFile =outputdir + '/Peaks/' + mName +'_broad-homer.Clean.bed'
-                        peakType="broad"
-                    else:
-                        print (colored("Did you call the peaks?",
-                                       "green",
-                                       attrs = ["bold"]
-                                      ))
-                        peakType="none"
+                    peakFile =outputdir + '/Peaks/' + mName +'.Clean.bed'
+
                     massSpectro.piggBack (outputdir,
                                           mPwm,
                                           sProt,
@@ -2046,8 +1977,7 @@ def main ():
                                           gVer,
                                           mDist,
                                           mPvalue,
-                                          distPiggy,
-                                          peakType)
+                                          distPiggy)
             else:
                 if mPrefix == "NA":
                     print (colored("if giving your own bed files using --mPeak"+
@@ -2076,9 +2006,6 @@ def main ():
                                           mPvalue,
                                           distPiggy)
 
-        print ("-----------------------------------------------")
-        print ("        Finished: " + mode + "                 ")
-        print ("-----------------------------------------------")
 
 if __name__ == "__main__":
     main()

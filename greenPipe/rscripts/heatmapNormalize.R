@@ -164,7 +164,7 @@ fwrite(data.frame(d[,c(1:6)],h),
 	col.names=F
 	)
 
-system(paste("pv ", input ," | pigz -dc | head -n1 | pigz -c > nnnnnn  && cat nnnnnn ", oo, " > nz && mv nz ", oo, " && rm nnnnnn", sep =""))
+system(paste("pv ", input ," | pigz -dc | head -n1 | pigz -c > nnnnnn  && cat nnnnnn ", oo, " > nz && mv nz ", oo, sep =""))
 #_________________
 fwrite(data.frame(sample=rep(sampleLabels, each = bins),coverage=hMean),
 	paste(output,'-',normLabels,"-curve.gz", sep = ""),

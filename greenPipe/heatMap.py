@@ -125,8 +125,8 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
     if hPOpt == "None":
         hPOpt = ['--colorMap', 'GnBu',
         '--yAxisLabel', 'Coverage',
-        '--heatmapWidth', '2',
-        '--heatmapHeight', '8']
+        '--heatmapWidth', '1.5',
+        '--heatmapHeight', '5']
 
     else:
         hPOpt = hPOpt.replace("[","").replace("]","").split(',')
@@ -232,20 +232,12 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--dpi', '300'] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
         c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metagene.gz',
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-metageneCoverage',
         '-l', ",".join(inNames),
-        '-c', ",".join(map(str,inCounts))
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
@@ -257,15 +249,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
     #------------
     elif hRegionMode == "tss":
         if inFiles == "NA":
@@ -326,20 +310,12 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "TSS"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
         c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss.gz',
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-tss',
         '-l', ",".join(inNames),
-        '-c', ",".join(map(str,inCounts))
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
@@ -351,15 +327,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
     #------------
     elif hRegionMode == "bed":
         if inFiles == "NA":
@@ -419,20 +387,12 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
         c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed.gz',
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-bed',
         '-l', ",".join(inNames),
-        '-c', ",".join(map(str,inCounts))
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
@@ -444,15 +404,7 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
     #------------
     elif hRegionMode == "peaks":
         print (colored("Using peak type: "+ hPeakType,
@@ -523,20 +475,12 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
         c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks',
         '-l', ",".join(inNames),
-        '-c', ",".join(map(str,inCounts))
+        '-c', ",".join(inCounts)
         ]
 
         universal.run_cmd(c,outputdir)
@@ -548,23 +492,14 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-        print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                " Run command in same terminal and remove comma bracket before running. ",
-                       "red",
-                       attrs = ["dark"]
-                      )
-              )
+
 #--
         if hDiffPeaks == "True":
-            glbs=glob.glob(outputdir+ "/comparePeaks/Peaks/" + "*bed")
-            hBed = [glb for glb in glbs if "all" not in glb]
+            hBed=glob.glob(outputdir+ "/Peaks/DifferentialPeaks/" + "*.differentialPeaks.txt")
             if len(hBed) == 0:
                 print (colored("You wanted to generate heatmap of the differential peak, but it"+
-                               " seems that files does not exist. Can you check *bed files" +
-                               " in the folder " + outputdir+ "/comparePeaks/Peaks/"+
+                               " seems that files does not exist. Can you check *differentialPeaks.txt files" +
+                               " in the folder " + outputdir+ "/Peaks/DifferentialPeaks/"+
                                " or use --hDiffPeaks False",
                                "red",
                                attrs = ["bold"]
@@ -616,20 +551,12 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                '--refPointLabel', "center"] + hPOpt
 
             universal.run_cmd(c,outputdir)
-            print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                    "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                    "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                    "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                    " Run command in same terminal and remove comma bracket before running. ",
-                           "red",
-                           attrs = ["dark"]
-                          )
-                  )
+
             c=['Rscript', heatmapNormalize,
             '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks.gz',
             '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-differentialpeaks',
             '-l', ",".join(inNames),
-            '-c', ",".join(map(str,inCounts))
+            '-c', ",".join(inCounts)
             ]
 
             universal.run_cmd(c,outputdir)
@@ -642,13 +569,3 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
                '--refPointLabel', "center"] + hPOpt
 
             universal.run_cmd(c,outputdir)
-
-            print (colored("If heatmap figures are not good e.g. if labels are overlapping then use same command as above, "+
-                    "but increase the heatmap height and width like --heatmapWidth 3.5 --heatmapHeight 12. Give short label for the regions "+
-                    "and samples using --regionsLabel and --samplesLabel. Suppose you have two samples and used two bed files, then "+
-                    "--regionsLabel region1 region2 --samplesLabel sampleA sampleB. "+
-                    " Run command in same terminal and remove comma bracket before running. ",
-                           "red",
-                           attrs = ["dark"]
-                          )
-                  )

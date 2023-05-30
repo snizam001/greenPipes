@@ -9,7 +9,6 @@ from greenPipe import universal
 from greenPipe import filterMotifSeq
 from greenPipe import initPeakCalling
 from greenPipe import ann
-from greenPipe import qcTagD
 import pandas as pd
 import upsetplot
 import glob
@@ -19,7 +18,7 @@ import statistics
 
 def overlapPeaks (overFiles, overDir, overDist, outputdir, overReplace):
 
-	cmd_rs=['mergePeaks','makeTagDirectory']
+	cmd_rs=['mergePeaks']
 	for cmd_r in cmd_rs:
 		try:
 
@@ -102,7 +101,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	cmd_rs=[diffR]
 	for cmd_r in cmd_rs:
 		try:
-			subprocess.call(['Rscript', cmd_r,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			subprocess.call([cmd_r,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 		except FileNotFoundError:
 			print(colored(cmd_r+
 							': It is not installed in your computer or not in the PATH.',
@@ -114,7 +113,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	#--- checking if all neccessary tools exists or not??
 	#___________________________________________________________________________
 
-	cmd_rs=['getDifferentialPeaks','shuffleBed','getPeakTags', 'intersectBed']
+	cmd_rs=['getDifferentialPeaks','shuffleBed','getPeakTags']
 	for cmd_r in cmd_rs:
 		try:
 
@@ -299,16 +298,9 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	with open(file,'w') as f:
 		universal.run_cmd_file(cmd,f,outputdir)
 
-	cmd=['pos2bed.pl',
-		'-o', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-		outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
-		]
-
-	universal.run_cmd(cmd,outputdir)
-
 	cmd=['getDifferentialPeaks',
 		rdPeak2,
-		rdTag2, './xYz786',
+		rdTag2, './xYz786'
 		' -size', str(rdSize),
 		'-P', str(rdPvalue),
 		'-F', str(rdFoldChange)] + rdOther
@@ -316,10 +308,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	file = outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
 	with open(file,'w') as f:
 		universal.run_cmd_file(cmd,f,outputdir)
-	cmd=['pos2bed.pl',
-         '-o',outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-		 outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt']
-	universal.run_cmd(cmd,outputdir)
+
 	#--- To find all genes
 
 	cmd=['getDifferentialPeaks',
@@ -332,13 +321,10 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	file = outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.txt'
 	with open(file,'w') as f:
 		universal.run_cmd_file(cmd,f,outputdir)
-	cmd=['pos2bed.pl',
-         '-o', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.bed',
-		 outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.txt']
-	universal.run_cmd(cmd,outputdir)
+
 	cmd=['getDifferentialPeaks',
 		rdPeak2,
-		rdTag2, './xYz786',
+		rdTag2, './xYz786'
 		' -size', str(rdSize),
 		'-P', str(1),
 		'-F', str(0)] + rdOther
@@ -347,10 +333,6 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	with open(file,'w') as f:
 		universal.run_cmd_file(cmd,f,outputdir)
 
-	cmd=['pos2bed.pl',
-         '-o', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + 'allPeaks.bed',
-		 outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + 'allPeaks.txt']
-	universal.run_cmd(cmd,outputdir)
 	print("[#-------------- Generating V plot]")
 	#--- v plot real differential Peaks
 	try:
@@ -383,7 +365,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				'red', attrs=['bold']))
 
 	print("[#-------------- Finding black and white peaks: using simulation]")
-	#--- finding black and white regions: for this I was using read less that or equal to 5 to match with background and greater than or equal to 15 to consider it as real Peak
+	#--- finding black and white regions: for this I am using read less that or equal to 5 to match with background and greater than or equal to 15 to consider it as real Peak
 	#--- better would have been to use backround read distribution and now adding it.
 
 	if os.path.getsize(rdPeak1) != 0 and os.path.getsize(outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt') != 0:
@@ -404,7 +386,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 
 		# ./xYz786
 		# rdPeak1
-		open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed', "w").close()
+		open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed', "a").close()
 		for pk1_SimulationTime in range(0,pk1_SimulationTimes):
 			mySeed = random.randint(100,10000)
 			cmd = ['shuffleBed',
@@ -415,27 +397,20 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 			with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed', "a") as f:
 					universal.run_cmd_file(cmd, f, outputdir)
 
-		cmd=['getDifferentialPeaks',
-			outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed',
-			'./xYz786', rdTag2,
-			'-size', str(rdSize),
-			'-P', str(1),
-			'-F', str(0)] + rdOther
-
-		# cmd = ['getPeakTags',
-		# 		outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed',
-		# 		'./xYz786']
+		cmd = ['getPeakTags',
+				outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName1+'.bed',
+				'./xYz786']
 
 		with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName1+'.txt', "a") as f:
 			universal.run_cmd_file(cmd, f, outputdir)
 
-		randomReadCount = pd.read_csv(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName1+'.txt', sep ='\t', header = None, comment = "#")
+		randomReadCount = pd.read_csv(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName1+'.txt', sep ='\t', header = None)
 
-		xx = randomReadCount.iloc[:,8].to_numpy()
+		xx = randomReadCount.iloc[:,1].to_numpy()
 		md1 = statistics.median(xx)
 		#--- The default constant = 1.4826 (approximately = 1/qnorm(3/4)) ensures consistency and use of 3 to cover 99% area of distrbution
 		mad1 = 3*(1.4826*statistics.median([abs(number-md1) for number in xx]))
-		qcTagD.qcTagD_fragmentLength(outputdir,rdName1,threads,"False")
+
 		mCutoff = md1 + mad1
 
 		print(colored('To find black and white for :' + rdName1 + ', cutoff value is: backgroup <= '+str(mCutoff)+' and peak is: 4*' + str(mCutoff),
@@ -471,7 +446,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				sep='\t',
 				header = None)
 
-		open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed', "w").close()
+		open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed', "a").close()
 		for pk2_SimulationTime in range(0,pk2_SimulationTimes):
 			mySeed = random.randint(100,10000)
 			cmd = ['shuffleBed',
@@ -482,24 +457,16 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 			with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed', "a") as f:
 					universal.run_cmd_file(cmd, f, outputdir)
 
-		cmd=['getDifferentialPeaks',
-			outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed',
-			rdTag2, './xYz786',
-			'-size', str(rdSize),
-			'-P', str(1),
-			'-F', str(0)] + rdOther
-
-		# cmd = ['getPeakTags',
-		# 		outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed',
-		# 		rdTag2]
+		cmd = ['getPeakTags',
+				outputdir+ '/' + 'comparePeaks/BlackAndWhite/random-'+rdName2+'.bed',
+				rdTag2]
 
 		with open(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName2+'.txt', "a") as f:
 			universal.run_cmd_file(cmd, f, outputdir)
 
-		randomReadCount = pd.read_csv(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName2+'.txt', sep ='\t', header = None, comment = "#")
+		randomReadCount = pd.read_csv(outputdir+ '/' + 'comparePeaks/BlackAndWhite/randomReadCount-'+rdName2+'.txt', sep ='\t', header = None)
 
-		xx = randomReadCount.iloc[:,8].to_numpy()
-
+		xx = randomReadCount.iloc[:,1].to_numpy()
 		md1 = statistics.median(xx)
 		#--- The default constant = 1.4826 (approximately = 1/qnorm(3/4)) ensures consistency and use of 3 to cover 99% area of distrbution
 		mad1 = 3*(1.4826*statistics.median([abs(number-md1) for number in xx]))
@@ -526,217 +493,16 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 	print("[#-------------- Motifs, Annotations, gene Ontology]")
 	#--- Motifs, Annotations, gene Ontology
 
-	# annPrefixes=[rdName1 + '-vs-' + rdName2,
-	# 			rdName2 + '-vs-' + rdName1,
-	# 			rdName1 + '-vs-' + rdName2 + '-BlackAndWhite',
-	# 			rdName2 + '-vs-' + rdName1 + '-BlackAndWhite'
-	# 			]
-	# annPrefixes=",".join(annPrefixes)
-	# annpeakFiles=[outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-	# 			outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-	# 			outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-	# 			outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
-	# 			]
-	# annpeakFiles=",".join(annpeakFiles)
-	# ann.Ann (annpeakFiles,
-	# 			annPrefixes,
-	# 			cGVersion,
-	# 			sFasta,
-	# 			outputdir+ '/' + 'comparePeaks/',
-	# 			threads)
-
-	#--- bulky vs non bulky, peak shift and Overlap
-	#realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize, rdOther, outputdir, libraryType, cGVersion, sFasta, genomeFile, threads):
-
-	totalCmdBulky = []
-
-	expr1SFrag=outputdir+'/'+'Tagdirectories_qualities/' + '/' + rdName1 + '_expr-S150.sorted.fragments.bed'
-	expr2SFrag=outputdir+'/'+'Tagdirectories_qualities/' + '/' + rdName2 + '_expr-S150.sorted.fragments.bed'
-	expr1LFrag=outputdir+'/'+'Tagdirectories_qualities/' + '/' + rdName1 + '_expr-L150.sorted.fragments.bed'
-	expr2LFrag=outputdir+'/'+'Tagdirectories_qualities/' + '/' + rdName2 + '_expr-L150.sorted.fragments.bed'
-	#-------
-	if not os.path.exists(expr1SFrag) or not os.path.exists(expr1LFrag):
-		qcTagD.qcTagD_fragmentLength(outputdir,rdName1,threads,"False")
-
-	if not os.path.exists(expr2SFrag) or not os.path.exists(expr2LFrag):
-		qcTagD.qcTagD_fragmentLength(outputdir,rdName2,threads,"False")
-
-	#-------
-	SpikeIn_normalized_Reads = (pd.read_csv(expr1SFrag, header = None, sep = "\t", comment = "#").shape[0]) * ( Expr1Spike_perReads / Expr2Spike_perReads)
-
-	cmd = ['makeTagDirectory',
-			outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150S_'+rdName1, expr1SFrag,
-			'-format', 'bed',
-			'-totalReads', str(SpikeIn_normalized_Reads)
-			]
-
-	totalCmdBulky.append(cmd)
-
-	cmd = ['makeTagDirectory',
-			outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150S_'+rdName2, expr2SFrag,
-			'-format', 'bed'
-			]
-
-	totalCmdBulky.append(cmd)
-	#----
-	SpikeIn_normalized_Reads = (pd.read_csv(expr1LFrag, header = None, sep = "\t", comment = "#").shape[0]) * ( Expr1Spike_perReads / Expr2Spike_perReads)
-
-	cmd = ['makeTagDirectory',
-			outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150L_'+rdName1, expr1LFrag,
-			'-format', 'bed',
-			'-totalReads', str(SpikeIn_normalized_Reads)
-			]
-
-	totalCmdBulky.append(cmd)
-
-	cmd = ['makeTagDirectory',
-			outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150L_'+rdName2, expr2LFrag,
-			'-format', 'bed'
-			]
-
-	totalCmdBulky.append(cmd)
-	#-------
-	with Pool (threads) as p:
-		p.starmap(universal.run_cmd,
-			zip(totalCmdBulky,
-			repeat(outputdir)
-			)
-		)
-	#--
-	#-- to find significant peaks
-	print("[#-------------- Finding differential peaks in bulky or nonbulky regions]")
-	totalCmdBulky=[]
-	totalCmdBulkyFile=[]
-
-	cmd=['getDifferentialPeaks',
-		rdPeak1,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150S_'+rdName1,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150S_'+rdName2,
-		' -size', str(rdSize),
-		'-P', str(rdPvalue),
-		'-F', str(rdFoldChange)] + rdOther
-
-	totalCmdBulky.append(cmd)
-	totalCmdBulkyFile.append(outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt')
-
-	cmd=['getDifferentialPeaks',
-		rdPeak2,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150S_'+rdName2,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150S_'+rdName1,
-		' -size', str(rdSize),
-		'-P', str(rdPvalue),
-		'-F', str(rdFoldChange)] + rdOther
-
-	totalCmdBulky.append(cmd)
-	totalCmdBulkyFile.append(outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt')
-
-	#--
-	cmd=['getDifferentialPeaks',
-		rdPeak1,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150L_'+rdName1,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150L_'+rdName2,
-		' -size', str(rdSize),
-		'-P', str(rdPvalue),
-		'-F', str(rdFoldChange)] + rdOther
-
-	totalCmdBulky.append(cmd)
-	totalCmdBulkyFile.append(outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt')
-
-	cmd=['getDifferentialPeaks',
-		rdPeak2,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150L_'+rdName2,
-		outputdir+'/'+'comparePeaks/BulkyvsNonBulky/TagDir_150L_'+rdName1,
-		' -size', str(rdSize),
-		'-P', str(rdPvalue),
-		'-F', str(rdFoldChange)] + rdOther
-
-	totalCmdBulky.append(cmd)
-	totalCmdBulkyFile.append(outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt')
-
-	with Pool (threads) as p:
-			p.starmap(universal.run_cmd_fileOpen,
-			zip(totalCmdBulky,
-			totalCmdBulkyFile,
-			repeat(outputdir)
-			)
-		)
-
-	cmd=['pos2bed.pl',
-		'-o', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-		outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
-	]
-	universal.run_cmd(cmd,outputdir)
-
-	cmd=['pos2bed.pl',
-		'-o', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-		outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
-	]
-	universal.run_cmd(cmd,outputdir)
-
-	cmd=['pos2bed.pl',
-		'-o', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-		outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
-	]
-	universal.run_cmd(cmd,outputdir)
-
-	cmd=['pos2bed.pl',
-		'-o', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-		outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
-	]
-	universal.run_cmd(cmd,outputdir)
-
-	#----
-	cmd=['intersectBed',
-         '-a', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-b', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-v']
-
-	universal.run_cmd_fileOpen(cmd,
-								outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-nonBulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-								outputdir
-								)
-
-	cmd=['intersectBed',
-         '-a', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-b', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-v']
-
-	universal.run_cmd_fileOpen(cmd,
-								outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-Bulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-								outputdir
-								)
-	#----
-	cmd=['intersectBed',
-         '-a', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150S-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-b', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-v']
-
-	universal.run_cmd_fileOpen(cmd,
-								outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-nonBulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-								outputdir
-								)
-
-	cmd=['intersectBed',
-         '-a', outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-150L-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-b', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-         '-v']
-
-	universal.run_cmd_fileOpen(cmd,
-								outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-Bulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.bed',
-								outputdir
-								)
-	#-- annotation of BulkyvsNonBulky
-
-	annPrefixes=[rdName1 + '-vs-' + rdName2 + '-Bulky-',
-				rdName2 + '-vs-' + rdName1 + '-Bulky-',
-				rdName1 + '-vs-' + rdName2 + '-nonBulky-',
-				rdName2 + '-vs-' + rdName1 + '-nonBulky-'
+	annPrefixes=[rdName1 + '-vs-' + rdName2,
+				rdName2 + '-vs-' + rdName1,
+				rdName1 + '-vs-' + rdName2 + '-BlackAndWhite',
+				rdName2 + '-vs-' + rdName1 + '-BlackAndWhite'
 				]
 	annPrefixes=",".join(annPrefixes)
-	annpeakFiles=[outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-Bulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-				outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-Bulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-				outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName1 + '-vs-' + rdName2 + '-nonBulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
-				outputdir+ '/' + 'comparePeaks/BulkyvsNonBulky/' + rdName2 + '-vs-' + rdName1 + '-nonBulky-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
+	annpeakFiles=[outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName1 + '-vs-' + rdName2 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt',
+				outputdir+ '/' + 'comparePeaks/BlackAndWhite/' + rdName2 + '-vs-' + rdName1 + '-' + str(rdPvalue) + '-'+ str(rdFoldChange) + '.txt'
 				]
 	annpeakFiles=",".join(annpeakFiles)
 	ann.Ann (annpeakFiles,
@@ -745,3 +511,5 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				sFasta,
 				outputdir+ '/' + 'comparePeaks/',
 				threads)
+
+	#--- bulky vs non bulky, peak shift and Overlap

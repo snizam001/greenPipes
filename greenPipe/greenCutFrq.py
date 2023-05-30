@@ -21,19 +21,16 @@ def extrMotif (maN):
     if os.path.exists("temp.motif"):
         os.remove("temp.motif")
 
-    for ma in maN.split(','):
+    if "," in maN:
+        for ma in maN.split(','):
 
-        jMotif = pd.DataFrame(jdata[ma])[0].str.split().apply(pd.Series)
-        print(colored('Using following motifs: '+ ma,
-                      'green',
-                      attrs=['bold']))
-        print(jMotif)
-        jMotif.to_csv("temp.motif",
-                      sep="\t",
-                      header=None,
-                      index=None,
-                      mode="a")
+            jMotif = pd.DataFrame(jdata[ma])[0].str.split().apply(pd.Series)
 
+            jMotif.to_csv("temp.motif",
+                          sep="\t",
+                          header=None,
+                          index=None,
+                          mode="a")
 
 
 

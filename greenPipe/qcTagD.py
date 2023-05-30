@@ -16,8 +16,8 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
     dirs=outputdir+'/'+'Tagdirectories_qualities/'
     folders=[dirs]
     for folder in folders:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        if not os.path.exists(outputdir+'/'+folder):
+            os.makedirs(outputdir+'/'+folder)
     #--------------
     if qcSpike != "False":
         if not (os.path.exists(outputdir + '/SpikeIn/' + Name + '_expr' + '.bam') or
@@ -116,101 +116,12 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
     if qcSpike == "False":
         expr_fragmentLength=dirs + '/' + Name + '_expr.sorted.fragments.bed'
         ctrl_fragmentLength=dirs + '/' + Name + '_control.sorted.fragments.bed'
-
-        e1F = pd.read_csv(expr_fragmentLength, header = None, sep = "\t", comment = '#')
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) <= 150, ].to_csv(
-                        dirs +  '/' +  Name +  '_expr-S150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                                )
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) >  150, ].to_csv(
-                        dirs + '/' + Name + '_expr-L150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        e1F = pd.read_csv(ctrl_fragmentLength, header = None, sep = "\t", comment = '#')
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) <= 150, ].to_csv(
-                        dirs + '/' + Name + '_control-S150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) >  150, ].to_csv(
-                        dirs + '/' + Name + '_control-L150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
         return(expr_fragmentLength,ctrl_fragmentLength)
     else:
         expr_fragmentLength=dirs + '/' + Name + '_expr.sorted.fragments.bed'
         ctrl_fragmentLength=dirs + '/' + Name + '_control.sorted.fragments.bed'
         exprSpk_fragmentLength=dirs + '/' + Name + '_expr.spike.sorted.fragments.bed'
         ctrlSpk_fragmentLength=dirs + '/' + Name + '_control.spike.sorted.fragments.bed'
-
-        e1F = pd.read_csv(expr_fragmentLength, header = None, sep = "\t", comment = '#')
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) <= 150, ].to_csv(
-                        dirs +  '/' +  Name +  '_expr-S150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                                )
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) >  150, ].to_csv(
-                        dirs + '/' + Name + '_expr-L150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        e1F = pd.read_csv(ctrl_fragmentLength, header = None, sep = "\t", comment = '#')
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) <= 150, ].to_csv(
-                        dirs + '/' + Name + '_control-S150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) >  150, ].to_csv(
-                        dirs + '/' + Name + '_control-L150.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        #---
-        e1F = pd.read_csv(exprSpk_fragmentLength, header = None, sep = "\t", comment = '#')
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) <= 150, ].to_csv(
-                        dirs +  '/' +  Name +  '_expr-S150.spike.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                                )
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) >  150, ].to_csv(
-                        dirs + '/' + Name + '_expr-L150.spike.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        e1F = pd.read_csv(ctrlSpk_fragmentLength, header = None, sep = "\t", comment = '#')
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) <= 150, ].to_csv(
-                        dirs + '/' + Name + '_control-S150.spike.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
-
-        e1F.loc[abs((e1F.iloc[:,1] - e1F.iloc[:,2])) >  150, ].to_csv(
-                        dirs + '/' + Name + '_control-L150.spike.sorted.fragments.bed',
-                        header = None,
-                        sep = "\t",
-                        index = None
-                        )
         return(expr_fragmentLength,ctrl_fragmentLength,exprSpk_fragmentLength,ctrlSpk_fragmentLength)
 
 def qcTagD (libraryType,outputdir,Names,threads,qcTagR):

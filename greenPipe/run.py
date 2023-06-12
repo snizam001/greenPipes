@@ -1865,7 +1865,7 @@ def main ():
         #_____________________________________________________________________________________________________
 
         if mode == "initHeatmap":
-
+            global hInCounts
             checkBlackList(blackListedRegions)
 
             for i in range(0,myin.shape[0]):

@@ -26,3 +26,5 @@ dependencies:
   - upsetplot >= 0.8.0
   - more-itertools >= 9.1.0
   - setuptools >= 67.7.2
+  - idr
+  - trim-galore

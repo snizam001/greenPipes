@@ -218,7 +218,7 @@ parser.add_argument("--pMethod",
                     "peak calling algorithm. Default is homer",
                     type=str,
                     choices=['homer',
-                             'macs2',
+                             #'macs2',
                              'seacr'],
                     default = 'homer'
                    )
@@ -301,7 +301,8 @@ parser.add_argument("--pSeacrThreshold",
 parser.add_argument("--pOpts",
                     help=colored("callPeaks mode: ", 'green', attrs = ['bold']) +
                     "Pipeline uses all default parameters. If you want to change something, "+
-                    "in the peakcalling from homer and macs2 you can give here as comma seperated values in bracket.",
+                    "in the peakcalling from homer you can give here as comma seperated values in bracket.",
+                    # "in the peakcalling from homer and macs2 you can give here as comma seperated values in bracket.",
                     type = str,
                     default = 'None'
                    )
@@ -322,8 +323,8 @@ parser.add_argument("--idrExprs",
                     "List of the tagDirectories of the experiments (IDR mode). "+
                     "If --idrMethod is homer then, give as follows: "+
                     " /home/dir1/exp1_rep1,/home/dir1/exp1_rep2;/home/dir1/exp2_rep1,/home/dir1/exp2_rep2,/home/dir1/exp2_rep3."+
-                    " Give full path" +
-                    ". If --idrMethod is macs2 then give list of the bamfiles",
+                    " Give full path.", #+
+                    # ". If --idrMethod is macs2 then give list of the bamfiles",
                     type=str,
                     default = 'NA'
                    )
@@ -331,8 +332,8 @@ parser.add_argument("--idrExprs",
 parser.add_argument("--idrCtrl",
                     help=colored("idr mode: ", 'green', attrs = ['bold']) +
                     "List of the tagDirectories of the control (IDR mode). If --idrMethod is homer then, give as follows: "+
-                    " /home/dir1/ctrl1_rep1,/home/dir1/ctrl1_rep2;/home/dir1/ctrl2_rep1,/home/dir1/ctrl2_rep2,/home/dir1/ctrl2_rep3. Give full path"+
-                    ". If --idrMethod is macs2 then give list of the bamfiles",
+                    " /home/dir1/ctrl1_rep1,/home/dir1/ctrl1_rep2;/home/dir1/ctrl2_rep1,/home/dir1/ctrl2_rep2,/home/dir1/ctrl2_rep3. Give full path", #+
+                    # ". If --idrMethod is macs2 then give list of the bamfiles",
                     type=str,
                     default = 'NA'
                    )
@@ -397,10 +398,12 @@ parser.add_argument("--idrOutput",
 
 parser.add_argument("--idrMethod",
                     help=colored("idr mode: ", 'green', attrs = ['bold']) +
-                    "Peak calling method: homer or macs2 in IDR",
+                    "Peak calling method: homer in IDR",
+                    # "Peak calling method: homer or macs2 in IDR",
                     type=str,
                     default = 'homer',
-                    choices =['homer','macs2']
+                    # choices =['homer','macs2']
+                    choices =['homer']
                    )
 
 parser.add_argument("--overFiles",

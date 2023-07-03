@@ -238,7 +238,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 			outputdir+'/'+'comparePeaks/Annotation',
 			outputdir+'/'+'comparePeaks/GeneOntology',
 			# outputdir+'/'+'comparePeaks/Overlap',
-			outputdir+'/'+'comparePeaks/ImageVplot',
+			outputdir+'/'+'comparePeaks/ImageBhujangasanaPlot',
 			outputdir+'/'+'comparePeaks/PeakShift',
 			outputdir+'/'+'comparePeaks/BlackAndWhite',
 			outputdir+'/'+'comparePeaks/BulkyvsNonBulky',
@@ -340,7 +340,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				'-f', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName1 + '-vs-' + rdName2 + '-' + 'allPeaks.txt',
 				'-p', rdPvalue,
 				'-c', rdFoldChange,
-				'-d', outputdir+'/'+'comparePeaks/ImageVplot',
+				'-d', outputdir+'/'+'comparePeaks/ImageBhujangasanaPlot',
 				'-x', rdName1 + '-vs-' + rdName2
 				]
 		universal.run_cmd(cmd,outputdir)
@@ -354,7 +354,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 				'-f', outputdir+ '/' + 'comparePeaks/Peaks/' + rdName2 + '-vs-' + rdName1 + '-' + 'allPeaks.txt',
 				'-p', rdPvalue,
 				'-c', rdFoldChange,
-				'-d', outputdir+'/'+'comparePeaks/ImageVplot',
+				'-d', outputdir+'/'+'comparePeaks/ImageBhujangasanaPlot',
 				'-x', rdName2 + '-vs-' + rdName1
 				]
 		universal.run_cmd(cmd,outputdir)

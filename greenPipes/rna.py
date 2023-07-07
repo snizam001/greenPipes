@@ -5,7 +5,7 @@ from datetime import datetime
 from termcolor import colored
 import glob
 import pkg_resources as psource
-from greenPipe import universal
+from greenPipes import universal
 from multiprocessing import Pool
 from itertools import repeat
 

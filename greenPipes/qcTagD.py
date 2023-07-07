@@ -9,7 +9,7 @@ from datetime import datetime
 from termcolor import colored
 import pkg_resources as psource
 import pandas as pd
-from greenPipe import universal
+from greenPipes import universal
 
 
 def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
@@ -170,7 +170,7 @@ def qcTagD (libraryType,outputdir,Names,threads,qcTagR):
         #____
         if libraryType == 'pair':
             expr_fragmentLength,ctrl_fragmentLength=qcTagD_fragmentLength(outputdir,Name,threads,"False")
-            cmd=[qcTagR,
+            cmd=['Rscript', qcTagR,
                  '-a',expr_tagCounts,
                  '-b',ctrl_tagCounts,
                  '-c',expr_tagAutocorrelation,
@@ -181,7 +181,7 @@ def qcTagD (libraryType,outputdir,Names,threads,qcTagR):
             totalCmd.append(cmd)
 #            universal.run_cmd(cmd,outputdir)
         else:
-            cmd=[qcTagR,
+            cmd=['Rscript', qcTagR,
                  '-a',expr_tagCounts,
                  '-b',ctrl_tagCounts,
                  '-c',expr_tagAutocorrelation,

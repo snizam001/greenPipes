@@ -3,8 +3,8 @@ import pandas as pd
 import subprocess
 import pkg_resources as psource
 import itertools
-from greenPipe import universal
-from greenPipe import greenCutFrq
+from greenPipes import universal
+from greenPipes import greenCutFrq
 from termcolor import colored
 
 def motifs_peaks (genomeversion,mypeak,out_dir,size,threads,outputdir):

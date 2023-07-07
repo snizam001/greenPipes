@@ -21,38 +21,38 @@ import pkg_resources as psource
 import filetype
 from multiprocessing import Pool
 from itertools import repeat
-from greenPipe import universal
-from greenPipe import linksFile as lf
-from greenPipe import qcFastQ
-from greenPipe import contamination
-from greenPipe import align
-from greenPipe import equalRead
-from greenPipe import qcBamfiles
-from greenPipe import initPeakCalling
-from greenPipe import qcTagD
-from greenPipe import ann
-from greenPipe import callPeak
-from greenPipe import covTracks
-from greenPipe import greenCutFrq
-from greenPipe import heatMap
-from greenPipe import idr
-from greenPipe import filterMotifSeq
-from greenPipe import massSpectro
-from greenPipe import comparePeak
-from greenPipe import stats
-from greenPipe import rna
-from greenPipe import minReadPrediction
-from greenPipe import hugo2Entrez
+from greenPipes import universal
+from greenPipes import linksFile as lf
+from greenPipes import qcFastQ
+from greenPipes import contamination
+from greenPipes import align
+from greenPipes import equalRead
+from greenPipes import qcBamfiles
+from greenPipes import initPeakCalling
+from greenPipes import qcTagD
+from greenPipes import ann
+from greenPipes import callPeak
+from greenPipes import covTracks
+from greenPipes import greenCutFrq
+from greenPipes import heatMap
+from greenPipes import idr
+from greenPipes import filterMotifSeq
+from greenPipes import massSpectro
+from greenPipes import comparePeak
+from greenPipes import stats
+from greenPipes import rna
+from greenPipes import minReadPrediction
+from greenPipes import hugo2Entrez
 
-#from greenPipe import generateIndex
+#from greenPipes import generateIndex
 #_____________________________________________________________________________________________________
 
 __description__ = """
 
-greenPipe pipeline (version 3.0): April, 2023
+greenPipes pipeline (version 3.0): April, 2023
 
-greenPipe [required arguments] [common arguments] [optional arguments]
-greenPipe --help
+greenPipes [required arguments] [common arguments] [optional arguments]
+greenPipes --help
 
 """
 
@@ -65,7 +65,7 @@ Authors:
 """
 #_____________________________________________________________________________________________________
 
-parser = argparse.ArgumentParser('greenPipe.py',
+parser = argparse.ArgumentParser('greenPipes.py',
                                  usage = __description__,
                                  epilog=colored(epilogue, 'yellow', attrs = ['bold']))
 
@@ -783,7 +783,7 @@ parser.add_argument("--sProt",
 
 parser.add_argument("--mPeak",
                     help=colored("piggyBack: ", 'green', attrs = ['bold']) +
-                    "Path of the peak file of greenPipe experiment in bed format. "+
+                    "Path of the peak file of greenPipes experiment in bed format. "+
                     "It is optional. If not given, tool will automatically search peak file on basis of "+
                     "your --outputdir and --inputfile. If provided give the full path of peaks as comma "+
                     "seperated values e.g. /home/xyz/exp1.Clean.bed,/home/xyz/exp2.Clean.bed. ",

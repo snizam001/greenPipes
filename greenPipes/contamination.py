@@ -1,7 +1,7 @@
 import os
 import subprocess
 from termcolor import colored
-from greenPipe import universal
+from greenPipes import universal
 
 def contamination (libraryType,Name,inputdir,outputdir,thread):
     folders=['Contamination']
@@ -70,7 +70,7 @@ def contamination (libraryType,Name,inputdir,outputdir,thread):
 
 
                 #total_cmd.append(c)
-                #/media/sheikh/TXPN3/Nizam/greenPipe_example/Fastq/NFYA_endo_control_R1.fastq.gz
+                #/media/sheikh/TXPN3/Nizam/greenPipes_example/Fastq/NFYA_endo_control_R1.fastq.gz
                 #NFYA_endo_control_R1.tagged_filter.fastq.gz
                 c=['seqtk',
                 'seq',

@@ -6,7 +6,7 @@ import more_itertools as mit
 import pathlib
 import gzip
 import re
-from greenPipe import universal
+from greenPipes import universal
 import os
 import subprocess
 from termcolor import colored

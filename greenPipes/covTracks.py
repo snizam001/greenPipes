@@ -4,8 +4,8 @@ import os
 import subprocess
 from datetime import datetime
 from termcolor import colored
-from greenPipe import initPeakCalling
-from greenPipe import universal
+from greenPipes import initPeakCalling
+from greenPipes import universal
 import pandas as pd
 from random import randint
 

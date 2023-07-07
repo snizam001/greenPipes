@@ -6,7 +6,7 @@ from datetime import datetime
 from termcolor import colored
 from multiprocessing import Pool
 from itertools import repeat
-from greenPipe import universal
+from greenPipes import universal
 import pandas as pd
 from gtfparse import read_gtf
 

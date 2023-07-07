@@ -6,8 +6,8 @@ from datetime import datetime
 from termcolor import colored
 import glob
 import pkg_resources as psource
-from greenPipe import filterMotifSeq
-from greenPipe import universal
+from greenPipes import filterMotifSeq
+from greenPipes import universal
 from multiprocessing import Pool
 from itertools import repeat
 
@@ -121,7 +121,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
 
     for i in range(0,len(annpeakFile)):
         outFile=outputdir+'/UserAnnotation/'+annPrefixes[i]+'.txt'
-        cmd=[annR,
+        cmd=['Rscript', annR,
              '-m', annSize,
              '-i', annpeakFile[i],
              '-d', annFiles,

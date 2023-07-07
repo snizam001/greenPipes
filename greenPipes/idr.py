@@ -1,7 +1,7 @@
 #-- IDRs
 
-from greenPipe import universal
-from greenPipe import initPeakCalling
+from greenPipes import universal
+from greenPipes import initPeakCalling
 import pkg_resources as psource
 import glob
 import os

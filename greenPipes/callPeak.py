@@ -7,10 +7,10 @@ from datetime import datetime
 from termcolor import colored
 from multiprocessing import Pool
 from itertools import repeat
-from greenPipe import qcTagD
+from greenPipes import qcTagD
 import pandas as pd
-from greenPipe import universal
-from greenPipe import initPeakCalling
+from greenPipes import universal
+from greenPipes import initPeakCalling
 import glob
 
 def run_cmd_file (mycmd,f,outputdir):

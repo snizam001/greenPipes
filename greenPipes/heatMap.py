@@ -7,8 +7,8 @@ import subprocess
 from datetime import datetime
 from termcolor import colored
 import glob
-from greenPipe import initPeakCalling
-from greenPipe import universal
+from greenPipes import initPeakCalling
+from greenPipes import universal
 import pkg_resources as psource
 
 def initHeatMap (Name,threads,outputdir,blackListedRegions,heatmapSpikeIn,libraryType,effectiveGenomeSize, initHeatmapOtherOptions):

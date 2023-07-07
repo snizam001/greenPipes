@@ -1,8 +1,8 @@
 include README.rst
-include greenPipe/rscripts/*
-include greenPipe/otherScripts/*
-include greenPipe/otherScripts/*/*
-include greenPipe/otherScripts/*/*/*
-include greenPipe/otherScripts/*/*/*/*
-include greenPipe/data/*
-include greenPipe/data/*/*
+include greenPipes/rscripts/*
+include greenPipes/otherScripts/*
+include greenPipes/otherScripts/*/*
+include greenPipes/otherScripts/*/*/*
+include greenPipes/otherScripts/*/*/*/*
+include greenPipes/data/*
+include greenPipes/data/*/*

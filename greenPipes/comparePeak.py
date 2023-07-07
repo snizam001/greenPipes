@@ -5,10 +5,10 @@ from datetime import datetime
 from termcolor import colored
 from multiprocessing import Pool
 from itertools import repeat
-from greenPipe import universal
-from greenPipe import filterMotifSeq
-from greenPipe import initPeakCalling
-from greenPipe import ann
+from greenPipes import universal
+from greenPipes import filterMotifSeq
+from greenPipes import initPeakCalling
+from greenPipes import ann
 import pandas as pd
 import upsetplot
 import glob
@@ -68,7 +68,7 @@ def overlapPeaks (overFiles, overDir, overDist, outputdir, overReplace):
 	venn = pd.read_csv(overDir+'/'+'Comparison_venn',sep='\t',header=None)
 	if (venn.shape[1]-2) < 5:
 
-		mycmd=['homer_venn.plot.R',
+		mycmd=['Rscript', psource.resource_filename(__name__, 'rscripts/homer_venn.plot.R'),
 		'Comparison_venn',
 		overDir+'/'+'Comparison_venn']
 

@@ -8,7 +8,7 @@ from termcolor import colored
 import re
 from multiprocessing import Pool
 from itertools import repeat
-from greenPipe import universal
+from greenPipes import universal
 
 
 def equalRead (libraryType,outputdir,Names,RandomReadNumbers,threads):

@@ -17,7 +17,7 @@ import mygene
 mg = mygene.MyGeneInfo()
 from Bio.Seq import Seq
 import pyfaidx
-from greenPipe import greenCutFrq
+from greenPipes import greenCutFrq
 import gzip
 import urllib.request
 
@@ -259,7 +259,7 @@ def vennDiagram (outDir,infile,distance,Names):
 
     if (venn.shape[1]-2) < 5:
         vennR=psource.resource_filename(__name__, "rscripts/venn.R")
-        mycmd=[vennR,
+        mycmd=['Rscript', vennR,
                'Comparison_venn',
                outDir+"/"+Name+"."+'Comparison_venn']
         run_cmd(mycmd)
@@ -400,7 +400,7 @@ def proof_of_piggyBack (inFile,
 
 
             vennR=psource.resource_filename(__name__, "rscripts/venn.R")
-            mycmd=[vennR,
+            mycmd=['Rscript', vennR,
                    Name+'vs'+ENCName+'-'+ENCCellLines+selFile.iloc[i,0]+'.Comparison',
                    outDir+'/'+'Comparison']
 
@@ -472,8 +472,8 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
         entrezOfProteins=massHugo2Entrez(lProt,Species)
 
     #---
-    motifOfgreenPipelist=[]
-    motifOfgreenPipe_withoutpwm_withoutsesquencelist=[]
+    motifOfgreenPipeslist=[]
+    motifOfgreenPipes_withoutpwm_withoutsesquencelist=[]
     MassSpectro_Fasta=pyfaidx.Fasta(sFasta)
 
     #-- Reading peak files, finding significant Jasper motifs, find user provided motifs and unexplained peaks with motifs
@@ -484,10 +484,10 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
 
     #---- Motifs in the total peaks
     if os.path.exists(motifFile):
-        motifOfgreenPipelist.append(motifFile)
+        motifOfgreenPipeslist.append(motifFile)
     else:
         motifs_peaks(gVer,peakFile,out_motifs + Name,size,threads,outputdir)
-        motifOfgreenPipelist.append(motifFile)
+        motifOfgreenPipeslist.append(motifFile)
 
         if not os.path.exists(motifFile):
 
@@ -517,7 +517,7 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
                         MassSpectro_Fasta,
                         outputdir)
 
-    motifOfgreenPipe_withoutpwm_withoutsesquencelist.append(
+    motifOfgreenPipes_withoutpwm_withoutsesquencelist.append(
         outputdir+'/'+'MassSpectrometry/' + Name + '.peaks_WithoutPwmSeq/knownResults.txt'
     )
 
@@ -537,19 +537,19 @@ def piggBack (outputdir,mPwm,sProt,Species,sFasta,lProt,peak,Name,size,threads,g
     if not os.path.exists(mVenn):
         os.makedirs(mVenn)
 
-    print(motifOfgreenPipelist)
+    print(motifOfgreenPipeslist)
     print(motifFile)
     #--- (total peaks)
     motifInfo=intersect_mass_green(
         Jasper2IDs,
-        motifOfgreenPipelist[0],
+        motifOfgreenPipeslist[0],
         outputdir+'/'+'MassSpectrometry/'+ Name + '.totalPeaks.txt',
         pvalue)
     print(motifInfo)
     #--- (peaks without PWM and Sequence of motifs)
     motifInfo=intersect_mass_green(
         Jasper2IDs,
-        motifOfgreenPipe_withoutpwm_withoutsesquencelist[0],
+        motifOfgreenPipes_withoutpwm_withoutsesquencelist[0],
         outputdir+'/'+'MassSpectrometry/'+ Name + '.WithoutmPwmWithoutSequence.txt',
         pvalue)
     print(motifInfo)

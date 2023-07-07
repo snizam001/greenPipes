@@ -7,11 +7,11 @@ import pickle
 import subprocess
 from datetime import datetime
 from termcolor import colored
-from greenPipe import initPeakCalling
-from greenPipe import qcTagD
+from greenPipes import initPeakCalling
+from greenPipes import qcTagD
 import pkg_resources as psource
 from io import StringIO
-from greenPipe import universal
+from greenPipes import universal
 
 def extrMotif (maN):
 
@@ -189,7 +189,7 @@ def cutFreq (Names,threads,outputdir,cutMotif,cutCenter,maN):
 
         gCutFrqR = psource.resource_filename(__name__, "rscripts/greenCutFrq.R")
 
-        c=[gCutFrqR,
+        c=['Rscript', gCutFrqR,
            "--bam1", exprFrag.replace(".bed",""),
            "--bam2", ctrlFrag.replace(".bed",""),
            "--motifFile", cutMotif,

@@ -5,7 +5,7 @@ import os
 import subprocess
 from datetime import datetime
 from termcolor import colored
-from greenPipe import universal
+from greenPipes import universal
 
 
 def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,gpu):

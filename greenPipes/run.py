@@ -1790,6 +1790,7 @@ def main ():
         #_____________________________________________________________________________________________________
         if mode == "cutfrequency":
 
+          if libraryType == "pair":
             print(colored("using genome version: "+cGVersion+" in cutfrequency mode",
                           "green",
                           attrs= ["bold"]
@@ -1863,7 +1864,12 @@ def main ():
                                      cMotifFile,
                                      cCenter,
                                      cMaN)
-
+          else:
+            print(colored("Single-end libraries: cutfrequency will not be calculated",
+                          "red",
+                          attrs= ["bold"]
+                         )
+                 )
         #-- Heatmap mode
         #_____________________________________________________________________________________________________
 
@@ -1963,11 +1969,17 @@ def main ():
         #_____________________________________________________________________________________________________
         if mode == "MassSpectrometry" or mode == "piggyBack":
             if mPeak == "NA":
-                for i in len(0,myin.shape[0]):
+                for i in range(0,myin.shape[0]):
                     mName = myin.loc[i,4]
-                    peakFile =outputdir + '/Peaks/' + mName +'.Clean.bed'
+                    # _all -> narrow-homer -> broad
+                    if os.path.exists(outputdir + '/Peaks/' + mName +'_all-homer.Clean.bed'):
+                      peakFile =outputdir + '/Peaks/' + mName +'_all-homer.Clean.bed'
+                    elif os.path.exists(outputdir + '/Peaks/' + mName +'_narrow-homer.Clean.bed'):
+                      peakFile =outputdir + '/Peaks/' + mName +'_narrow-homer.Clean.bed'
+                    else:
+                      peakFile =outputdir + '/Peaks/' + mName +'_broad-homer.Clean.bed'
 
-                    massSpectro.piggBack (outputdir,
+                    massSpectro.piggBack (outputdir, 
                                           mPwm,
                                           sProt,
                                           Species,

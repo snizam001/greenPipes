@@ -104,7 +104,7 @@ def initPeakCalling (libraryType,outputdir,Names,spikeNormPeak,threads):
                         readN_expr=int(lines.split(' ')[0])
                 else:
                     if re.search('mapped',lines) and not re.search('mate',lines):
-                        readN_exp=int(lines.split(' ')[0])
+                        readN_expr=int(lines.split(' ')[0])
 
         SpikeIn_normalized_controlReadsNew = outvalues[2] * ((outvalues[0]/(outvalues[2]+outvalues[0])) / (outvalues[1]/(readN_expr+outvalues[1])))
 

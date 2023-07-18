@@ -2,9 +2,12 @@
 #Real_differentialPeaks.R --files  --dir
 
 #--- install necessary packages
+if(!require(R.utils)){
+        install.packages("R.utils",repos = "http://cran.us.r-project.org")}
+library(R.utils)
 
 if(!require(optparse)){
-	install.packages("optparse")
+	install.packages("optparse",repos = "http://cran.us.r-project.org")
     library(optparse)
 }
 

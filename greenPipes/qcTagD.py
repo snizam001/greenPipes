@@ -16,8 +16,8 @@ def qcTagD_fragmentLength (outputdir,Name,threads,qcSpike):
     dirs=outputdir+'/'+'Tagdirectories_qualities/'
     folders=[dirs]
     for folder in folders:
-        if not os.path.exists(outputdir+'/'+folder):
-            os.makedirs(outputdir+'/'+folder)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
     #--------------
     if qcSpike != "False":
         if not (os.path.exists(outputdir + '/SpikeIn/' + Name + '_expr' + '.bam') or

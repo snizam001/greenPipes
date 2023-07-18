@@ -5,13 +5,17 @@
 ## this is currently only for R version 3.2.0; module load r/3.2.0
 
 # ~~~~~ LOAD PACKAGES ~~~~~~~ #
+if(!require(R.utils)){
+        install.packages("R.utils",repos = "http://cran.us.r-project.org")}
+library(R.utils)
+
 if(!require(VennDiagram)){
-        install.packages("VennDiagram")
+        install.packages("VennDiagram",repos = "http://cran.us.r-project.org")
     library(VennDiagram)
 }
 
 if(!require(gridExtra)){
-        install.packages("gridExtra")
+        install.packages("gridExtra",repos = "http://cran.us.r-project.org")
     library(gridExtra)
 }
 

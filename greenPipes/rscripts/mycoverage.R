@@ -4,13 +4,16 @@
 
 
 #!/usr/bin/env Rscript
+if(!require(R.utils)){
+        install.packages("R.utils",repos = "http://cran.us.r-project.org")}
+library(R.utils)
 
 if(!require(optparse)){
-        install.packages("optparse")}
+        install.packages("optparse",repos = "http://cran.us.r-project.org")}
 library(optparse)
 #--- 
 if (!requireNamespace("BiocManager", quietly = TRUE)){
-    install.packages("BiocManager")
+    install.packages("BiocManager",repos = "http://cran.us.r-project.org")
 }
 #--- 
 if(!require(GenomicAlignments)){
@@ -33,7 +36,7 @@ if(!require(BSgenome)){
         }
 #----
 if(!require(plot.matrix)){
-        install.packages("plot.matrix")}
+        install.packages("plot.matrix",repos = "http://cran.us.r-project.org")}
 library(plot.matrix)
 
 #--- 

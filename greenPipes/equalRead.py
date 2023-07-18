@@ -42,7 +42,7 @@ def equalRead (libraryType,outputdir,Names,RandomReadNumbers,threads):
     #--- identifying total number of reads
     for Name in Names:
         with open(outputdir + '/Bamfiles/' + Name + '_expr.Flagstats.txt','r') as f:
-            isItPair=0
+            xyz = 0
             for lines in f:
                 if libraryType=="pair":
                     if re.search('read1',lines):
@@ -50,26 +50,9 @@ def equalRead (libraryType,outputdir,Names,RandomReadNumbers,threads):
                         print(lines.split(' ')[0])
                         readN_exp.append(int(lines.split(' ')[0]))
                 else:
-                    if re.search('read1',lines):
-                        print(colored('file is related to pair-end sequencing, '+
-                                      'but single-end is mentioned in the command',
-                                      'red',
-                                      attrs = ['bold']
-                                     )
-                             )
-                        exit()
                     if re.search('mapped',lines) and not re.search('mate',lines):
                         print(lines.split(' ')[0])
                         readN_exp.append(int(lines.split(' ')[0]))
-
-            if isItPair==0:
-                print(colored('file is related to single-end sequencing, '+
-                              'but pair-end is mentioned in the command',
-                              'red',
-                              attrs = ['bold']
-                             )
-                     )
-                exit()
     print(readN_exp)
 
     #--- Checking if given random reads are perfect or not?
@@ -129,13 +112,11 @@ def equalRead (libraryType,outputdir,Names,RandomReadNumbers,threads):
                 universal.run_cmd(cmd,outputdir)
                 cmd=["samtools",
                      "index",
-                     "-@", str(threads),
                      infile+Expr[k]+'.bam'
                     ]
                 universal.run_cmd(cmd,outputdir)
                 cmd=['samtools',
                      'flagstat',
-                     '-@', str(threads),
                      infile+Expr[k]+'.bam']
                 with open(infile+Expr[k]+'.Flagstats.txt', "w+") as f:
                      universal.run_cmd_file(cmd,f,outputdir)

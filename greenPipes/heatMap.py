@@ -194,8 +194,9 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
         if hCovMethod == 1:
             inCounts = [1]*len(inNames)
+            inCounts = [str(inCounts) for inCounts in inCounts]
         elif hCovMethod == 2:
-            inCounts = inCounts
+            inCounts = [str(inCounts) for inCounts in inCounts]
 
         if hCovMethod == 1:
             c=['computeMatrix',
@@ -269,8 +270,9 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
         if hCovMethod == 1:
             inCounts = [1]*len(inNames)
+            inCounts = [str(inCounts) for inCounts in inCounts]
         elif hCovMethod == 2:
-            inCounts = inCounts
+            inCounts = [str(inCounts) for inCounts in inCounts]
 
         if hCovMethod == 1:
             c=['computeMatrix',
@@ -346,8 +348,9 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
             exit()
         if hCovMethod == 1:
             inCounts = [1]*len(inNames)
+            inCounts = [str(inCounts) for inCounts in inCounts]
         elif hCovMethod == 2:
-            inCounts = inCounts
+            inCounts = [str(inCounts) for inCounts in inCounts]
 
         if hCovMethod == 1:
             c=['computeMatrix',
@@ -434,8 +437,9 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
         print(hBed)
         if hCovMethod == 1:
             inCounts = [1]*len(inNames)
+            inCounts = [str(inCounts) for inCounts in inCounts]
         elif hCovMethod == 2:
-            inCounts = inCounts
+            inCounts = [str(inCounts) for inCounts in inCounts]
 
         if hCovMethod == 1:
             c=['computeMatrix',
@@ -475,12 +479,11 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
            '--refPointLabel', "center"] + hPOpt
 
         universal.run_cmd(c,outputdir)
-
         c=['Rscript', heatmapNormalize,
         '-i', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks.gz',
         '-o', outputdir+'/'+'HeatMaps/heatmap-'+hCovComp+'-peaks',
         '-l', ",".join(inNames),
-        '-c', ",".join(inCounts)
+        '-c', str(",".join(inCounts))
         ]
 
         universal.run_cmd(c,outputdir)
@@ -510,8 +513,9 @@ def heatmap (inFiles,inNames,threads,outputdir,hRegionMode,gtf,hBed,hCovComp, hC
 
             if hCovMethod == 1:
                 inCounts = [1]*len(inNames)
+                inCounts = [str(inCounts) for inCounts in inCounts]
             elif hCovMethod == 2:
-                inCounts = inCounts
+                inCounts = [str(inCounts) for inCounts in inCounts]
 
             if hCovMethod == 1:
                 c=['computeMatrix',

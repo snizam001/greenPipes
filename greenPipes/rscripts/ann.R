@@ -1,33 +1,36 @@
 #!/usr/bin/env Rscript
 #----- ann.R
-
+if(!require(R.utils)){
+        install.packages("R.utils",repos = "http://cran.us.r-project.org")}
+library(R.utils)
+#--- 
 if(!require(optparse)){
-        install.packages("optparse")}
+        install.packages("optparse",repos = "http://cran.us.r-project.org")}
 library(optparse)
 #---
 if(!require(data.table)){
-        install.packages("data.table")}
+        install.packages("data.table",repos = "http://cran.us.r-project.org")}
 library(data.table)
 #---
 if (!requireNamespace("BiocManager", quietly = TRUE)){
-    install.packages("BiocManager")
+    install.packages("BiocManager", repos = "http://cran.us.r-project.org")
 }
 #---
 if(!require(GenomicRanges)){
     print ("GenomicRanges is not avaiable in your system")
-    system('sudo apt-get install libcurl4-openssl-dev')
+    #system('sudo apt-get install libcurl4-openssl-dev')
         BiocManager::install("GenomicRanges")
         }
 
 library(GenomicRanges)
 #---
 if(!require(plot.matrix)){
-        install.packages("plot.matrix")}
+        install.packages("plot.matrix",repos = "http://cran.us.r-project.org")}
 library(plot.matrix)
 #--
 #---
 if(!require(UpSetR)){
-        install.packages("UpSetR")}
+        install.packages("UpSetR",repos = "http://cran.us.r-project.org")}
 library(UpSetR)
 #---
 option_list = list(

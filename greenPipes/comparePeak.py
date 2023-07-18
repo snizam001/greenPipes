@@ -1,4 +1,4 @@
-# differential peaks, overlapping peaks
+# differential peaks, overlapping peaks: Peak shift and V-plot will be implemented in the next version
 import os
 import subprocess
 from datetime import datetime
@@ -239,7 +239,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 			outputdir+'/'+'comparePeaks/GeneOntology',
 			# outputdir+'/'+'comparePeaks/Overlap',
 			outputdir+'/'+'comparePeaks/ImageBhujangasanaPlot',
-			outputdir+'/'+'comparePeaks/PeakShift',
+			#outputdir+'/'+'comparePeaks/PeakShift',
 			outputdir+'/'+'comparePeaks/BlackAndWhite',
 			outputdir+'/'+'comparePeaks/BulkyvsNonBulky',
 			]

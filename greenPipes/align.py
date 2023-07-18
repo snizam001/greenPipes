@@ -70,11 +70,11 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
         myothercommand="bwa"
         if not os.path.exists(refgenome+".bwt"):
             print(colored('BWA reference genome does not exist. '+
-                          'Create index of the genome file using bowtie2-build',
+                          'Create index of the genome file using command: bwa index refGenome.fasta',
                           'red', attrs=['bold']))
         if not os.path.exists(spikein+".bwt"):
             print(colored('BWA reference genome does not exist for SpikeIn.'+
-                          ' Create index of the SpikeIn fasta file using bowtie2-build',
+                          ' Create index of the SpikeIn fasta file using command: bwa index refGenome.fasta',
                           'red', attrs=['bold']))
 
         if alignParam == "None":
@@ -194,8 +194,9 @@ def alignment (libraryType,outputdir,Name,refgenome,spikein,threads,alignParam,g
                 p1=subprocess.Popen(['bwa',
                                      'mem',
                                      refGnome[j],
-                                     infile+ Expr[k]+'_trimmed.fq.gz',
-                                     '-o', outfile+Expr[k]+'.sam'] +
+                                     infile+ Expr[k]+'_trimmed.fq.gz' #,
+#                                     '-o', outfile+Expr[k]+'.sam'
+                                     ] +
                                     bwa_parameters,
                                     stdout=subprocess.PIPE,
                                     stderr=logfile)

@@ -11,21 +11,23 @@
 # ""  --heatmapHeight 20 && eog Fig4EPeaks-SpikeNormalized.jpeg
 # incorporate the standarrrrrrd deviation in the coverage plot.
 #Think: you can not use it find significant differences(?)
-
+if(!require(R.utils)){
+        install.packages("R.utils",repos = "http://cran.us.r-project.org")}
+library(R.utils)
 if(!require(optparse)){
-        install.packages("optparse")}
+        install.packages("optparse",repos = "http://cran.us.r-project.org")}
 library(optparse)
 #---
 if(!require(data.table)){
-        install.packages("data.table")}
+        install.packages("data.table",repos = "http://cran.us.r-project.org")}
 library(data.table)
 #---
 if(!require(matrixStats)){
-        install.packages("matrixStats")}
+        install.packages("matrixStats",repos = "http://cran.us.r-project.org")}
 library(matrixStats)
 #---
 if(!require(crayon)){
-        install.packages("crayon")}
+        install.packages("crayon",repos = "http://cran.us.r-project.org")}
 library(crayon)
 #---
 option_list = list(
@@ -164,7 +166,7 @@ fwrite(data.frame(d[,c(1:6)],h),
 	col.names=F
 	)
 
-system(paste("pv ", input ," | pigz -dc | head -n1 | pigz -c > nnnnnn  && cat nnnnnn ", oo, " > nz && mv nz ", oo, sep =""))
+system(paste("pv ", input ," | pigz -dc | head -n1 | pigz -c > nnnnnn  && cat nnnnnn ", oo, " > nz && mv nz ", oo, " && rm nnnnnn", sep =""))
 #_________________
 fwrite(data.frame(sample=rep(sampleLabels, each = bins),coverage=hMean),
 	paste(output,'-',normLabels,"-curve.gz", sep = ""),

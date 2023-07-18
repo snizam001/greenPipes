@@ -36,7 +36,6 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
                          )
                  )
             exit()
-
     dirs=[outputdir+'/'+'UserAnnotation']
     for d in dirs:
         if not os.path.exists(d):
@@ -45,6 +44,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
 
     myPeakFolders = []
     zz = ['Peaks', 'idr_homer', 'idr_macs2']
+
     if annpeakFiles=='None':
         for z in zz:
             if os.path.exists(outputdir + '/' + z + '/'):
@@ -72,6 +72,22 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
             print(kk)
 
         annPrefixes=annPrefix.split(',')
+
+        #-- checking if given file exist or not in the system 
+
+        c_files=annpeakFiles.split(',') #+annFiles.split(',')
+        print(c_files)
+        e_file=0
+        for c_file in c_files:
+            if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
+                e_file=e_file+1
+                print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
+                              'red',
+                              attrs=['bold']
+                             )
+                     )
+                annpeakFile.remove(c_file)
+
     if len(annPrefixes) != len(annpeakFile):
       print(colored("The lenght of the --annPrefix is not equal to the --annpeakFiles.",
                     'red',
@@ -79,20 +95,8 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
                    )
            )
       exit()
-    #-- checking if given file exists
-    c_files=annpeakFiles.split(',') #+annFiles.split(',')
-    print(c_files)
-    e_file=0
-    for c_file in c_files:
-        if not os.path.exists(c_file) or os.path.getsize(c_file)==0:
-            e_file=e_file+1
-            print(colored(c_file+": does not exist or empty. Open this file in editor and write \"EMPTY\"",
-                          'red',
-                          attrs=['bold']
-                         )
-                 )
-            annpeakFiles.remove(c_file)
 
+    #-- checking if given annotation files exists or not in the system
     c_files=annFiles.split(',') #+annFiles.split(',')
     print(c_files)
     e_file=0
@@ -106,7 +110,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
                  )
             annFiles.remove(c_file)
 
-    if len(annFiles) == 0 or len(annpeakFiles) == 0:
+    if len(annFiles) == 0 or len(annpeakFile) == 0:
         exit()
 
     if annSize == 'None' or annFiles == "None" or annName == "None":
@@ -139,7 +143,32 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
             subprocess.call([cmd_r,'--help'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         except FileNotFoundError:
             print(colored(cmd_r+
-                          ': Part of homer. It is not installed in your computer or not in the PATH.',
+                          ': Part of homer or Meme suite. It is not installed in your computer or not in the PATH.',
+                          'red',
+                          attrs=['bold']
+                         )
+                 )
+            exit()
+
+    cmd_rs=['meme']
+    meme_single = 0
+    for cmd_r in cmd_rs:
+        try:
+            pp = subprocess.Popen([cmd_r,'-p','2','temp.txt'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            if "given but Parallel MEME not configured" in str(pp.communicate()[1]):
+              print(colored(cmd_r+
+                            ': meme suite is configured to use only one processor. If you want to use'+
+                            ' multiple processor, then follow the instruction give at: '+
+                            'https://meme-suite.org/meme/doc/install.html?man_type=web#parallel. Meme-suite with only one '+
+                            "processor is going to take hell of time to finish.",
+                            'red',
+                            attrs=['bold']
+                           )
+                   )
+              meme_single = 1           
+        except FileNotFoundError:
+            print(colored(cmd_r+
+                          ': Part of homer or Meme suite. It is not installed in your computer or not in the PATH.',
                           'red',
                           attrs=['bold']
                          )
@@ -279,33 +308,55 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
                  )
 
     for i in range(0,len(annpeakFile)):
-        cmd = [
-            'meme',
-            outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
-            '-oc',
-            outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
-            '-dna',
-            '-p', str(threads),
-            '-nmotifs', '10',
-            '-mod', 'zoops',
-            '-seed', '786',
-            '-revcomp',
-            '-minw', '6',
-            '-maxw', '15',
-        ]
-
-        universal.run_cmd(cmd, outputdir)
-
+        if os.stat(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa').st_size !=0 and os.path.exists(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'):
+          if meme_single == 1:
+            cmd = [
+                'meme',
+                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
+                '-oc',
+                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
+                '-dna',
+    #            '-p', str(threads),
+                '-nmotifs', '10',
+                '-mod', 'zoops',
+    #            '-seed', '786',
+                '-revcomp',
+                '-minw', '6',
+                '-maxw', '15',
+            ]
+          else:
+            cmd = [
+                'meme',
+                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
+                '-oc',
+                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
+                '-dna',
+                '-p', str(threads),
+                '-nmotifs', '10',
+                '-mod', 'zoops',
+    #            '-seed', '786',
+                '-revcomp',
+                '-minw', '6',
+                '-maxw', '15',
+            ]
+          universal.run_cmd(cmd, outputdir)
+        else:
+          print(colored(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'+" file does not exist or is of zero size.",
+            'red',
+            attrs=['bold']
+            ))
+          
     totalCmd = []
     target=psource.resource_filename(__name__, "data/JASPAR2018_CORE_non-redundant.meme")
-    for i in range(0,len(annpeakFile)):
-        cmd = [
-        'tomtom',
-        '-oc',outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_tomtom',
-        outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt',
-        target
-        ]
-        totalCmd.append(cmd)
+    if os.stat(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt').st_size !=0 and os.path.exists(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt'):
+      for i in range(0,len(annpeakFile)):
+          cmd = [
+          'tomtom',
+          '-oc',outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_tomtom',
+          outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt',
+          target
+          ]
+          totalCmd.append(cmd)
 
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,

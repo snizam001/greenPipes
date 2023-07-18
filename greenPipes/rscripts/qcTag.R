@@ -1,12 +1,15 @@
 #!/usr/bin/env Rscript
+if(!require(R.utils)){
+        install.packages("R.utils",repos = "http://cran.us.r-project.org")}
+library(R.utils)
 
 if(!require(optparse)){
-        install.packages("optparse")
+        install.packages("optparse",repos = "http://cran.us.r-project.org")
     library(optparse)
 }
 
 if(!require(data.table)){
-        install.packages("data.table")
+        install.packages("data.table",repos = "http://cran.us.r-project.org")
     library(data.table)
 }
 

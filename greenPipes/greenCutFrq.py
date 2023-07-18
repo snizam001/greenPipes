@@ -31,6 +31,15 @@ def extrMotif (maN):
                           header=None,
                           index=None,
                           mode="a")
+    else:
+      ma = maN
+      jMotif = pd.DataFrame(jdata[ma])[0].str.split().apply(pd.Series)
+
+      jMotif.to_csv("temp.motif",
+                    sep="\t",
+                    header=None,
+                    index=None,
+                    mode="a")    
 
 
 

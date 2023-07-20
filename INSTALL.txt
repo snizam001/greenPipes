@@ -1,3 +1,19 @@
 Run Install_linux.sh for Linux based operating system
 Run Install_window.bat for Windows operating system
 Run Install_unix.sh for Unix (MAC) based operating system
+
+
+Windows in powershell:
+
+1. Open powershell in window and navigate to the directory of greenPipes by using cd command e.g.
+cd C:\Documents and Settings\Users\Desktop\greenPipes
+
+2. By default, PowerShell restricts running scripts for security reasons. You may need to change the execution policy to allow running scripts. To do this, execute the following command in the PowerShell window:
+
+Set-ExecutionPolicy RemoteSigned
+
+3. Run the script using the script's filename with the .ps1 extension:
+
+./Install_powerShell.ps1
+
+4. If you encounter an error that says "execution of scripts is disabled," you can run the script by bypassing the execution policy:

@@ -1,4 +1,4 @@
-packageInstall = c("R.utils", 
+packageInstall = c("R.utils",
 	"optparse",
 	"data.table",
 	"BiocManager",
@@ -10,7 +10,12 @@ packageInstall = c("R.utils",
 	"VennDiagram",
 	"gridExtra")
 
-install.packages(packageInstall,repos = "http://cran.us.r-project.org")
+for(i in c(1:length(packageInstall))){
+if(!require(packageInstall[i],character.only = TRUE)){
+	install.packages(packageInstall[i],repos = "http://cran.us.r-project.org")
+	}
+library(packageInstall[i],character.only = TRUE)
+}
 
 library(BiocManager)
 BiocManager::install(c("GenomicRanges","GenomicAlignments","rtracklayer","BSgenome"))

@@ -1,7 +1,3 @@
-pip install ./
-
-
-#
-Download references, black listed regions, annotation and test files from https://osf.io/ruhj9/
-
-#
+Run Install_linux.sh for Linux based operating system
+Run Install_window.bat for Windows operating system
+Run Install_unix.sh for Unix (MAC) based operating system

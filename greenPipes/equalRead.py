@@ -46,7 +46,6 @@ def equalRead (libraryType,outputdir,Names,RandomReadNumbers,threads):
             for lines in f:
                 if libraryType=="pair":
                     if re.search('read1',lines):
-                        isItPair=isItPair+1
                         print(lines.split(' ')[0])
                         readN_exp.append(int(lines.split(' ')[0]))
                 else:

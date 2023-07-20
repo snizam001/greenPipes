@@ -73,7 +73,7 @@ def UserAnn (outputdir,annpeakFiles,annFiles,annSize,annName,annPrefix,threads):
 
         annPrefixes=annPrefix.split(',')
 
-        #-- checking if given file exist or not in the system 
+        #-- checking if given file exist or not in the system
 
         c_files=annpeakFiles.split(',') #+annFiles.split(',')
         print(c_files)
@@ -165,7 +165,7 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
                             attrs=['bold']
                            )
                    )
-              meme_single = 1           
+              meme_single = 1
         except FileNotFoundError:
             print(colored(cmd_r+
                           ': Part of homer or Meme suite. It is not installed in your computer or not in the PATH.',
@@ -308,55 +308,69 @@ def Ann (annpeakFiles, annPrefix, cGVersion, sFasta, outputdir, threads):
                  )
 
     for i in range(0,len(annpeakFile)):
-        if os.stat(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa').st_size !=0 and os.path.exists(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'):
-          if meme_single == 1:
-            cmd = [
-                'meme',
-                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
-                '-oc',
-                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
-                '-dna',
-    #            '-p', str(threads),
-                '-nmotifs', '10',
-                '-mod', 'zoops',
-    #            '-seed', '786',
-                '-revcomp',
-                '-minw', '6',
-                '-maxw', '15',
-            ]
-          else:
-            cmd = [
-                'meme',
-                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
-                '-oc',
-                outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
-                '-dna',
-                '-p', str(threads),
-                '-nmotifs', '10',
-                '-mod', 'zoops',
-    #            '-seed', '786',
-                '-revcomp',
-                '-minw', '6',
-                '-maxw', '15',
-            ]
-          universal.run_cmd(cmd, outputdir)
-        else:
-          print(colored(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'+" file does not exist or is of zero size.",
-            'red',
-            attrs=['bold']
-            ))
-          
+        try:
+            if os.stat(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa').st_size !=0 and os.path.exists(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'):
+              if meme_single == 1:
+                cmd = [
+                    'meme',
+                    outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
+                    '-oc',
+                    outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
+                    '-dna',
+        #            '-p', str(threads),
+                    '-nmotifs', '10',
+                    '-mod', 'zoops',
+        #            '-seed', '786',
+                    '-revcomp',
+                    '-minw', '6',
+                    '-maxw', '15',
+                ]
+              else:
+                cmd = [
+                    'meme',
+                    outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa',
+                    '-oc',
+                    outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme',
+                    '-dna',
+                    '-p', str(threads),
+                    '-nmotifs', '10',
+                    '-mod', 'zoops',
+        #            '-seed', '786',
+                    '-revcomp',
+                    '-minw', '6',
+                    '-maxw', '15',
+                ]
+              universal.run_cmd(cmd, outputdir)
+            else:
+              print(colored(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'+" file does not exist or is of zero size.",
+                'red',
+                attrs=['bold']
+                ))
+        except FileNotFoundError:
+            print(colored(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '.fa'+
+                        ': file not found or of zero size',
+                        'red',
+                        attrs=['bold']))
+
+
     totalCmd = []
     target=psource.resource_filename(__name__, "data/JASPAR2018_CORE_non-redundant.meme")
-    if os.stat(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt').st_size !=0 and os.path.exists(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt'):
-      for i in range(0,len(annpeakFile)):
-          cmd = [
-          'tomtom',
-          '-oc',outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_tomtom',
-          outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt',
-          target
-          ]
-          totalCmd.append(cmd)
+    try:
+        if os.stat(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt').st_size !=0 and os.path.exists(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt'):
+          for i in range(0,len(annpeakFile)):
+              cmd = [
+              'tomtom',
+              '-oc',outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_tomtom',
+              outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt',
+              target
+              ]
+              totalCmd.append(cmd)
+    except FileNotFoundError:
+        print(colored(outputdir + '/Motifs/Meme/' + annPrefixes[i] + '_meme/meme.txt'+
+                        ': file not found or of zero size',
+                        'red',
+                        attrs=['bold']))
+
 
     with Pool (threads) as p:
         p.starmap(universal.run_cmd,

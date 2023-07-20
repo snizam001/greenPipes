@@ -53,7 +53,10 @@ def equalRead (libraryType,outputdir,Names,RandomReadNumbers,threads):
                         print(lines.split(' ')[0])
                         readN_exp.append(int(lines.split(' ')[0]))
     print(readN_exp)
-
+    for x in readN_exp:
+        if x == 0:
+            print(colored('Note that number of the reads in some samples are zero.',
+                  'red', attrs=['bold']))
     #--- Checking if given random reads are perfect or not?
     if RandomReadNumbers == 0:
         readN_exp = [ min(readN_exp)/readN for readN in readN_exp]

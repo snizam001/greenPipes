@@ -2,7 +2,7 @@
 
 # Install mamba and create greenpipes environment
 # --
-
+currentDirectory=$(pwd)
 if ! [ -x "$(command -v mamba)" ]
 	then
 	echo "----------------------------------------------------------------"
@@ -111,4 +111,5 @@ fi
 # Installing R packages
 
 echo "Installing the different R libraries."
+cd $currentDirectory
 Rscript $(pwd)/Install_r.R

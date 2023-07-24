@@ -27,7 +27,7 @@ else
 	echo "---------------------------------------"
 	echo "creating python environment: greenpipes ..."
 	echo "---------------------------------------"
-	mamba env  create --name greenpipes -f $(pwd)/environment.yml
+	mamba env  create --name greenpipes -f $(pwd)/environment.yaml
 fi
 
 # Install greenpipes

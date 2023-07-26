@@ -987,6 +987,9 @@ mPrefix=args.mPrefix
 sDist = sDist/2
 #-- logfile
 #_____________________________________________________________________________________________________
+if not os.path.exists(outputdir):
+    os.makedirs(outputdir)
+
 with open(outputdir+'/'+'log.txt','w') as logfile:
     logfile.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
 
@@ -1459,6 +1462,8 @@ def main ():
             elif pMethod == "seacr":
                 if genomeFile == "NA":
                     genome = psource.resource_filename(__name__, "data/hg38.genome")
+                else:
+                    genome = genomeFile
                 seacr=psource.resource_filename(__name__, "otherScripts/SEACR/SEACR_1.3.sh")
                 callPeak.callPeaksSEACR (outputdir,
                                          Names,
@@ -1979,7 +1984,7 @@ def main ():
                     else:
                       peakFile =outputdir + '/Peaks/' + mName +'_broad-homer.Clean.bed'
 
-                    massSpectro.piggBack (outputdir, 
+                    massSpectro.piggBack (outputdir,
                                           mPwm,
                                           sProt,
                                           Species,

@@ -9,9 +9,6 @@ if ! [ -x "$(command -v mamba)" ]
 	echo "mamba is not present in system. Installing it before proceeding! You can install it by installing mambaforge from https://github.com/conda-forge/miniforge for your operating system."
 	echo "----------------------------------------------------------------"
 	exit 0
-	#architecture=$(uname -m)
-	#wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$architecture.sh"
-	#conda install -n base --override-channels -c conda-forge mamba 'python_abi=*=*cp*'
 fi
 
 # create greenpipes environment
@@ -30,15 +27,6 @@ else
 	mamba env  create --name greenpipes -f $(pwd)/environment.yaml
 fi
 
-# Install greenpipes
-
-#  - bash
-#  - fish
-#  - tcsh
-#  - xonsh
-#  - zsh
-#  - powershell
-
 eval "$(conda shell.bash hook)"
 conda activate greenpipes
 
@@ -47,7 +35,7 @@ if ! [ -x "$(command -v greenPipes)" ]
 	echo "---------------------------------------"
 	echo "Installing greenPipes ..."
 	echo "---------------------------------------"
-	chmod +x $(pwd)/greenPipes/rscripts/*
+	chmod -R +x $(pwd)/greenPipes/*
 	pip install $(pwd)/
 else
 	echo "---------------------------------------"

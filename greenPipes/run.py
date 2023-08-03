@@ -119,8 +119,7 @@ comNamed.add_argument("--inputfile",
 comNamed.add_argument("--libraryType",
                       help='type of the library',
                       choices=['single','pair'],
-                      default="NA",
-                      required=True)
+                      default="NA")
 """
 comNamed.add_argument("--experimentType",
                       help='type of the experiment',
@@ -983,6 +982,10 @@ gVer=args.gVer
 sDist=args.sDist
 mPvalue=args.mPvalue
 mPrefix=args.mPrefix
+
+if libraryType == "NA":
+        print("--libraryType is not defined. Use --libraryType pair or  --libraryType single for pair-end and single-end library.")
+        exit()
 
 #--
 sDist = sDist/2

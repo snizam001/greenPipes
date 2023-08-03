@@ -119,7 +119,8 @@ comNamed.add_argument("--inputfile",
 comNamed.add_argument("--libraryType",
                       help='type of the library',
                       choices=['single','pair'],
-                      default="NA")
+                      default="NA",
+                      required=True)
 """
 comNamed.add_argument("--experimentType",
                       help='type of the experiment',

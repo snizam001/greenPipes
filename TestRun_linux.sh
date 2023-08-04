@@ -2,7 +2,7 @@
 #_________________________________________
 
 # First download datasets
-echo "Download Test Data from https://osf.io/ruhj9"
+echo "Download Test Data from https://osf.io/ruhj9, if not downloaed."
 
 
 # Run example dataset

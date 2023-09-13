@@ -1,5 +1,5 @@
-#dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE)
-#.libPaths(Sys.getenv("R_LIBS_USER"))
+dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE)
+.libPaths(Sys.getenv("R_LIBS_USER"))
 
 packageInstall = c("R.utils",
 	"optparse",

@@ -12,7 +12,7 @@ setup(
 		},
 	version=__version__,
 	description="pipeline for the analysis of greenCUTRUN datasets and integrated analysis with RNAseq and MassSpectrometry",
-	author="Sheikh Nizamuddin",
+	author="Sheikh Nizamuddin and Marc Timmers",
 	license="DKFZ",
 	include_package_data=True,
 	package_data={"greenPipes": ["data/*"]},
@@ -20,5 +20,5 @@ setup(
 #	package_rscript={"greenCUTRUN": ["rscripts/*"]},
 #	package_dir={"":'greenCUTRUN'},
 	install_requires=requirements,
-	url='https://github.com/snizam001/greenPipes'
+	url='https://github.com/snizam001/greenPipe'
 ) 

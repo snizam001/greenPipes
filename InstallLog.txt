@@ -1,4 +1,0 @@
-
-----------------------------------------------------------------
-mamba is not present in system. Installing it before proceeding! You can install it by installing mambaforge from https://github.com/conda-forge/miniforge for your operating system.
-----------------------------------------------------------------

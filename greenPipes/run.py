@@ -1602,7 +1602,7 @@ def main ():
         #_____________________________________________________________________________________________________
 
         if mode == 'PeakComparison':
-            #---- finding differential Peaks
+            #---- finding differential Peaks: change compareInfile == "NA" option
             findYourOwnPeakFile = 0
             if not os.path.exists(compareInfile) or compareInfile == "NA":
                 print(colored(compareInfile+": does not exist",

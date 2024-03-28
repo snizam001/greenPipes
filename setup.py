@@ -20,5 +20,5 @@ setup(
 #	package_rscript={"greenCUTRUN": ["rscripts/*"]},
 #	package_dir={"":'greenCUTRUN'},
 	install_requires=requirements,
-	url='https://github.com/snizam001/greenPipe'
+	url='https://github.com/snizam001/greenPipes'
 ) 

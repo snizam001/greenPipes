@@ -60,7 +60,7 @@ epilogue = """
 Authors:
         (a) Sheikh Nizamuddin:
         snizam001@gmail.com,
-        (b) H.Th. Marc Timmers:
+        (b) H.T. Marc Timmers:
         m.timmers@dkfz-heidelberg.de
 """
 #_____________________________________________________________________________________________________

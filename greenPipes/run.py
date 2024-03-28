@@ -218,7 +218,7 @@ parser.add_argument("--pMethod",
                     "peak calling algorithm. Default is homer",
                     type=str,
                     choices=['homer',
-                             'macs2',
+                             #'macs2',
                              'seacr'],
                     default = 'homer'
                    )

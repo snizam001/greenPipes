@@ -402,8 +402,8 @@ parser.add_argument("--idrMethod",
                     # "Peak calling method: homer or macs2 in IDR",
                     type=str,
                     default = 'homer',
-                    # choices =['homer','macs2']
-                    choices =['homer']
+                    choices =['homer','macs2']
+                    #choices =['homer']
                    )
 
 parser.add_argument("--overFiles",

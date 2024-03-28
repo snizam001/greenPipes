@@ -225,6 +225,11 @@ def callPeaksHomer (outputdir,Names,threads,ControlPeak,styles,blackListedRegion
 
 def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effectiveGenomeSize,blackListedRegions,libraryType,pOpts):
 
+    if libraryType == 'pair':
+        fileFormat = 'BAMPE'
+    else:
+        fileFormat = 'BAM'
+
     if pOpts == "None":
         pOpt = []
     else:
@@ -307,7 +312,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
                    'callpeak',
                    '-t', inExpr,
                    '-c', inCtrl,
-                   '-f', 'BAM',
+                   '-f', fileFormat, #'BAM',
                    '-g', str(effectiveGenomeSize),
                    '-n', Name + "_broad-macs2",
                    '--outdir', dirs[0],
@@ -321,7 +326,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
                    'callpeak',
                    '-t', inExpr,
                    '-c', inCtrl,
-                   '-f', 'BAM',
+                   '-f', fileFormat, #'BAM',
                    '-g', str(effectiveGenomeSize),
                    '-n', Name + "_narrow-macs2",
                    '--outdir', dirs[0],
@@ -334,7 +339,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
                 c=['macs2',
                    'callpeak',
                    '-t', inExpr,
-                   '-f', 'BAM',
+                   '-f', fileFormat, #'BAM',
                    '-g', str(effectiveGenomeSize),
                    '-n', Name + "_broad-macs2",
                    '--outdir', dirs[0],
@@ -347,7 +352,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
                 c=['macs2',
                    'callpeak',
                    '-t', inExpr,
-                   '-f', 'BAM',
+                   '-f', fileFormat, #'BAM',
                    '-g', str(effectiveGenomeSize),
                    '-n', Name + "_narrow-macs2",
                    '--outdir', dirs[0],
@@ -372,7 +377,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
 
             oVal  =initPeakCalling.spike_normalization2([sCtrl,sExpr,Ctrl,Expr],libraryType)
             print(oVal)
-            oVal_norm = (oVal[0]/oVal[2])/(oVal[1]/oVal[3])
+            oVal_norm = (oVal[0]/(oVal[0]+oVal[2]))/(oVal[1]/(oVal[1]+oVal[3]))
             myratio=1/oVal_norm
 
             if broad_on==1:
@@ -380,7 +385,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
                    'callpeak',
                    '-t', inExpr,
                    '-c', inCtrl,
-                   '-f', 'BAM',
+                   '-f', fileFormat, #'BAM',
                    '-g', str(effectiveGenomeSize),
                    '-n', Name + "_broad-macs2",
                    '--outdir', dirs[0],
@@ -395,7 +400,7 @@ def callPeaksMacs2 (outputdir,Names,threads,spikePeaks,ControlPeak,styles,effect
                    'callpeak',
                    '-t', inExpr,
                    '-c', inCtrl,
-                   '-f', 'BAM',
+                   '-f', fileFormat, #'BAM',
                    '-g', str(effectiveGenomeSize),
                    '-n', Name + "_narrow-macs2",
                    '--outdir', dirs[0],
@@ -618,7 +623,7 @@ def callPeaksSEACR (outputdir,Names,threads,spikePeaks,ControlPeak,seacr,library
 
             oVal  =initPeakCalling.spike_normalization2([sCtrl,sExpr,Ctrl,Expr],libraryType)
             print(oVal)
-            oVal_norm = (oVal[0]/(oVal[2]+oVal[0]))/(oVal[1]/(oVal[3]+oVal[1]))
+            oVal_norm = (oVal[0]/(oVal[0]+oVal[2]))/(oVal[1]/(oVal[1]+oVal[3]))
             myratio=1/oVal_norm
             print("------------------")
             print(myratio)

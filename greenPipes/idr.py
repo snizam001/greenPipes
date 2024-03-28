@@ -46,15 +46,20 @@ def macs2idrCommand (mysamples,peakList,inputFiletype,outputFile,IdrThreshold):
     return(c)
 
 
-def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pvalue,effectiveGenomeSize,myratio):
+def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pvalue,effectiveGenomeSize,myratio,libraryType):
     #---
+    if libraryType == 'pair':
+        fileFormat = 'BAMPE'
+    else:
+        fileFormat = 'BAM'
+
     if Style == "broad" or Style=="histone":
         if CtrlInclude == "True" and SpikeInclude == "False":
             c=['macs2',
                'callpeak',
                '-t', Expr,
                '-c', Ctrl,
-               '-f', 'BAM',
+               '-f', fileFormat, #'BAM',
                '-g', str(effectiveGenomeSize),
                '-n', Prefix,
                '--outdir', OutDir,
@@ -66,7 +71,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
             c=['macs2',
                'callpeak',
                '-t', Expr,
-               '-f', 'BAM',
+               '-f', fileFormat, #'BAM',
                '-g', str(effectiveGenomeSize),
                '-n', Prefix,
                '--outdir', OutDir,
@@ -79,7 +84,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
                'callpeak',
                '-t', Expr,
                '-c', Ctrl,
-               '-f', 'BAM',
+               '-f', fileFormat, #'BAM',
                '-g', str(effectiveGenomeSize),
                '-n', Prefix,
                '--outdir', OutDir,
@@ -96,7 +101,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
                'callpeak',
                '-t', Expr,
                '-c', Ctrl,
-               '-f', 'BAM',
+               '-f', fileFormat, #'BAM',
                '-g', str(effectiveGenomeSize),
                '-n', Prefix,
                '--outdir', OutDir,
@@ -107,7 +112,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
             c=['macs2',
                'callpeak',
                '-t', Expr,
-               '-f', 'BAM',
+               '-f', fileFormat, #'BAM',
                '-g', str(effectiveGenomeSize),
                '-n', Prefix,
                '--outdir', OutDir,
@@ -119,7 +124,7 @@ def macs2PeakCalling (Style,CtrlInclude,SpikeInclude,Expr,Ctrl,OutDir,Prefix,Pva
                'callpeak',
                '-t', Expr,
                '-c', Ctrl,
-               '-f', 'BAM',
+               '-f', fileFormat, #'BAM',
                '-g', str(effectiveGenomeSize),
                '-n', Prefix,
                '--outdir', OutDir,
@@ -718,7 +723,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
     oDir   = outputdir + '/idr_macs2/peaks/pooled'
     Prefix = 'TotalExperiment'
 
-    c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, TotalExprRatio)
+    c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, TotalExprRatio,libraryType)
     totalCmd.append(c)
     #--
     replicate = 0
@@ -728,7 +733,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         inCtrl = outputdir+'/idr_macs2/bamfiles/TotalControl'
         oDir   = outputdir + '/idr_macs2/peaks/replicates/'
         Prefix = idrName + '_replicate' + str(replicate)
-        c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, myratios[i])
+        c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, myratios[i],libraryType)
         totalCmd.append(c)
 
     #-- creating pseudoreplicates
@@ -879,7 +884,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
         oDir   = outputdir+'/idr_macs2/peaks/pooled-pseudoreps/'
         Prefix = 'TotalExperiment' + pseudo
 
-        c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, TotalExprRatio)
+        c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, TotalExprRatio,libraryType)
         totalCmd.append(c)
 
     #----
@@ -891,7 +896,7 @@ def idr_macs2 (outputdir,idrSpike,idrExpr,idrCtrl,idrExprSpike,idrCtrlSpike,idrN
             inCtrl = outputdir+'/idr_macs2/bamfiles/TotalControl'
             oDir   = outputdir + '/idr_macs2/peaks/pseudoreps'
             Prefix = idrName + '_replicate' + str(replicate) + pseudo
-            c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, myratios[i])
+            c=macs2PeakCalling (idrStyle, idrControl, idrSpike, inExpr, inCtrl, oDir, Prefix, '0.2', effectiveGenomeSize, myratios[i],libraryType)
             totalCmd.append(c)
 
     with Pool (threads) as p:

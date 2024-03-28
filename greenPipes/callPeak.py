@@ -618,7 +618,7 @@ def callPeaksSEACR (outputdir,Names,threads,spikePeaks,ControlPeak,seacr,library
 
             oVal  =initPeakCalling.spike_normalization2([sCtrl,sExpr,Ctrl,Expr],libraryType)
             print(oVal)
-            oVal_norm = (oVal[0]/oVal[2])/(oVal[1]/oVal[3])
+            oVal_norm = (oVal[0]/(oVal[2]+oVal[0]))/(oVal[1]/(oVal[3]+oVal[1]))
             myratio=1/oVal_norm
             print("------------------")
             print(myratio)

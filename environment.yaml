@@ -261,5 +261,5 @@ dependencies:
       - multiprocess==0.70.14
       - polars==0.18.7
       - pyqt5-sip==12.11.0
-      - macs2==2.2.9.1
+#      - macs2==2.2.9.1
 

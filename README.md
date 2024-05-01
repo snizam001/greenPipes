@@ -1,6 +1,6 @@
 # greenPipes
      Automated data analysis platform for greenCUT&RUN and CUT&RUN genome-localization datasets with options for integration with other -omics technology data.
-
+     
      See license before cloning/using this tool
 
 # citation:
@@ -20,6 +20,9 @@ USAGE:
 
      Follow the handbook to learn about different modes and options available in the greenPipes pipeline.
 
+     Handbook is available at:
+     https://drive.google.com/file/d/1Hdsq9dBYN7PCxher6mqVNaP1YTrDgxfY/view
+     
      For quick help type following command after installation:
 
      conda activate greenpipes

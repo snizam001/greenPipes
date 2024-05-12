@@ -1,11 +1,9 @@
 # greenPipes
      Automated data analysis platform for greenCUT&RUN and CUT&RUN genome-localization datasets with options for integration with other -omics technology data.
-     
-     See license before cloning/using this tool
 
 # citation:
 
-     Unpublished work
+     https://doi.org/10.1093/bioinformatics/btae307
 
 INSTALLATION:
 

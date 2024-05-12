@@ -18,7 +18,7 @@ USAGE:
 
      Follow the handbook to learn about different modes and options available in the greenPipes pipeline.
 
-     Handbook is available at:
+     Handbook or manual is available at:
      https://drive.google.com/file/d/1Hdsq9dBYN7PCxher6mqVNaP1YTrDgxfY/view
      
      For quick help type following command after installation:

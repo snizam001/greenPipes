@@ -1,10 +1,3 @@
-#!/usr/bin/env Rscript
-
-## USAGE: multi_peaks_Venn.R <sampleID> /path/to/venn.txt
-## This script will process venn output from HOMER mergePeaks and plot a venn diagram
-## this is currently only for R version 3.2.0; module load r/3.2.0
-
-# ~~~~~ LOAD PACKAGES ~~~~~~~ #
 if(!require(R.utils)){
         install.packages("R.utils",repos = "http://cran.us.r-project.org")}
 library(R.utils)
@@ -19,43 +12,27 @@ if(!require(gridExtra)){
     library(gridExtra)
 }
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ # 
 
-
-# ~~~~~ GET SCRIPT ARGS ~~~~~~~ #
 args <- commandArgs(TRUE); cat("Script args are:\n"); args
 SampleID<-args[1]
 venn_table_file<-args[2]
 plot_outdir<-dirname(venn_table_file)
 plot_filepath<-paste0(plot_outdir,"/",SampleID,"_venn.pdf") 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ # 
 
-
-# ~~~~~ PARSE THE VENN TABLE ~~~~~~~ #
-# read in the venn text
 venn_table_df<-read.table(venn_table_file,header = TRUE,sep = "\t",stringsAsFactors = FALSE,check.names = FALSE)
-# venn_table_df
 
-# get the venn categories
 venn_categories<-colnames(venn_table_df)[!colnames(venn_table_df) %in% c("Total","Name")] 
 cat("Venn categories are:\n"); venn_categories
 
-# venn_categories
+
 num_categories<-length(venn_categories)
 cat("Num categories are:\n"); num_categories
 
-# make a summary table
+
 venn_summary<-venn_table_df[!colnames(venn_table_df) %in% venn_categories]
 cat("Venn summary table is categories are:\n"); venn_summary
-# venn_summary
 
-# write summary table
 write.table(venn_summary,file = "venn_summary.tsv",quote = FALSE,row.names = FALSE)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ # 
-
-
-# ~~~~~ SET UP THE PLOT ~~~~~~~ #
-# get the areas for the venn; add up all the overlaps that contain the given category 
 
 if (num_categories == 2) {
   # PAIRWISE VENN
@@ -418,7 +395,6 @@ if (num_categories == 2) {
     n12345 = area_n12345,
     category = gsub(pattern = ".bed",replacement = "",x = venn_categories),
     fill = c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3"),
-    # cat.col = c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3"),
     cat.dist = 0.25,
     cat.cex = 1.2,
     margin = 0.1,

@@ -300,7 +300,7 @@ def realDiffPeaksHomer (rdName1, rdName2, rdPeak, rdPvalue, rdFoldChange, rdSize
 
 	cmd=['getDifferentialPeaks',
 		rdPeak2,
-		rdTag2, './xYz786'
+		rdTag2, './xYz786', # There was typo error here. After './xYz786' comma was missing: date 20.07.2024
 		' -size', str(rdSize),
 		'-P', str(rdPvalue),
 		'-F', str(rdFoldChange)] + rdOther

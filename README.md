@@ -25,7 +25,10 @@ Automated data analysis platform for greenCUT&RUN and CUT&RUN genome-localizatio
 
      Follow the handbook to learn about different modes and options available in the greenPipes pipeline.
 
-     Handbook or manual is available at following google drive link (https://drive.google.com/file/d/1Hdsq9dBYN7PCxher6mqVNaP1YTrDgxfY/view) and also present as supplementary file at https://doi.org/10.1093/bioinformatics/btae307:
+     Handbook or manual is available at following google drive link given below
+     and also present as supplementary file at https://doi.org/10.1093/bioinformatics/btae307:
+
+Drive link: https://drive.google.com/file/d/1Hdsq9dBYN7PCxher6mqVNaP1YTrDgxfY/view
      
      For quick help type following command after installation:
 
